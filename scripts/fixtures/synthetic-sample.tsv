@@ -1,0 +1,22 @@
+# SYNTHETIC TEST FIXTURE — NOT data from the supplied PDF.
+# Exists only to exercise the importer's edge cases (duplicate id, missing
+# fields, malformed numbers, ambiguous concatenated meal text, empty meals,
+# calorie mismatch, unmapped activity label, negative value, outliers).
+# Deliberately includes a gap in the id sequence (1013-1199 absent) to prove
+# missing-id detection works.
+# page=1
+Participant ID	Name	Age	Gender	Height (cm)	Weight (kg)	Activity Level	Breakfast	Lunch	Dinner	Snacks	Calories (kcal)	Protein (g)	Carbohydrates (g)	Fat (g)	Dietary Fibre (g)	Sugar (g)	Sodium (mg)
+1001	Zoya Singh	23	Female	165 cm	58 kg	Moderate	Idli, Sambar	Rice, Dal, Sabzi	Roti, Paneer	Apple	1853	68	250	55	24	38	1800
+1002	 Arun Kumar 	31	Male	178 cm	82 kg	Active	Oats, Milk	Chicken Rice	Roti, Dal	Protein Shake	2450	120	280	80	20	45	2600
+1003	Meera Nair	27	Female	160 cm	54 kg	Sedentary	Dosa	Sambar Rice	Khichdi	Tea, Biscuits	1650	52	230	48	18	40	1500
+1004	Rahul Verma	45	Male	172 cm	91 kg	Very Active	Paratha, Curd	Rajma Chawal	Chicken Curry	Nuts	2900	140	320	105	28	50	3200
+1005	Zoya Singh	29	Female	168 cm	63 kg	Light	Poha	Chole Roti	Dal Rice	Fruit	1980	70	270	60	26	42	2000
+1005	Duplicate Id Person	33	Male	175 cm	70 kg	Moderate	Upma	Curd Rice	Roti Sabzi	Tea	2100	75	290	65	22	44	2100
+1006	Missing Fields		Female			Moderate	Idli	Rice Dal	Roti		1800	60	260	50	20	35	1700
+1007	Malformed Numbers	twenty	Male	abc	-70 kg	Moderate	Oats	Rice	Roti	Apple	not-a-number	65	240	50	20	30	1600
+1008	Ambiguous Meals	26	Female	162 cm	57 kg	Moderate	Protein ShakeSamosa	Rice Dal	Roti Paneer	BananaChikki	1900	66	255	58	21	39	1750
+1009	Empty Meals	38	Male	180 cm	78 kg	Active					2300	95	300	75	25	48	2400
+1010	Calorie Mismatch	24	Female	158 cm	50 kg	Sedentary	Idli	Rice Dal	Roti	Fruit	1200	120	300	90	20	35	1400
+1011	Odd Labels	41	Other	169 cm	66 kg	Ultra Active	Dosa	Sambar Rice	Khichdi	Tea	2050	-12	275	62	23	41	1900
+1012	Outlier Values	9	Male	250 cm	25 kg	Sedentary	Oats	Rice	Roti	Apple	9000	40	400	30	15	60	1200
+1200	Last Participant	35	Female	166 cm	61 kg	Moderate	Upma, Chutney	Curd Rice	Roti, Dal, Sabzi	Buttermilk	1990	72	268	61	25	40	1850

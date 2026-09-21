@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Balanced meal bowl</title>
+  <desc id="desc">A colorful bowl with greens, grains, vegetables, and beans.</desc>
+  <rect width="1200" height="900" fill="#e8f1e8"/>
+  <circle cx="970" cy="150" r="190" fill="#d4e6d8"/>
+  <circle cx="170" cy="760" r="240" fill="#f4dfc7"/>
+  <ellipse cx="600" cy="650" rx="390" ry="90" fill="#b9cdbb" opacity=".6"/>
+  <path d="M245 430h710l-55 245c-18 82-136 135-300 135s-282-53-300-135z" fill="#fffaf2" stroke="#315c43" stroke-width="12"/>
+  <ellipse cx="600" cy="440" rx="365" ry="150" fill="#315c43" stroke="#244534" stroke-width="12"/>
+  <ellipse cx="600" cy="430" rx="315" ry="112" fill="#f5c86b"/>
+  <path d="M360 430c40-80 125-120 205-72 45 28 74 60 105 96-83 42-209 44-310-24z" fill="#6f9e61"/>
+  <path d="M640 355c75-45 172-8 211 63-39 54-104 77-178 60-30-30-51-78-33-123z" fill="#e77b58"/>
+  <circle cx="515" cy="390" r="42" fill="#e9a74e"/>
+  <circle cx="570" cy="475" r="35" fill="#d95d4d"/>
+  <circle cx="735" cy="445" r="38" fill="#f2d46d"/>
+  <circle cx="420" cy="450" r="30" fill="#8b6042"/>
+  <path d="M470 350c20-65 58-93 88-106M530 345c6-66 30-105 58-126M690 350c21-63 61-92 92-107" fill="none" stroke="#6f9e61" stroke-width="18" stroke-linecap="round"/>
+  <path d="M245 430c18 30 42 46 78 54M955 430c-18 30-42 46-78 54" fill="none" stroke="#f5c86b" stroke-width="12" stroke-linecap="round"/>
+</svg>

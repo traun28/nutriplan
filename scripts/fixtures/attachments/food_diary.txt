@@ -1,0 +1,14 @@
+My Food Diary
+
+Age: 25
+Weight: 70 kg
+Height: 175 cm
+Activity Level: Sedentary
+Goal: General health
+
+Breakfast: Idli, Sambar, Coffee
+Lunch: Rajma Chawal, Salad
+Dinner: Khichdi, Curd
+
+Intolerances: Lactose
+Foods to avoid: Oats, Mushroom

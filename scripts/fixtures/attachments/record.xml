@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<record>
+  <personal>
+    <age>36</age>
+    <weight>74 kg</weight>
+    <height>180 cm</height>
+    <gender>Male</gender>
+    <activityLevel>Active</activityLevel>
+  </personal>
+  <goals><goal>Weight gain</goal><dailyCalorieTarget>2800</dailyCalorieTarget></goals>
+  <preferences><dietaryType>Eggetarian</dietaryType></preferences>
+</record>

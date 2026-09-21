@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/* Design tokens — sophisticated health / nutrition palette            */
+/* Deep greens · warm white · neutral grey · subtle warm accent        */
+/* ------------------------------------------------------------------ */
+@theme {
+  --color-brand-50: #f1f6f2;
+  --color-brand-100: #e0ebe2;
+  --color-brand-200: #c2d8c8;
+  --color-brand-300: #9abda7;
+  --color-brand-400: #6f9e81;
+  --color-brand-500: #4e8363;
+  --color-brand-600: #3d6a4f;
+  --color-brand-700: #315541;
+  --color-brand-800: #294536;
+  --color-brand-900: #22392e;
+
+  --color-accent-200: #f3e0bb;
+  --color-accent-300: #e9cd93;
+  --color-accent-400: #dcab52;
+  --color-accent-500: #c99234;
+  --color-accent-600: #a9762a;
+
+  --color-canvas: #faf9f5;
+  --color-surface: #ffffff;
+  --color-ink: #20261f;
+  --color-muted: #617066;
+  --color-line: #e6e4db;
+
+  --color-danger-50: #fdf1ec;
+  --color-danger-100: #fae0d6;
+  --color-danger-500: #c04b32;
+  --color-danger-600: #a63d27;
+  --color-danger-700: #8a3321;
+
+  --font-sans:
+    var(--font-inter),
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  --radius-card: 0.9rem;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 2px rgba(32, 38, 31, 0.05), 0 10px 30px rgba(32, 38, 31, 0.06);
+  --shadow-lift: 0 2px 4px rgba(32, 38, 31, 0.06), 0 18px 44px rgba(32, 38, 31, 0.1);
+  --shadow-pop: 0 12px 32px rgba(32, 38, 31, 0.14);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-canvas font-sans text-ink antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-brand-200);
+    color: var(--color-brand-900);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Subtle scroll-reveal used on the landing page sections. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.55s ease,
+      transform 0.55s ease;
+  }
+
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Print / PDF layout (Part 8)                                         */
+/* Browser "Print → Save as PDF" produces a clean diet chart.          */
+/* ------------------------------------------------------------------ */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+  }
+
+  /* Hide chrome and interactive controls. */
+  header[class*="sticky"],
+  footer,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Flatten the app shell so content flows naturally across pages. */
+  main {
+    display: block !important;
+  }
+
+  /* Cards stay readable but lose screen-only depth. */
+  [class*="shadow-card"],
+  [class*="shadow-lift"],
+  [class*="shadow-pop"] {
+    box-shadow: none !important;
+  }
+
+  /* Keep meals and summary cards intact across page breaks. */
+  .break-inside-avoid,
+  article,
+  section > div > div {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Single-column print layout regardless of the screen grid. */
+  .grid {
+    display: block !important;
+  }
+
+  .grid > * {
+    margin-bottom: 10px;
+  }
+
+  a[href]::after {
+    content: "";
+  }
+}
