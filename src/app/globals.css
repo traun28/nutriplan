@@ -173,3 +173,59 @@
     content: "";
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Phase 2 — subtle motion for dialogs, cards and list entries          */
+/* ------------------------------------------------------------------ */
+@keyframes np-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes np-rise-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+
+@layer components {
+  .dialog-overlay {
+    animation: np-fade-in 0.18s ease-out;
+  }
+
+  .dialog-panel {
+    animation: np-rise-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .entry-enter {
+    animation: np-rise-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .card-hover {
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .card-hover:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lift);
+    border-color: color-mix(in oklab, var(--color-brand-400) 30%, var(--color-line));
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded-[10px] bg-line/50;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog-overlay,
+  .dialog-panel,
+  .entry-enter {
+    animation: none;
+  }
+
+  .card-hover:hover {
+    transform: none;
+  }
+}

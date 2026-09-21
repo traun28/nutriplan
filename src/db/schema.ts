@@ -7,6 +7,7 @@
  */
 import {
   boolean,
+  index,
   integer,
   jsonb,
   pgTable,
@@ -136,3 +137,68 @@ export const attachments = pgTable("attachments", {
   keptAsReference: boolean("kept_as_reference").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+/* ------------------------------------------------------------------ */
+/* Phase 2 — food logging, favourites, water                           */
+/* ------------------------------------------------------------------ */
+
+/**
+ * One logged food entry. Nutrition values are snapshotted at save time
+ * (scaled from the food database via the shared calculation helpers) so a
+ * later change to the dataset never silently rewrites history.
+ */
+export const foodLogs = pgTable("food_logs", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  /** Local calendar date "YYYY-MM-DD" as chosen by the user. */
+  logDate: text("log_date").notNull(),
+  /** MealId: breakfast | morningSnack | lunch | eveningSnack | dinner | otherSnacks */
+  mealType: text("meal_type").notNull(),
+  /** Stable id from FOOD_DATABASE. */
+  foodId: text("food_id").notNull(),
+  foodName: text("food_name").notNull(),
+  /** Multiplier of the food's reference serving (e.g. 1.5). */
+  servings: real("servings").notNull(),
+  /** Human-readable portion, e.g. "1.5 bowl(s)". */
+  portionLabel: text("portion_label").notNull().default(""),
+  calories: real("calories").notNull(),
+  proteinGrams: real("protein_grams").notNull(),
+  carbohydrateGrams: real("carbohydrate_grams").notNull(),
+  fatGrams: real("fat_grams").notNull(),
+  /** Null when the dataset has no fibre figure for the food. */
+  fiberGrams: real("fiber_grams"),
+  /** "HH:MM" local time, null when not supplied. */
+  loggedTime: text("logged_time"),
+  /** Client-generated idempotency key — blocks accidental double submits. */
+  clientId: text("client_id"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  index("food_logs_user_date_idx").on(table.userId, table.logDate),
+  uniqueIndex("food_logs_user_client_unique").on(table.userId, table.clientId),
+]);
+
+/** Per-user favourite foods (never global). */
+export const foodFavorites = pgTable("food_favorites", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  foodId: text("food_id").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [uniqueIndex("food_favorites_user_food_unique").on(table.userId, table.foodId)]);
+
+/** Individual water entries; the daily total is a sum, never stored. */
+export const waterLogs = pgTable("water_logs", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  logDate: text("log_date").notNull(),
+  amountMl: integer("amount_ml").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [index("water_logs_user_date_idx").on(table.userId, table.logDate)]);
+
+/** Small per-user settings bag (currently: water target). */
+export const userSettings = pgTable("user_settings", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  data: jsonb("data").$type<{ waterTargetMl?: number }>().notNull().default({}),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [uniqueIndex("user_settings_user_unique").on(table.userId)]);

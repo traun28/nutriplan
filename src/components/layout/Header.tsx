@@ -14,6 +14,7 @@ import { cn } from "@/lib/cn";
 
 const NAV_ITEMS = [
   { href: "/", label: "Home" },
+  { href: "/dashboard", label: "Dashboard" },
   { href: "/planner", label: "Diet Planner" },
   { href: "/nutrition", label: "Nutrition" },
   { href: "/diet-plan", label: "Diet Plan" },

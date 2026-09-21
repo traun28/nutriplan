@@ -30,7 +30,7 @@ function LoginForm() {
   const { login, register, user, loading } = useAuth();
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get("next") || "/planner";
+  const next = params.get("next") || "/dashboard";
 
   const [mode, setMode] = useState<Mode>("login");
   const [fullName, setFullName] = useState("");

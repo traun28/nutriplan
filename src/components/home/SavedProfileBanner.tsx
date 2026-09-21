@@ -64,8 +64,8 @@ export function SavedProfileBanner() {
         </div>
 
         <div className="flex flex-wrap gap-2.5">
-          <Button href="/profile" size="sm" variant="outline">
-            View Profile
+          <Button href="/dashboard" size="sm" variant="outline">
+            Open Dashboard
           </Button>
           {status.action.href ? (
             <Button

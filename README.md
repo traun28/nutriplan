@@ -155,6 +155,8 @@ src/
 │   ├── page.tsx                Home
 │   ├── planner/                Questionnaire (steps 1–5)
 │   ├── review/                 Review + Save
+│   ├── dashboard/              Daily nutrition command centre (Phase 2)
+│   ├── history/                Paginated food history (Phase 2)
 │   ├── nutrition/              Processed nutrition dashboard
 │   ├── diet-plan/              Final diet chart
 │   ├── profile/                Saved-profile management
@@ -170,10 +172,12 @@ src/
 │   ├── planner/                Questionnaire steps + food-intake widgets
 │   ├── review/                 Reusable summary cards
 │   ├── nutrition/              Nutrition dashboard
+│   ├── dashboard/              Daily summary, today's meals, water, next meal
+│   ├── food-log/               Log Food dialog + food history
 │   ├── diet-plan/              Meal cards, comparison, safety summary
 │   ├── dataset/                Insights view + sample-participant loader
 │   └── common/                 NextStepCard, ConflictNotice
-├── context/                    ProfileContext, NutritionContext, DietPlanContext
+├── context/                    ProfileContext, NutritionContext, DietPlanContext, DayLogContext
 ├── data/
 │   ├── options.ts              Option catalogue + label helpers
 │   ├── foods/                  Food database + its quality checker
@@ -488,6 +492,44 @@ OCR are detected and explained rather than guessed.
 | JPG / PNG / WEBP | no OCR in this deployment | honest limitation explained |
 | DOC / XLS / PPT (legacy) | not extracted | conversion suggestion |
 | ZIP | not extracted | security (path traversal, bombs) |
+
+## 19. Daily dashboard & food logging (Phase 2)
+
+`/dashboard` is the daily command centre. It reads the saved profile
+(greeting, goal), the Part 6 processed targets (calories / macros) and the
+Phase 2 day log, and never calculates nutrition itself.
+
+- **Daily summary** — consumed / target / remaining for calories, protein,
+  carbohydrates and fat with progress bars; exceeding a target is shown
+  explicitly rather than by overflowing the bar.
+- **Today's meals** — logged entries grouped by Breakfast · Morning Snack ·
+  Lunch · Evening Snack · Dinner · Other, with edit / repeat / delete.
+- **Log Food dialog** — date → meal → search (all / recent / favourites /
+  category) → food details (serving, macros, tags, allergens) → quantity →
+  live preview → save. The same dialog edits an entry.
+- **Next meal** — the next unlogged slot from the generated plan (only when a
+  plan exists). **Water tracker** — persistent entries with an adjustable
+  target. **Recommendations** — short notes derived from the logged data.
+- **Day switcher** — previous / next / today; each day is fetched separately.
+- `/history` — paginated table of everything logged, with edit / repeat / delete.
+
+Storage: `food_logs`, `food_favorites`, `water_logs`, `user_settings`
+(all keyed by `user_id`; see `src/db/schema.ts`). Nutrition on an entry is a
+snapshot computed by `services/foodLog/calculations.ts`, which delegates to
+the Part 7 `buildPlannedItem` scaler, so logged and planned food agree.
+
+API (session cookie required; user id is never accepted from the client):
+
+| Method | Route | Purpose |
+|---|---|---|
+| GET | `/api/day?date=` | entries + totals + water + favourites + recents |
+| GET / POST | `/api/food-logs` | `?date=` day view, `?page=` history / create |
+| GET / PATCH / DELETE | `/api/food-logs/:id` | one entry (owner only) |
+| GET | `/api/food-logs/recent` | recent + favourite food ids |
+| GET | `/api/food-favorites` · PUT/DELETE `/api/food-favorites/:foodId` | favourites |
+| GET / POST | `/api/water?date=` | water entries / add |
+| PATCH / DELETE | `/api/water/:id` | edit / remove |
+| PUT | `/api/water/target` | daily target |
 
 ## 21. Future enhancements
 
