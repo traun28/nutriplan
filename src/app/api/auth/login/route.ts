@@ -3,6 +3,7 @@
  *
  * The same generic message is returned for an unknown email and for a wrong
  * password, so the endpoint cannot be used to discover which emails exist.
+ * Only @gmail.com addresses are accepted (see `@/lib/email`).
  */
 import { eq } from "drizzle-orm";
 import { db, hasDatabase } from "@/db";
@@ -14,6 +15,7 @@ import {
 } from "@/services/server/auth";
 import { badRequest, readJson, serverError } from "@/services/server/guard";
 import { findDevUser } from "@/services/server/devStore";
+import { validateGmailAddress } from "@/lib/email";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -31,6 +33,10 @@ export async function POST(request: Request) {
   const password = body.password ?? "";
 
   if (!email || !password) return badRequest("Enter your email and password.");
+
+  // Accounts are Gmail-only, so anything else can never match a stored user.
+  const emailError = validateGmailAddress(email);
+  if (emailError) return badRequest(emailError);
 
   try {
     if (!hasDatabase) {
