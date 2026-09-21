@@ -316,7 +316,7 @@ export async function getDatasetRecords(userId: number, datasetId: number, limit
   if (!hasDatabase) return getDevDatasetRecords(userId, datasetId, limit, offset);
   try {
     const owned = await getDataset(userId, datasetId);
-    if (!owned) return { rows: [], total: owned === null ? 0 : 0 };
+    if (!owned) return { rows: [], total: 0 };
     const rows = await db
       .select()
       .from(datasetRecords)

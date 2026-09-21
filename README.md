@@ -322,6 +322,24 @@ local and never commit database credentials. If the provider requires TLS,
 use the complete connection string it provides, including options such as
 `sslmode=require`.
 
+**Local development without a hosted database**
+
+A fully local PostgreSQL can run inside Node — no system install required:
+
+```bash
+npm run db:local
+```
+
+This starts an embedded PostgreSQL on `127.0.0.1:5432` (data lives in the
+gitignored `.pgdata/` folder) and creates the `nutriplan` database on first
+run. Then point `.env` at it:
+
+```
+DATABASE_URL=postgresql://nutriplan:nutriplan@127.0.0.1:5432/nutriplan
+```
+
+and run `npm run db:push`. Delete `.pgdata/` to reset the database.
+
 When `DATABASE_URL` is not set, development authentication uses a temporary
 in-memory store so the website and account flow can still be tested. Those
 accounts disappear when the development server restarts. Configure PostgreSQL
