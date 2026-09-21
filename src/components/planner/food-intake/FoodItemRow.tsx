@@ -17,11 +17,11 @@ import { FieldError } from "@/components/ui/core";
 import { cn } from "@/lib/cn";
 
 const CONTROL =
-  "w-full rounded-[10px] border bg-white px-3 py-2 text-sm text-ink placeholder:text-muted/70 transition-[border-color,box-shadow] duration-200 focus:outline-none focus:ring-4";
+  "w-full rounded-[10px] border bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted/70 transition-[border-color,box-shadow] duration-200 focus:outline-none focus:ring-4";
 const NORMAL =
-  "border-line hover:border-brand-300 focus:border-brand-500 focus:ring-brand-500/15";
+  "border-line hover:border-brand-400/50 focus:border-brand-500 focus:ring-brand-500/15";
 const INVALID =
-  "border-danger-500 bg-danger-50/40 focus:border-danger-500 focus:ring-danger-500/15";
+  "border-danger-500 bg-danger-50/60 focus:border-danger-500 focus:ring-danger-500/15";
 
 interface FoodItemRowProps {
   mealLabel: string;
@@ -132,7 +132,7 @@ export function FoodItemRow({
           type="button"
           onClick={onRemove}
           aria-label={`Remove ${rowLabel}`}
-          className="inline-flex h-[38px] items-center justify-center gap-1.5 rounded-[10px] border border-line bg-white px-3 text-xs font-semibold text-muted transition-colors hover:border-danger-500 hover:bg-danger-50 hover:text-danger-600 focus-visible:outline-2 focus-visible:outline-danger-500 sm:w-[38px] sm:px-0"
+          className="inline-flex h-[38px] items-center justify-center gap-1.5 rounded-[10px] border border-line bg-surface px-3 text-xs font-semibold text-muted transition-colors hover:border-danger-500 hover:bg-danger-50 hover:text-danger-600 focus-visible:outline-2 focus-visible:outline-danger-500 sm:w-[38px] sm:px-0"
         >
           <Trash2 className="h-4 w-4" aria-hidden="true" />
           <span className="sm:hidden">Remove</span>

@@ -45,13 +45,13 @@ export function ProgressSteps({
                 <span
                   className={cn(
                     "z-10 grid h-8 w-8 place-items-center rounded-full text-xs font-bold transition-colors duration-300",
-                    complete && "bg-brand-600 text-white",
+                    complete && "bg-brand-700 text-white",
                     active &&
                       !complete &&
-                      "border-2 border-brand-600 bg-white text-brand-700 ring-4 ring-brand-500/15",
+                      "border-2 border-brand-600 bg-surface text-brand-400 ring-4 ring-brand-500/15",
                     !complete &&
                       !active &&
-                      "border-2 border-line bg-white text-muted",
+                      "border-2 border-line bg-surface text-muted",
                   )}
                 >
                   {complete ? (

@@ -40,10 +40,10 @@ export function SelectableCard({
   return (
     <label
       className={cn(
-        "group relative block h-full rounded-card border bg-white p-4 transition-all duration-200",
+        "group relative block h-full rounded-card border bg-surface p-4 transition-all duration-200",
         selected
           ? "border-brand-500 bg-brand-50/70 shadow-card ring-1 ring-brand-500/40"
-          : "border-line hover:border-brand-300 hover:shadow-card",
+          : "border-line hover:border-brand-400/50 hover:shadow-card",
         disabled
           ? "cursor-not-allowed opacity-50"
           : "cursor-pointer focus-within:border-brand-500",
@@ -67,8 +67,8 @@ export function SelectableCard({
             className={cn(
               "grid h-10 w-10 shrink-0 place-items-center rounded-[10px] transition-colors duration-200",
               selected
-                ? "bg-brand-600 text-white"
-                : "bg-brand-50 text-brand-700 group-hover:bg-brand-100",
+                ? "bg-brand-700 text-white"
+                : "bg-brand-50 text-brand-400 group-hover:bg-brand-100",
             )}
           >
             {icon}
@@ -91,8 +91,8 @@ export function SelectableCard({
         className={cn(
           "absolute right-3 top-3 grid h-5 w-5 place-items-center rounded-full transition-all duration-200",
           selected
-            ? "scale-100 bg-brand-600 text-white opacity-100"
-            : "scale-90 border border-line bg-white text-transparent opacity-60 group-hover:border-brand-300",
+            ? "scale-100 bg-brand-700 text-white opacity-100"
+            : "scale-90 border border-line bg-surface text-transparent opacity-60 group-hover:border-brand-400/50",
         )}
       >
         <Check className="h-3 w-3" strokeWidth={3} />

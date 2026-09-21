@@ -65,7 +65,7 @@ export function MealSection({
     <section
       aria-labelledby={`meal-heading-${definition.id}`}
       className={cn(
-        "rounded-card border bg-white p-4 transition-colors duration-200 sm:p-5",
+        "rounded-card border bg-surface p-4 transition-colors duration-200 sm:p-5",
         meal.hasMeal ? "border-line" : "border-dashed border-line bg-canvas/60",
       )}
     >
@@ -76,7 +76,7 @@ export function MealSection({
             className={cn(
               "grid h-9 w-9 shrink-0 place-items-center rounded-[10px]",
               meal.hasMeal
-                ? "bg-brand-50 text-brand-700"
+                ? "bg-brand-50 text-brand-400"
                 : "bg-line/60 text-muted",
             )}
           >
@@ -149,7 +149,7 @@ export function MealSection({
           <button
             type="button"
             onClick={handleAdd}
-            className="mt-3 inline-flex items-center gap-1.5 rounded-pill border border-brand-200 bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-700 transition-colors hover:bg-brand-100 focus-visible:outline-2 focus-visible:outline-brand-500"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-pill border border-brand-400/25 bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-400 transition-colors hover:bg-brand-100 focus-visible:outline-2 focus-visible:outline-brand-500"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
             Add Food
@@ -171,12 +171,12 @@ export function MealSection({
               onChange={(event) => onNotesChange(event.target.value)}
               maxLength={160}
               placeholder="Example: usually eaten at college"
-              className="w-full rounded-[10px] border border-line bg-white px-3 py-2 text-sm text-ink placeholder:text-muted/70 transition-[border-color,box-shadow] hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15"
+              className="w-full rounded-[10px] border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted/70 transition-[border-color,box-shadow] hover:border-brand-400/50 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15"
             />
           </div>
         </>
       ) : (
-        <p className="mt-3 rounded-[10px] bg-white px-4 py-3 text-xs leading-relaxed text-muted">
+        <p className="mt-3 rounded-[10px] bg-surface px-4 py-3 text-xs leading-relaxed text-muted">
           Marked as skipped. This meal will not be planned for you, and no food
           entries are required here.
         </p>

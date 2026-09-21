@@ -23,7 +23,7 @@ const CHECK_LABELS: Record<string, string> = {
 function OutcomeIcon({ outcome }: { outcome: PlanCheckOutcome }) {
   if (outcome === "passed") {
     return (
-      <CheckCircle2 className="h-4 w-4 shrink-0 text-brand-600" aria-hidden="true" />
+      <CheckCircle2 className="h-4 w-4 shrink-0 text-brand-400" aria-hidden="true" />
     );
   }
   if (outcome === "failed") {
@@ -48,7 +48,7 @@ export function SafetySummary({ plan }: { plan: DietPlan }) {
     <Card className="break-inside-avoid">
       <div className="border-b border-line bg-brand-50/60 px-5 py-3.5">
         <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
-          <ShieldAlert className="h-4 w-4 text-brand-600" aria-hidden="true" />
+          <ShieldAlert className="h-4 w-4 text-brand-400" aria-hidden="true" />
           Restriction check
         </h2>
         <p className="mt-0.5 text-xs text-muted">
@@ -70,7 +70,7 @@ export function SafetySummary({ plan }: { plan: DietPlan }) {
                   outcome === "failed"
                     ? "text-xs font-bold text-danger-600"
                     : outcome === "passed"
-                      ? "text-xs font-semibold text-brand-700"
+                      ? "text-xs font-semibold text-brand-400"
                       : "text-xs font-medium text-muted"
                 }
               >

@@ -64,18 +64,18 @@ export function MealCard({
         <div className="flex min-w-0 items-center gap-3">
           <span
             aria-hidden="true"
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-brand-600 text-xs font-bold text-white"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-brand-700 text-xs font-bold text-white"
           >
             {String(index + 1).padStart(2, "0")}
           </span>
           <div className="min-w-0">
-            <h3 className="truncate text-sm font-bold uppercase tracking-wide text-brand-800">
+            <h3 className="truncate text-sm font-bold uppercase tracking-wide text-brand-300">
               {meal.label}
             </h3>
           </div>
         </div>
-        <span className="inline-flex shrink-0 items-center gap-1.5 rounded-pill border border-line bg-white px-3 py-1 text-xs font-semibold text-ink">
-          <Clock className="h-3.5 w-3.5 text-brand-600" aria-hidden="true" />
+        <span className="inline-flex shrink-0 items-center gap-1.5 rounded-pill border border-line bg-surface px-3 py-1 text-xs font-semibold text-ink">
+          <Clock className="h-3.5 w-3.5 text-brand-400" aria-hidden="true" />
           {formatTime(meal.time)}
         </span>
       </div>
@@ -83,7 +83,7 @@ export function MealCard({
       <div className="p-5">
         <div className="flex items-start gap-3">
           <UtensilsCrossed
-            className="mt-0.5 h-5 w-5 shrink-0 text-brand-600"
+            className="mt-0.5 h-5 w-5 shrink-0 text-brand-400"
             aria-hidden="true"
           />
           <h4 className="text-base font-bold leading-snug text-ink">
@@ -128,7 +128,7 @@ export function MealCard({
                 onClick={() => void openPicker()}
                 aria-expanded={pickerOpen}
                 aria-controls={`${detailsId}-replace`}
-                className="inline-flex items-center gap-1.5 rounded-pill border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700 transition-colors hover:bg-brand-100"
+                className="inline-flex items-center gap-1.5 rounded-pill border border-brand-400/25 bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-400 transition-colors hover:bg-brand-100"
               >
                 <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
                 {pickerOpen ? "Close" : "Replace"}
@@ -139,7 +139,7 @@ export function MealCard({
               onClick={() => setOpen((value) => !value)}
               aria-expanded={open}
               aria-controls={detailsId}
-              className="inline-flex items-center gap-1.5 rounded-pill border border-line bg-white px-3 py-1.5 text-xs font-semibold text-ink transition-colors hover:border-brand-300 hover:text-brand-700"
+              className="inline-flex items-center gap-1.5 rounded-pill border border-line bg-surface px-3 py-1.5 text-xs font-semibold text-ink transition-colors hover:border-brand-400/50 hover:text-brand-400"
             >
               {open ? "Hide details" : "Why this meal?"}
               <ChevronDown
@@ -156,7 +156,7 @@ export function MealCard({
         {pickerOpen && (
           <div
             id={`${detailsId}-replace`}
-            className="mt-4 rounded-[10px] border border-brand-200 bg-brand-50/40 p-3 print:hidden"
+            className="mt-4 rounded-[10px] border border-brand-400/25 bg-brand-50/40 p-3 print:hidden"
           >
             <p className="text-xs font-bold text-ink">
               Safe alternatives for {meal.label.toLowerCase()}
@@ -181,7 +181,7 @@ export function MealCard({
                       type="button"
                       onClick={() => void choose(food.id)}
                       disabled={busyFoodId !== null}
-                      className="flex w-full items-center justify-between gap-2 rounded-[10px] border border-line bg-white px-3 py-2 text-left text-xs transition-colors hover:border-brand-400 disabled:opacity-60"
+                      className="flex w-full items-center justify-between gap-2 rounded-[10px] border border-line bg-surface px-3 py-2 text-left text-xs transition-colors hover:border-brand-400 disabled:opacity-60"
                     >
                       <span className="min-w-0">
                         <span className="block truncate font-semibold text-ink">{food.name}</span>
@@ -190,7 +190,7 @@ export function MealCard({
                         </span>
                       </span>
                       {busyFoodId === food.id && (
-                        <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-brand-600" aria-hidden="true" />
+                        <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-brand-400" aria-hidden="true" />
                       )}
                     </button>
                   </li>
@@ -216,7 +216,7 @@ export function MealCard({
             </p>
             {meal.items.map((item) => (
               <div key={`${item.foodId}-ing`}>
-                <p className="text-xs font-bold uppercase tracking-wide text-brand-700">
+                <p className="text-xs font-bold uppercase tracking-wide text-brand-400">
                   {item.name} — ingredients
                 </p>
                 <p className="mt-1 text-xs leading-relaxed text-muted">
@@ -252,7 +252,7 @@ function NutrientChip({
     <div
       className={cn(
         "rounded-[10px] border px-3 py-2",
-        emphasis ? "border-brand-200 bg-brand-50" : "border-line bg-canvas",
+        emphasis ? "border-brand-400/25 bg-brand-50" : "border-line bg-canvas",
       )}
     >
       <dt className="text-[11px] font-medium text-muted">{label}</dt>

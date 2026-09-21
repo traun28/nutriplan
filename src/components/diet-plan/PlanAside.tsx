@@ -36,7 +36,7 @@ export function PersonalisationCard({ plan }: { plan: DietPlan }) {
           {plan.personalisationFactors.map((factor) => (
             <li key={factor} className="flex items-start gap-2.5">
               <Check
-                className="mt-0.5 h-4 w-4 shrink-0 text-brand-600"
+                className="mt-0.5 h-4 w-4 shrink-0 text-brand-400"
                 strokeWidth={3}
                 aria-hidden="true"
               />
@@ -68,7 +68,7 @@ export function DietaryConsiderationsCard({
     <Card className="break-inside-avoid">
       <div className="border-b border-line bg-brand-50/60 px-5 py-3.5">
         <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
-          <ShieldCheck className="h-4 w-4 text-brand-600" aria-hidden="true" />
+          <ShieldCheck className="h-4 w-4 text-brand-400" aria-hidden="true" />
           Dietary considerations
         </h2>
       </div>
@@ -116,10 +116,10 @@ function ChipGroup({
 }) {
   const toneClass =
     tone === "danger"
-      ? "border-danger-100 bg-danger-50 text-danger-700"
+      ? "border-danger-500/30 bg-danger-50 text-danger-700"
       : tone === "warning"
-        ? "border-accent-300/70 bg-accent-200/40 text-accent-600"
-        : "border-line bg-white text-ink";
+        ? "border-accent-300/40/30 bg-accent-200/40 text-accent-300"
+        : "border-line bg-surface text-ink";
 
   return (
     <div>
@@ -175,7 +175,7 @@ export function PlanConsiderationsCard({ profile }: { profile: UserProfile }) {
     <Card className="break-inside-avoid">
       <div className="border-b border-line bg-brand-50/60 px-5 py-3.5">
         <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
-          <Droplets className="h-4 w-4 text-brand-600" aria-hidden="true" />
+          <Droplets className="h-4 w-4 text-brand-400" aria-hidden="true" />
           Hydration &amp; plan considerations
         </h2>
       </div>
@@ -198,7 +198,7 @@ export function PlanConsiderationsCard({ profile }: { profile: UserProfile }) {
           <ul className="mt-4 space-y-2">
             {notes.map((note) => (
               <li key={note} className="flex items-start gap-2 text-xs leading-relaxed text-muted">
-                <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-600" aria-hidden="true" />
+                <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-400" aria-hidden="true" />
                 {note}
               </li>
             ))}
@@ -220,7 +220,7 @@ export function RecommendationsCard({ plan }: { plan: DietPlan }) {
     <Card className="break-inside-avoid">
       <div className="border-b border-line bg-brand-50/60 px-5 py-3.5">
         <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
-          <Lightbulb className="h-4 w-4 text-brand-600" aria-hidden="true" />
+          <Lightbulb className="h-4 w-4 text-brand-400" aria-hidden="true" />
           General recommendations
         </h2>
       </div>

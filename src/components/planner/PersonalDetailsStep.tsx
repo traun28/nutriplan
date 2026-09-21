@@ -251,22 +251,22 @@ function PersonalDetailsAside() {
       <Card>
         <CardBody>
           <div className="flex items-center gap-2 text-sm font-bold text-ink">
-            <Info className="h-4 w-4 text-brand-600" aria-hidden="true" />
+            <Info className="h-4 w-4 text-brand-400" aria-hidden="true" />
             Why we ask this
           </div>
           <ul className="mt-3 space-y-2.5 text-xs leading-relaxed text-muted">
             <li className="flex gap-2">
-              <span className="font-bold text-brand-600">·</span>
+              <span className="font-bold text-brand-400">·</span>
               Height and weight are stored in centimetres and kilograms for
               your BMI and energy calculations.
             </li>
             <li className="flex gap-2">
-              <span className="font-bold text-brand-600">·</span>
+              <span className="font-bold text-brand-400">·</span>
               Age, gender and activity level inform future energy
               estimations.
             </li>
             <li className="flex gap-2">
-              <span className="font-bold text-brand-600">·</span>
+              <span className="font-bold text-brand-400">·</span>
               Occupation adds lifestyle context for later personalisation.
             </li>
           </ul>

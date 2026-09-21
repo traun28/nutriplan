@@ -24,10 +24,10 @@ import { cn } from "@/lib/cn";
 import { FieldError, FieldLabel } from "@/components/ui/core";
 
 const CONTROL_BASE =
-  "w-full rounded-[10px] border bg-white px-3.5 py-2.5 text-sm text-ink placeholder:text-muted/70 transition-[border-color,box-shadow,background-color] duration-200 focus:outline-none focus:ring-4";
-const CONTROL_NORMAL = "border-line hover:border-brand-300 focus:border-brand-500 focus:ring-brand-500/15";
+  "w-full rounded-[10px] border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-muted/70 transition-[border-color,box-shadow,background-color] duration-200 focus:outline-none focus:ring-4";
+const CONTROL_NORMAL = "border-line hover:border-brand-400/50 focus:border-brand-500 focus:ring-brand-500/15";
 const CONTROL_ERROR =
-  "border-danger-500 bg-danger-50/40 hover:border-danger-500 focus:border-danger-500 focus:ring-danger-500/15";
+  "border-danger-500 bg-danger-50/60 hover:border-danger-500 focus:border-danger-500 focus:ring-danger-500/15";
 
 function fieldClasses(error?: string) {
   return cn(CONTROL_BASE, error ? CONTROL_ERROR : CONTROL_NORMAL);

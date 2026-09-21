@@ -54,7 +54,7 @@ export function Header() {
           className="flex min-w-0 items-center gap-2.5"
           aria-label="Personalised Diet Planner — home"
         >
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-brand-600 text-white shadow-[0_4px_12px_rgba(61,106,79,0.3)]">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-brand-700 text-white shadow-[0_4px_12px_rgba(5,150,105,0.35)]">
             <Leaf className="h-4.5 w-4.5" aria-hidden="true" />
           </span>
           <span className="min-w-0">
@@ -82,7 +82,7 @@ export function Header() {
                 className={cn(
                   "rounded-pill px-3 py-2 text-sm font-medium transition-colors duration-150",
                   active
-                    ? "bg-brand-600 text-white shadow-[0_4px_12px_rgba(61,106,79,0.28)]"
+                    ? "bg-brand-700 text-white shadow-[0_4px_12px_rgba(5,150,105,0.32)]"
                     : "text-muted hover:bg-line/60 hover:text-ink",
                 )}
               >
@@ -92,6 +92,28 @@ export function Header() {
           })}
         </nav>
 
+        {/* Desktop auth */}
+        <div className="hidden items-center gap-2 xl:flex">
+          {user ? (
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="inline-flex items-center gap-2 rounded-pill border border-line px-3 py-2 text-sm font-medium text-muted transition-colors hover:border-brand-400/50 hover:text-brand-400"
+            >
+              <LogOut className="h-4 w-4" aria-hidden="true" />
+              Log out
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-2 rounded-pill bg-brand-700 px-3 py-2 text-sm font-semibold text-white shadow-[0_4px_12px_rgba(5,150,105,0.32)]"
+            >
+              <LogIn className="h-4 w-4" aria-hidden="true" />
+              Log in
+            </Link>
+          )}
+        </div>
+
         {/* Mobile menu toggle */}
         <button
           type="button"
@@ -99,7 +121,7 @@ export function Header() {
           aria-expanded={menuOpen}
           aria-controls="mobile-navigation"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          className="grid h-10 w-10 place-items-center rounded-[10px] border border-line bg-white text-ink transition-colors hover:border-brand-300 hover:text-brand-700 xl:hidden"
+          className="grid h-10 w-10 place-items-center rounded-[10px] border border-line bg-surface text-ink transition-colors hover:border-brand-400/50 hover:text-brand-400 xl:hidden"
         >
           {menuOpen ? (
             <X className="h-5 w-5" aria-hidden="true" />
@@ -114,7 +136,7 @@ export function Header() {
         <nav
           id="mobile-navigation"
           aria-label="Mobile"
-          className="border-t border-line bg-white px-5 py-4 shadow-pop xl:hidden"
+          className="border-t border-line bg-surface px-5 py-4 shadow-pop xl:hidden"
         >
           <ul className="grid gap-1">
             {NAV_ITEMS.map((item) => {
@@ -128,7 +150,7 @@ export function Header() {
                     className={cn(
                       "flex w-full items-center justify-between rounded-[10px] px-4 py-3 text-left text-sm font-semibold transition-colors",
                       active
-                        ? "bg-brand-600 text-white"
+                        ? "bg-brand-700 text-white"
                         : "text-ink hover:bg-brand-50",
                     )}
                   >
@@ -156,7 +178,7 @@ export function Header() {
                 <Link
                   href="/login"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2 rounded-[10px] bg-brand-600 px-4 py-3 text-sm font-semibold text-white"
+                  className="flex items-center gap-2 rounded-[10px] bg-brand-700 px-4 py-3 text-sm font-semibold text-white"
                 >
                   <LogIn className="h-4 w-4" aria-hidden="true" />
                   Log in

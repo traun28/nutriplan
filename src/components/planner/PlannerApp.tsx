@@ -72,7 +72,7 @@ export default function PlannerApp() {
   return (
     <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
       <header className="mb-8">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-600">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
           Diet Planner
         </p>
         <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">

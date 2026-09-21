@@ -40,10 +40,10 @@ import { NextStepCard } from "@/components/common/NextStepCard";
 import { cn } from "@/lib/cn";
 
 const BMI_TONE: Record<string, string> = {
-  underweight: "bg-accent-200/50 text-accent-600 border-accent-300",
-  normal: "bg-brand-50 text-brand-700 border-brand-200",
-  overweight: "bg-accent-200/50 text-accent-600 border-accent-300",
-  obesity: "bg-danger-50 text-danger-700 border-danger-100",
+  underweight: "bg-accent-200/50 text-accent-300 border-accent-300",
+  normal: "bg-brand-50 text-brand-400 border-brand-400/25",
+  overweight: "bg-accent-200/50 text-accent-300 border-accent-300",
+  obesity: "bg-danger-50 text-danger-700 border-danger-500/30",
 };
 
 function NutritionDashboardView() {
@@ -54,7 +54,7 @@ function NutritionDashboardView() {
     return (
       <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
         <header className="mb-8">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-600">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             Nutrition profile
           </p>
           <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
@@ -96,7 +96,7 @@ function NutritionDashboardView() {
     <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
       <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-600">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             Nutrition profile
           </p>
           <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
@@ -132,11 +132,11 @@ function NutritionDashboardView() {
       {isStale && (
         <div
           role="status"
-          className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-card border border-accent-300/70 bg-accent-200/30 p-4"
+          className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-card border border-accent-300/40/30 bg-accent-200/30 p-4"
         >
           <div className="flex items-start gap-3">
             <TriangleAlert
-              className="mt-0.5 h-4 w-4 shrink-0 text-accent-600"
+              className="mt-0.5 h-4 w-4 shrink-0 text-accent-300"
               aria-hidden="true"
             />
             <p className="text-xs leading-relaxed text-ink/80">
@@ -152,11 +152,11 @@ function NutritionDashboardView() {
 
       {/* -------------------- missing information --------------------- */}
       {errors.length > 0 && (
-        <Card className="mb-6 border-accent-300/70">
+        <Card className="mb-6 border-accent-300/40/30">
           <CardBody>
             <div className="flex items-center gap-2">
               <CircleAlert
-                className="h-4 w-4 shrink-0 text-accent-600"
+                className="h-4 w-4 shrink-0 text-accent-300"
                 aria-hidden="true"
               />
               <h2 className="text-sm font-bold text-ink">
@@ -166,7 +166,7 @@ function NutritionDashboardView() {
             <ul className="mt-3 space-y-1.5">
               {errors.map((issue) => (
                 <li key={issue.field} className="flex gap-2 text-sm text-muted">
-                  <span className="font-bold text-accent-600">·</span>
+                  <span className="font-bold text-accent-300">·</span>
                   {issue.message}
                 </li>
               ))}
@@ -199,7 +199,7 @@ function NutritionDashboardView() {
       {processed && (
         <>
           <CalculationDetails processed={processed} />
-          <p className="mt-6 rounded-card border border-line bg-white p-4 text-xs leading-relaxed text-muted">
+          <p className="mt-6 rounded-card border border-line bg-surface p-4 text-xs leading-relaxed text-muted">
             <strong className="text-ink">Please note:</strong> calculated
             values are general estimates for educational planning and may not
             reflect individual nutritional needs. They are not a medical
@@ -274,7 +274,7 @@ function ResultsGrid({
         <Card>
           <div className="border-b border-line bg-brand-50/60 px-5 py-3.5">
             <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
-              <Scale className="h-4 w-4 text-brand-600" aria-hidden="true" />
+              <Scale className="h-4 w-4 text-brand-400" aria-hidden="true" />
               Body Mass Index
             </h2>
           </div>
@@ -310,7 +310,7 @@ function ResultsGrid({
         <Card>
           <div className="border-b border-line bg-brand-50/60 px-5 py-3.5">
             <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
-              <Flame className="h-4 w-4 text-brand-600" aria-hidden="true" />
+              <Flame className="h-4 w-4 text-brand-400" aria-hidden="true" />
               Energy Estimate
             </h2>
           </div>
@@ -432,11 +432,11 @@ function ResultsGrid({
                   aria-label={`Calorie split: protein ${proteinPercent}%, carbohydrates ${macros.carbohydrates.percentOfCalories}%, fat ${macros.fat.percentOfCalories}%`}
                 >
                   <span
-                    className="h-full bg-brand-600"
+                    className="h-full bg-brand-700"
                     style={{ width: `${proteinPercent}%` }}
                   />
                   <span
-                    className="h-full bg-brand-300"
+                    className="h-full bg-brand-400"
                     style={{ width: `${macros.carbohydrates.percentOfCalories}%` }}
                   />
                   <span
@@ -446,11 +446,11 @@ function ResultsGrid({
                 </div>
                 <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-muted">
                   <li className="flex items-center gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-brand-600" aria-hidden="true" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-brand-700" aria-hidden="true" />
                     Protein {proteinPercent}%
                   </li>
                   <li className="flex items-center gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-brand-300" aria-hidden="true" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-brand-400" aria-hidden="true" />
                     Carbohydrates {macros.carbohydrates.percentOfCalories}%
                   </li>
                   <li className="flex items-center gap-1.5">
@@ -482,13 +482,13 @@ function ResultsGrid({
         <Card>
           <CardBody>
             <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
-              <Info className="h-4 w-4 text-brand-600" aria-hidden="true" />
+              <Info className="h-4 w-4 text-brand-400" aria-hidden="true" />
               Assumptions applied
             </h2>
             <ul className="mt-3 space-y-1.5">
               {processed.calculationNotes.map((note) => (
                 <li key={note} className="flex gap-2 text-xs leading-relaxed text-muted">
-                  <span className="font-bold text-brand-600">·</span>
+                  <span className="font-bold text-brand-400">·</span>
                   {note}
                 </li>
               ))}
@@ -515,7 +515,7 @@ function Stat({
     <div
       className={cn(
         "rounded-[10px] border p-3.5",
-        emphasis ? "border-brand-200 bg-brand-50" : "border-line bg-canvas",
+        emphasis ? "border-brand-400/25 bg-brand-50" : "border-line bg-canvas",
       )}
     >
       <p className="text-xs font-medium text-muted">{label}</p>
@@ -584,7 +584,7 @@ function CalculationDetails({ processed }: { processed: ProcessedProfile }) {
         className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-brand-50/50 sm:px-7"
       >
         <span className="flex items-center gap-2 text-sm font-bold text-ink">
-          <Calculator className="h-4 w-4 text-brand-600" aria-hidden="true" />
+          <Calculator className="h-4 w-4 text-brand-400" aria-hidden="true" />
           How was this calculated?
         </span>
         <ChevronDown
@@ -675,7 +675,7 @@ function DetailRow({
 }) {
   return (
     <div className="rounded-[10px] border border-line bg-canvas p-3.5">
-      <dt className="text-xs font-bold uppercase tracking-wide text-brand-700">
+      <dt className="text-xs font-bold uppercase tracking-wide text-brand-400">
         {term}
       </dt>
       <dd>

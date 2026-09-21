@@ -12,7 +12,7 @@ export default function AssistantPage() {
   return (
     <div className="mx-auto flex h-[calc(100vh-8rem)] max-w-3xl flex-col px-5 py-6">
       <AssistantProvider>
-        <div className="flex h-full flex-col overflow-hidden rounded-card border border-line bg-white shadow-sm">
+        <div className="flex h-full flex-col overflow-hidden rounded-card border border-line bg-surface shadow-sm">
           <AssistantChat />
         </div>
       </AssistantProvider>

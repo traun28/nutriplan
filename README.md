@@ -393,9 +393,9 @@ npm run typecheck    # tsc --noEmit
 - The landing page ships **no** engine code: the nutrition processor, diet
   generator, food database, dataset and AI engine are all loaded on demand
   via dynamic `import()` when the user first needs them.
-- The hero image is served through `next/image` (AVIF/WebP, responsive
-  `srcset`, `priority`): ~39 KB on mobile / ~91 KB on desktop instead of the
-  231 KB original, with its aspect ratio reserved so nothing shifts.
+- The landing hero is a Ken Burns video (`public/hero.mp4`) generated offline
+  from four dark food stills (`scripts/hero-video`). Type is Inter Variable
+  (body) and Plus Jakarta Sans (display).
 - Attachment parsing (pdf.js, jszip) runs **server-side**, never in the
   browser bundle.
 

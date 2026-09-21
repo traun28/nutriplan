@@ -58,17 +58,17 @@ export interface DatasetRow {
 }
 
 const STATUS_UI: Record<string, { label: string; cls: string }> = {
-  uploading: { label: "Uploading", cls: "border-line bg-white text-muted" },
-  processing: { label: "Processing", cls: "border-line bg-white text-muted" },
-  ready: { label: "Ready", cls: "border-brand-200 bg-brand-50 text-brand-700" },
+  uploading: { label: "Uploading", cls: "border-line bg-surface text-muted" },
+  processing: { label: "Processing", cls: "border-line bg-surface text-muted" },
+  ready: { label: "Ready", cls: "border-brand-400/25 bg-brand-50 text-brand-400" },
   needs_review: {
     label: "Needs review",
-    cls: "border-accent-300/70 bg-accent-200/30 text-accent-600",
+    cls: "border-accent-300/40/30 bg-accent-200/30 text-accent-300",
   },
-  failed: { label: "Failed", cls: "border-danger-100 bg-danger-50 text-danger-700" },
+  failed: { label: "Failed", cls: "border-danger-500/30 bg-danger-50 text-danger-700" },
   unsupported: {
     label: "Unsupported",
-    cls: "border-danger-100 bg-danger-50 text-danger-700",
+    cls: "border-danger-500/30 bg-danger-50 text-danger-700",
   },
 };
 
@@ -176,14 +176,14 @@ export function DatasetLibrary({
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search datasets by name or type"
             aria-label="Search datasets"
-            className="h-11 w-full rounded-[10px] border border-line bg-white pl-10 pr-3.5 text-sm text-ink placeholder:text-muted/70 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15"
+            className="h-11 w-full rounded-[10px] border border-line bg-surface pl-10 pr-3.5 text-sm text-ink placeholder:text-muted/70 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(event) => setStatusFilter(event.target.value)}
           aria-label="Filter by status"
-          className="h-11 rounded-[10px] border border-line bg-white px-3.5 text-sm text-ink focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15"
+          className="h-11 rounded-[10px] border border-line bg-surface px-3.5 text-sm text-ink focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15"
         >
           <option value="all">All statuses</option>
           <option value="ready">Ready</option>
@@ -238,7 +238,7 @@ export function DatasetLibrary({
                             {status.label}
                           </span>
                           {dataset.imported && (
-                            <span className="rounded-pill bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700">
+                            <span className="rounded-pill bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-400">
                               In library
                             </span>
                           )}
@@ -416,7 +416,7 @@ export function DatasetLibrary({
                                 className="flex items-start gap-1.5 text-xs text-muted"
                               >
                                 <AlertTriangle
-                                  className="mt-0.5 h-3 w-3 shrink-0 text-accent-600"
+                                  className="mt-0.5 h-3 w-3 shrink-0 text-accent-300"
                                   aria-hidden="true"
                                 />
                                 {warning}

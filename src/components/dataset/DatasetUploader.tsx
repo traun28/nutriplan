@@ -123,14 +123,14 @@ export function DatasetUploader({ onUploaded }: Props) {
           "flex flex-col items-center justify-center gap-3 rounded-card border-2 border-dashed px-6 py-10 text-center transition-all",
           dragging
             ? "border-brand-500 bg-brand-50"
-            : "border-line bg-white hover:border-brand-300 hover:bg-canvas",
+            : "border-line bg-surface hover:border-brand-400/50 hover:bg-canvas",
           busy && "pointer-events-none opacity-70",
         )}
       >
         <span
           className={cn(
             "grid h-12 w-12 place-items-center rounded-full",
-            dragging ? "bg-brand-600 text-white" : "bg-brand-50 text-brand-600",
+            dragging ? "bg-brand-700 text-white" : "bg-brand-50 text-brand-400",
           )}
         >
           {busy ? (
@@ -211,7 +211,7 @@ export function DatasetUploader({ onUploaded }: Props) {
       {success && (
         <p
           role="status"
-          className="flex items-start gap-2 rounded-[10px] bg-brand-50 px-3.5 py-2.5 text-xs text-brand-700"
+          className="flex items-start gap-2 rounded-[10px] bg-brand-50 px-3.5 py-2.5 text-xs text-brand-400"
         >
           <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           {success}

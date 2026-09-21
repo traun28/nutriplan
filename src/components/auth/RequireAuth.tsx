@@ -41,7 +41,7 @@ export function RequireAuth({
     return (
       <div className="mx-auto max-w-3xl px-5 py-20">
         <div className="flex items-center gap-3 text-sm text-muted">
-          <Loader2 className="h-5 w-5 animate-spin text-brand-600" aria-hidden="true" />
+          <Loader2 className="h-5 w-5 animate-spin text-brand-400" aria-hidden="true" />
           Checking your session…
         </div>
         <div className="mt-6 h-48 animate-pulse rounded-card bg-line/40" />
@@ -52,7 +52,7 @@ export function RequireAuth({
   if (error && !user) {
     return (
       <div className="mx-auto max-w-lg px-5 py-20">
-        <div className="rounded-card border border-danger-100 bg-danger-50/60 p-6">
+        <div className="rounded-card border border-danger-500/30 bg-danger-50/60 p-6">
           <div className="flex items-start gap-3">
             <AlertTriangle
               className="mt-0.5 h-5 w-5 shrink-0 text-danger-600"
@@ -83,7 +83,7 @@ export function RequireAuth({
     return (
       <div className="mx-auto max-w-3xl px-5 py-20">
         <div className="flex items-center gap-3 text-sm text-muted">
-          <Loader2 className="h-5 w-5 animate-spin text-brand-600" aria-hidden="true" />
+          <Loader2 className="h-5 w-5 animate-spin text-brand-400" aria-hidden="true" />
           Redirecting to login…
         </div>
       </div>

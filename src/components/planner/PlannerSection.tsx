@@ -44,7 +44,7 @@ export function PlannerSection({
     <div className="grid items-start gap-6 lg:grid-cols-[1fr_320px]">
       <Card>
         <CardBody>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-600">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             {stepLabel}
           </p>
           <h2 className="mt-2 text-2xl font-bold tracking-tight text-ink">
@@ -70,7 +70,7 @@ export function PlannerSection({
             </div>
             <div className="flex flex-col items-start gap-2 sm:items-end">
               {continueDisabled && continueHint && (
-                <p className="text-xs font-medium text-accent-600">
+                <p className="text-xs font-medium text-accent-300">
                   {continueHint}
                 </p>
               )}

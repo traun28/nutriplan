@@ -41,14 +41,14 @@ const STATUS_UI: Record<
 };
 
 const toneClass: Record<string, string> = {
-  neutral: "border-line bg-white text-muted",
-  brand: "border-brand-200 bg-brand-50 text-brand-700",
-  warning: "border-accent-300/70 bg-accent-200/30 text-accent-600",
-  danger: "border-danger-100 bg-danger-50 text-danger-700",
+  neutral: "border-line bg-surface text-muted",
+  brand: "border-brand-400/25 bg-brand-50 text-brand-400",
+  warning: "border-accent-300/40/30 bg-accent-200/30 text-accent-300",
+  danger: "border-danger-500/30 bg-danger-50 text-danger-700",
 };
 
 function KindIcon({ kind }: { kind: AttachmentRecord["kind"] }) {
-  const cls = "h-5 w-5 text-brand-600";
+  const cls = "h-5 w-5 text-brand-400";
   if (kind === "image") return <ImageIcon className={cls} aria-hidden="true" />;
   if (kind === "csv" || kind === "xlsx" || kind === "xls")
     return <Sheet className={cls} aria-hidden="true" />;
@@ -119,9 +119,9 @@ export function AttachmentCard({ record, onReview, onRemove }: Props) {
           className={cn(
             "mt-3 rounded-[10px] border p-3 text-xs leading-relaxed",
             record.status === "failed" || record.status === "unsupported"
-              ? "border-danger-100 bg-danger-50 text-danger-700"
+              ? "border-danger-500/30 bg-danger-50 text-danger-700"
               : record.status === "needs_review"
-                ? "border-accent-300/70 bg-accent-200/30 text-ink/80"
+                ? "border-accent-300/40/30 bg-accent-200/30 text-ink/80"
                 : "border-line bg-canvas text-muted",
           )}
         >
@@ -134,22 +134,22 @@ export function AttachmentCard({ record, onReview, onRemove }: Props) {
         <div className="mt-3 space-y-2">
           <div className="flex flex-wrap gap-2 text-xs">
             {extraction.fields.length > 0 && (
-              <span className="rounded-pill bg-brand-50 px-2.5 py-1 font-semibold text-brand-700">
+              <span className="rounded-pill bg-brand-50 px-2.5 py-1 font-semibold text-brand-400">
                 {extraction.fields.length} field{extraction.fields.length === 1 ? "" : "s"}
               </span>
             )}
             {extraction.nutrients.length > 0 && (
-              <span className="rounded-pill bg-brand-50 px-2.5 py-1 font-semibold text-brand-700">
+              <span className="rounded-pill bg-brand-50 px-2.5 py-1 font-semibold text-brand-400">
                 {extraction.nutrients.length} nutrient{extraction.nutrients.length === 1 ? "" : "s"}
               </span>
             )}
             {extraction.foods.length > 0 && (
-              <span className="rounded-pill bg-brand-50 px-2.5 py-1 font-semibold text-brand-700">
+              <span className="rounded-pill bg-brand-50 px-2.5 py-1 font-semibold text-brand-400">
                 {extraction.foods.length} food{extraction.foods.length === 1 ? "" : "s"}
               </span>
             )}
             {extraction.tables.length > 0 && (
-              <span className="rounded-pill bg-brand-50 px-2.5 py-1 font-semibold text-brand-700">
+              <span className="rounded-pill bg-brand-50 px-2.5 py-1 font-semibold text-brand-400">
                 {extraction.tables.length} table{extraction.tables.length === 1 ? "" : "s"}
               </span>
             )}
@@ -165,7 +165,7 @@ export function AttachmentCard({ record, onReview, onRemove }: Props) {
               <button
                 type="button"
                 onClick={() => onReview(record)}
-                className="inline-flex items-center gap-1.5 rounded-[10px] bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-brand-700"
+                className="inline-flex items-center gap-1.5 rounded-[10px] bg-brand-700 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-brand-800"
               >
                 <Eye className="h-3.5 w-3.5" aria-hidden="true" />
                 Review extracted information
@@ -181,7 +181,7 @@ export function AttachmentCard({ record, onReview, onRemove }: Props) {
           {extraction.warnings.slice(0, 3).map((warning) => (
             <li key={warning} className="flex items-start gap-1.5 text-xs text-muted">
               <AlertTriangle
-                className="mt-0.5 h-3 w-3 shrink-0 text-accent-600"
+                className="mt-0.5 h-3 w-3 shrink-0 text-accent-300"
                 aria-hidden="true"
               />
               {warning}

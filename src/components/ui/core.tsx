@@ -18,14 +18,14 @@ type ButtonSize = "sm" | "md" | "lg";
 
 const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
   primary:
-    "bg-brand-600 text-white shadow-[0_6px_16px_rgba(61,106,79,0.25)] hover:bg-brand-700 hover:shadow-[0_8px_20px_rgba(61,106,79,0.32)] active:translate-y-px",
+    "bg-brand-700 text-white shadow-[0_6px_16px_rgba(5,150,105,0.28)] hover:bg-brand-800 hover:shadow-[0_8px_20px_rgba(5,150,105,0.35)] active:translate-y-px",
   secondary:
-    "border border-brand-200 bg-brand-50 text-brand-800 hover:bg-brand-100",
+    "border border-brand-400/25 bg-brand-50 text-brand-300 hover:bg-brand-100",
   outline:
-    "border border-line bg-white text-ink hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700",
-  ghost: "text-muted hover:bg-brand-50 hover:text-brand-700",
+    "border border-line bg-surface text-ink hover:border-brand-400/50 hover:bg-brand-50 hover:text-brand-400",
+  ghost: "text-muted hover:bg-brand-50 hover:text-brand-400",
   danger:
-    "bg-danger-600 text-white shadow-[0_6px_16px_rgba(166,61,39,0.25)] hover:bg-danger-700 active:translate-y-px",
+    "bg-danger-800 text-white shadow-[0_6px_16px_rgba(239,68,68,0.28)] hover:bg-danger-600 active:translate-y-px",
 };
 
 const BUTTON_SIZES: Record<ButtonSize, string> = {
@@ -137,11 +137,11 @@ export function CardBody({
 type BadgeTone = "neutral" | "brand" | "warning" | "danger" | "solid";
 
 const BADGE_TONES: Record<BadgeTone, string> = {
-  neutral: "border border-line bg-white text-muted",
-  brand: "border border-brand-200 bg-brand-50 text-brand-700",
-  warning: "border border-accent-300 bg-accent-200/40 text-accent-600",
-  danger: "border border-danger-100 bg-danger-50 text-danger-700",
-  solid: "border border-brand-600 bg-brand-600 text-white",
+  neutral: "border border-line bg-surface text-muted",
+  brand: "border border-brand-400/25 bg-brand-50 text-brand-400",
+  warning: "border border-accent-300/40/30 bg-accent-200/40 text-accent-300",
+  danger: "border border-danger-500/30 bg-danger-50 text-danger-700",
+  solid: "border border-brand-600 bg-brand-700 text-white",
 };
 
 export function Badge({
@@ -192,7 +192,7 @@ export function SectionHeader({
       )}
     >
       {eyebrow && (
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-600">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
           {eyebrow}
         </p>
       )}
@@ -228,12 +228,12 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center rounded-card border border-dashed border-line bg-white/60 px-6 py-10 text-center",
+        "flex flex-col items-center rounded-card border border-dashed border-line bg-surface/60 px-6 py-10 text-center",
         className,
       )}
     >
       {icon && (
-        <div className="grid h-12 w-12 place-items-center rounded-full bg-brand-50 text-brand-600">
+        <div className="grid h-12 w-12 place-items-center rounded-full bg-brand-50 text-brand-400">
           {icon}
         </div>
       )}

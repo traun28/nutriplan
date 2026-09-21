@@ -26,7 +26,7 @@ function StatusIcon({ status }: { status: AppStatus }) {
   if (status.needsAttention) {
     return (
       <AlertTriangle
-        className="mt-0.5 h-5 w-5 shrink-0 text-accent-600"
+        className="mt-0.5 h-5 w-5 shrink-0 text-accent-300"
         aria-hidden="true"
       />
     );
@@ -34,13 +34,13 @@ function StatusIcon({ status }: { status: AppStatus }) {
   if (status.state === "plan_ready") {
     return (
       <CheckCircle2
-        className="mt-0.5 h-5 w-5 shrink-0 text-brand-600"
+        className="mt-0.5 h-5 w-5 shrink-0 text-brand-400"
         aria-hidden="true"
       />
     );
   }
   return (
-    <Info className="mt-0.5 h-5 w-5 shrink-0 text-brand-600" aria-hidden="true" />
+    <Info className="mt-0.5 h-5 w-5 shrink-0 text-brand-400" aria-hidden="true" />
   );
 }
 
@@ -77,8 +77,8 @@ export function NextStepCard({
     <Card
       className={cn(
         status.needsAttention
-          ? "border-accent-300/70 bg-accent-200/20"
-          : "border-brand-200 bg-brand-50/60",
+          ? "border-accent-300/40/30 bg-accent-200/20"
+          : "border-brand-400/25 bg-brand-50/60",
         className,
       )}
     >

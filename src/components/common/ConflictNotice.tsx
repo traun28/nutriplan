@@ -24,7 +24,7 @@ export function ConflictNotice({ className }: { className?: string }) {
       <CardBody>
         <div className="flex items-start gap-3">
           <Info
-            className="mt-0.5 h-5 w-5 shrink-0 text-accent-600"
+            className="mt-0.5 h-5 w-5 shrink-0 text-accent-300"
             aria-hidden="true"
           />
           <div className="min-w-0 flex-1">

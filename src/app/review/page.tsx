@@ -55,7 +55,7 @@ function ReviewBlock({
       <div className="absolute right-4 top-3 z-10">
         <Link
           href={editHref}
-          className="inline-flex items-center gap-1.5 rounded-pill border border-line bg-white px-3 py-1 text-xs font-semibold text-ink shadow-sm transition-colors hover:border-brand-300 hover:text-brand-700"
+          className="inline-flex items-center gap-1.5 rounded-pill border border-line bg-surface px-3 py-1 text-xs font-semibold text-ink shadow-sm transition-colors hover:border-brand-400/50 hover:text-brand-400"
         >
           <PencilLine className="h-3 w-3" aria-hidden="true" />
           Edit
@@ -87,7 +87,7 @@ function ReviewView() {
     return (
       <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
         <header className="mb-8">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-600">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             Step 5 of 5 · Review
           </p>
           <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
@@ -139,7 +139,7 @@ function ReviewView() {
     <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
       <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-600">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             Step 5 of 5 · Review
           </p>
           <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
@@ -184,10 +184,10 @@ function ReviewView() {
       {storageStatus === "unavailable" && (
         <div
           role="alert"
-          className="mb-6 flex items-start gap-3 rounded-card border border-accent-300/70 bg-accent-200/30 p-4"
+          className="mb-6 flex items-start gap-3 rounded-card border border-accent-300/40/30 bg-accent-200/30 p-4"
         >
           <AlertTriangle
-            className="mt-0.5 h-4 w-4 shrink-0 text-accent-600"
+            className="mt-0.5 h-4 w-4 shrink-0 text-accent-300"
             aria-hidden="true"
           />
           <p className="text-xs leading-relaxed text-ink/80">
@@ -280,11 +280,11 @@ function ReviewView() {
 
       {/* ----------------------- Outstanding issues ---------------------- */}
       {issues.length > 0 && (
-        <Card className="mt-8 border-accent-300/70">
+        <Card className="mt-8 border-accent-300/40/30">
           <CardBody>
             <div className="flex items-center gap-2">
               <TriangleAlert
-                className="h-4 w-4 shrink-0 text-accent-600"
+                className="h-4 w-4 shrink-0 text-accent-300"
                 aria-hidden="true"
               />
               <h2 className="text-sm font-bold text-ink">
@@ -300,7 +300,7 @@ function ReviewView() {
                   <span className="text-sm text-ink">{issue.message}</span>
                   <Link
                     href={`/planner?step=${issue.step}`}
-                    className="text-xs font-semibold text-brand-700 underline-offset-2 hover:underline"
+                    className="text-xs font-semibold text-brand-400 underline-offset-2 hover:underline"
                   >
                     Fix this
                   </Link>
@@ -317,7 +317,7 @@ function ReviewView() {
           <div className="flex items-start gap-3">
             {readyToSave ? (
               <CheckCircle2
-                className="mt-0.5 h-6 w-6 shrink-0 text-brand-600"
+                className="mt-0.5 h-6 w-6 shrink-0 text-brand-400"
                 aria-hidden="true"
               />
             ) : (
@@ -335,7 +335,7 @@ function ReviewView() {
               {saveStatus === "saved" && (
                 <p
                   role="status"
-                  className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700"
+                  className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-400"
                 >
                   <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
                   Your profile has been saved on this device.

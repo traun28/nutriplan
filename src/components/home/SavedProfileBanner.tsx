@@ -37,16 +37,16 @@ export function SavedProfileBanner() {
 
   return (
     <div className="mx-auto max-w-6xl px-5 pt-6">
-      <div className="flex flex-col items-start justify-between gap-4 rounded-card border border-brand-200 bg-brand-50/70 px-5 py-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col items-start justify-between gap-4 rounded-card border border-brand-400/25 bg-brand-50/70 px-5 py-4 sm:flex-row sm:items-center">
         <div className="flex items-start gap-3">
           {status.needsAttention ? (
             <TriangleAlert
-              className="mt-0.5 h-5 w-5 shrink-0 text-accent-600"
+              className="mt-0.5 h-5 w-5 shrink-0 text-accent-300"
               aria-hidden="true"
             />
           ) : (
             <CheckCircle2
-              className="mt-0.5 h-5 w-5 shrink-0 text-brand-600"
+              className="mt-0.5 h-5 w-5 shrink-0 text-brand-400"
               aria-hidden="true"
             />
           )}
