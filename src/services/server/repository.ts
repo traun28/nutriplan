@@ -282,8 +282,11 @@ export async function deleteDataset(userId: number, id: number): Promise<boolean
       .returning({ id: datasets.id });
     if (deleted.length > 0) {
       await db.delete(datasetRecords).where(eq(datasetRecords.datasetId, id));
+      return true;
     }
-    return true;
+    // Nothing matched (not found, or not owned by this user) — the route
+    // must report that honestly instead of claiming a delete it never made.
+    return false;
   } catch {
     return false;
   }
