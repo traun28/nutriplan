@@ -2,6 +2,7 @@
  * POST /api/auth/register — create an account.
  *
  * Validates input, hashes the password with scrypt, then starts a session.
+ * Only @gmail.com addresses are accepted (see `@/lib/email`).
  * Passwords are never returned or logged.
  */
 import { eq } from "drizzle-orm";
@@ -15,6 +16,7 @@ import {
 } from "@/services/server/auth";
 import { badRequest, readJson, serverError } from "@/services/server/guard";
 import { createDevUser, findDevUser } from "@/services/server/devStore";
+import { validateGmailAddress } from "@/lib/email";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -25,8 +27,6 @@ interface Body {
   fullName?: string;
 }
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 export async function POST(request: Request) {
   const body = await readJson<Body>(request);
   if (!body) return badRequest("Invalid request.");
@@ -35,7 +35,8 @@ export async function POST(request: Request) {
   const password = body.password ?? "";
   const fullName = (body.fullName ?? "").trim();
 
-  if (!EMAIL_RE.test(email)) return badRequest("Please enter a valid email address.");
+  const emailError = validateGmailAddress(email);
+  if (emailError) return badRequest(emailError);
   if (password.length < 8)
     return badRequest("Password must be at least 8 characters.");
   if (fullName.length < 2) return badRequest("Please enter your name.");

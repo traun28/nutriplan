@@ -327,6 +327,11 @@ in-memory store so the website and account flow can still be tested. Those
 accounts disappear when the development server restarts. Configure PostgreSQL
 for durable account and server-side profile storage.
 
+Accounts are **Gmail-only**: sign-up and sign-in accept an address on
+`gmail.com` and reject every other domain (`xyz.com`, `yahoo.com`,
+`college.edu`, …). The rule lives in `src/lib/email.ts` and is applied by both
+the login form and the `/api/auth/register` and `/api/auth/login` routes.
+
 ### Using the dataset workflow
 
 The Dataset Management page follows this pipeline:

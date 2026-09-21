@@ -22,6 +22,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/core";
 import { cn } from "@/lib/cn";
+import { validateGmailAddress } from "@/lib/email";
 
 type Mode = "login" | "register";
 
@@ -51,6 +52,12 @@ function LoginForm() {
 
     if (!email.trim() || !password) {
       setError("Enter your email and password.");
+      return;
+    }
+    // Accounts are Gmail-only — catch other domains before the request.
+    const emailError = validateGmailAddress(email);
+    if (emailError) {
+      setError(emailError);
       return;
     }
     if (mode === "register") {
@@ -153,7 +160,8 @@ function LoginForm() {
             value={email}
             onChange={setEmail}
             autoComplete="email"
-            placeholder="you@example.com"
+            placeholder="you@gmail.com"
+            hint="Only @gmail.com addresses are accepted."
           />
 
           <Field
@@ -253,6 +261,7 @@ function Field({
   onChange,
   autoComplete,
   placeholder,
+  hint,
 }: {
   label: string;
   icon: React.ReactNode;
@@ -261,8 +270,10 @@ function Field({
   onChange: (value: string) => void;
   autoComplete?: string;
   placeholder?: string;
+  hint?: string;
 }) {
   const id = `field-${label.toLowerCase().replace(/\s+/g, "-")}`;
+  const hintId = `${id}-hint`;
   return (
     <div>
       <label htmlFor={id} className="mb-1.5 block text-sm font-semibold text-ink">
@@ -278,6 +289,7 @@ function Field({
           value={value}
           autoComplete={autoComplete}
           placeholder={placeholder}
+          aria-describedby={hint ? hintId : undefined}
           onChange={(event) => onChange(event.target.value)}
           className={cn(
             "h-11 w-full rounded-[10px] border border-line bg-white pl-10 pr-3.5 text-sm text-ink placeholder:text-muted/70",
@@ -285,6 +297,11 @@ function Field({
           )}
         />
       </div>
+      {hint && (
+        <p id={hintId} className="mt-1.5 text-xs text-muted">
+          {hint}
+        </p>
+      )}
     </div>
   );
 }
