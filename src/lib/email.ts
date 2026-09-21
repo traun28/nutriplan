@@ -19,11 +19,13 @@ export const GMAIL_MALFORMED_MESSAGE =
   "That doesn't look like a valid Gmail address. Check the part before the @.";
 
 /**
- * Gmail's own mailbox rules: 6–30 characters, letters, digits and dots, and it
- * must start and end with a letter or digit. Consecutive dots are rejected
- * separately in `isGmailAddress`.
+ * Gmail's own mailbox rules (Google's documented Gmail address requirements):
+ * 6–30 characters; letters, digits, dots, dashes and underscores; must start
+ * and end with a letter or digit; no runs of more than three consecutive
+ * special characters (checked separately in `isGmailAddress`).
  */
-const GMAIL_LOCAL_RE = /^[a-z0-9](?:[a-z0-9.+]{4,28})[a-z0-9]$/;
+const GMAIL_LOCAL_RE = /^[a-z0-9](?:[a-z0-9.+_-]{4,28})[a-z0-9]$/;
+const GMAIL_CONSECUTIVE_SPECIALS_RE = /[.+_-]{4,}/;
 
 /** True when `value` is an address on gmail.com with a well-formed mailbox. */
 export function isGmailAddress(value: string): boolean {
@@ -35,7 +37,7 @@ export function isGmailAddress(value: string): boolean {
   return (
     email.slice(at + 1) === GMAIL_DOMAIN &&
     GMAIL_LOCAL_RE.test(local) &&
-    !local.includes("..")
+    !GMAIL_CONSECUTIVE_SPECIALS_RE.test(local)
   );
 }
 
