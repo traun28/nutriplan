@@ -14,7 +14,7 @@ export default function NotFoundPage() {
         </p>
         <Link
           href="/"
-          className="mt-6 inline-flex items-center gap-2 rounded-pill bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-[0_6px_16px_rgba(61,106,79,0.25)] transition-colors hover:bg-brand-700"
+          className="mt-6 inline-flex items-center gap-2 rounded-pill bg-brand-700 px-6 py-3 text-sm font-semibold text-white shadow-[0_6px_16px_rgba(5,150,105,0.28)] transition-colors hover:bg-brand-800"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           Back to Home

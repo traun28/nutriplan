@@ -26,7 +26,7 @@ export function Chip({
   removeLabel: string;
 }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-pill border border-line bg-white py-1.5 pl-3 pr-1.5 text-sm font-medium text-ink shadow-sm">
+    <span className="inline-flex items-center gap-1 rounded-pill border border-line bg-surface py-1.5 pl-3 pr-1.5 text-sm font-medium text-ink shadow-sm">
       {label}
       <button
         type="button"
@@ -111,8 +111,8 @@ export function ChipInput({
 
       <div
         className={cn(
-          "flex flex-wrap items-center gap-2 rounded-[10px] border bg-white p-2.5 transition-[border-color,box-shadow] duration-200 focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-500/15",
-          error ? "border-danger-500 bg-danger-50/40" : "border-line",
+          "flex flex-wrap items-center gap-2 rounded-[10px] border bg-surface p-2.5 transition-[border-color,box-shadow] duration-200 focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-500/15",
+          error ? "border-danger-500 bg-danger-50/60" : "border-line",
         )}
       >
         {values.map((value) => (
@@ -143,7 +143,7 @@ export function ChipInput({
         <button
           type="button"
           onClick={addDraft}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-pill border border-brand-200 bg-brand-50 px-3.5 py-1.5 text-sm font-semibold text-brand-700 transition-colors duration-150 hover:bg-brand-100 focus-visible:outline-2 focus-visible:outline-brand-500"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-pill border border-brand-400/25 bg-brand-50 px-3.5 py-1.5 text-sm font-semibold text-brand-400 transition-colors duration-150 hover:bg-brand-100 focus-visible:outline-2 focus-visible:outline-brand-500"
         >
           <Plus className="h-3.5 w-3.5" aria-hidden="true" />
           Add
@@ -158,7 +158,7 @@ export function ChipInput({
         </datalist>
       )}
 
-      {notice && <p className="mt-1.5 text-xs font-medium text-accent-600">{notice}</p>}
+      {notice && <p className="mt-1.5 text-xs font-medium text-accent-300">{notice}</p>}
       <FieldError id={errorId}>{error}</FieldError>
     </div>
   );

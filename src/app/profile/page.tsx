@@ -62,7 +62,7 @@ function ProfileView() {
     return (
       <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
         <header className="mb-8">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-600">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             My Profile
           </p>
           <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
@@ -144,7 +144,7 @@ function ProfileView() {
     <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
       <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-600">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             My Profile
           </p>
           <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
@@ -204,7 +204,7 @@ function ProfileView() {
       {hasUnsavedChanges && (
         <div
           role="status"
-          className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-card border border-accent-300/70 bg-accent-200/30 p-4"
+          className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-card border border-accent-300/40/30 bg-accent-200/30 p-4"
         >
           <p className="text-xs leading-relaxed text-ink/80">
             You have changes that have not been saved to this device yet.
@@ -237,7 +237,7 @@ function ProfileView() {
                 <li key={item.label} className="flex items-center gap-3">
                   {item.done ? (
                     <CheckCircle2
-                      className="h-5 w-5 shrink-0 text-brand-600"
+                      className="h-5 w-5 shrink-0 text-brand-400"
                       aria-hidden="true"
                     />
                   ) : (

@@ -79,7 +79,7 @@ export function AssistantChat() {
       {/* Header */}
       <div className="flex items-center justify-between border-b border-line px-5 py-4">
         <div className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-full bg-brand-50 text-brand-600">
+          <span className="grid h-10 w-10 place-items-center rounded-full bg-brand-50 text-brand-400">
             <Sparkles className="h-5 w-5" aria-hidden="true" />
           </span>
           <div>
@@ -102,7 +102,7 @@ export function AssistantChat() {
             className={cn(
               "grid h-8 w-8 place-items-center rounded-[10px] transition-colors",
               voiceEnabled
-                ? "bg-brand-50 text-brand-600"
+                ? "bg-brand-50 text-brand-400"
                 : "text-muted hover:bg-canvas",
             )}
           >
@@ -134,7 +134,7 @@ export function AssistantChat() {
         {messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center gap-4 py-10">
             <EmptyState
-              icon={<Bot className="h-8 w-8 text-brand-600" aria-hidden="true" />}
+              icon={<Bot className="h-8 w-8 text-brand-400" aria-hidden="true" />}
               title="Hi, I'm your Nutrition Assistant"
               description="Ask me about your BMI, calories, protein, foods, meal replacements, shopping lists, or anything nutrition-related."
             />
@@ -144,7 +144,7 @@ export function AssistantChat() {
                   key={action.label}
                   type="button"
                   onClick={() => sendMessage(action.query)}
-                  className="rounded-pill border border-line bg-white px-3.5 py-1.5 text-xs font-semibold text-ink transition-colors hover:border-brand-300 hover:bg-brand-50"
+                  className="rounded-pill border border-line bg-surface px-3.5 py-1.5 text-xs font-semibold text-ink transition-colors hover:border-brand-400/50 hover:bg-brand-50"
                 >
                   {action.label}
                 </button>
@@ -177,7 +177,7 @@ export function AssistantChat() {
 
       {/* Voice error */}
       {voice.error && (
-        <div className="mx-5 mb-2 rounded-[10px] bg-accent-200/30 px-3.5 py-2 text-xs text-accent-600">
+        <div className="mx-5 mb-2 rounded-[10px] bg-accent-200/30 px-3.5 py-2 text-xs text-accent-300">
           {voice.error}
         </div>
       )}
@@ -201,16 +201,16 @@ export function AssistantChat() {
             className={cn(
               "grid h-11 w-11 shrink-0 place-items-center rounded-[10px] transition-all",
               voice.listening
-                ? "bg-danger-600 text-white animate-pulse"
+                ? "bg-danger-800 text-white animate-pulse"
                 : voice.supported
-                  ? "bg-brand-50 text-brand-600 hover:bg-brand-100"
+                  ? "bg-brand-50 text-brand-400 hover:bg-brand-100"
                   : "bg-canvas text-muted cursor-not-allowed",
             )}
           >
             {voice.listening ? (
               <span className="relative flex h-3 w-3">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
-                <span className="relative inline-flex h-3 w-3 rounded-full bg-white" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-surface opacity-75" />
+                <span className="relative inline-flex h-3 w-3 rounded-full bg-surface" />
               </span>
             ) : (
               <Mic className="h-5 w-5" aria-hidden="true" />
@@ -228,7 +228,7 @@ export function AssistantChat() {
               voice.listening ? "Listening…" : "Ask about your nutrition…"
             }
             disabled={processing}
-            className="h-11 flex-1 rounded-[10px] border border-line bg-white px-4 text-sm text-ink placeholder:text-muted/70 transition-[border-color,box-shadow] focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15 disabled:opacity-60"
+            className="h-11 flex-1 rounded-[10px] border border-line bg-surface px-4 text-sm text-ink placeholder:text-muted/70 transition-[border-color,box-shadow] focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15 disabled:opacity-60"
           />
 
           <Button
@@ -287,7 +287,7 @@ function MessageBubble({
       <span
         className={cn(
           "mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full text-xs font-bold",
-          isUser ? "bg-brand-600 text-white" : "bg-brand-50 text-brand-600",
+          isUser ? "bg-brand-700 text-white" : "bg-brand-50 text-brand-400",
         )}
         aria-hidden="true"
       >
@@ -299,8 +299,8 @@ function MessageBubble({
           className={cn(
             "inline-block rounded-card px-4 py-3 text-sm leading-relaxed",
             isUser
-              ? "bg-brand-600 text-white"
-              : "border border-line bg-white text-ink",
+              ? "bg-brand-700 text-white"
+              : "border border-line bg-surface text-ink",
           )}
         >
           <p className="whitespace-pre-wrap">{message.text}</p>
@@ -310,7 +310,7 @@ function MessageBubble({
               <button
                 type="button"
                 onClick={() => setExpanded(!expanded)}
-                className="flex items-center gap-1 text-xs font-semibold text-brand-700"
+                className="flex items-center gap-1 text-xs font-semibold text-brand-400"
                 aria-expanded={expanded}
               >
                 {expanded ? "Hide" : "Show"} details
@@ -362,7 +362,7 @@ function MessageBubble({
                 type="button"
                 onClick={() => (speaking ? onStopSpeak() : onSpeak(message.text))}
                 aria-label={speaking ? "Stop speaking" : "Read aloud"}
-                className="text-[11px] font-semibold text-muted hover:text-brand-700"
+                className="text-[11px] font-semibold text-muted hover:text-brand-400"
               >
                 {speaking ? "Stop" : "Read aloud"}
               </button>

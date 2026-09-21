@@ -59,7 +59,7 @@ export function AttachmentsView() {
           <AttachmentUploader />
 
           {failures.length > 0 && (
-            <Card className="border-danger-100 bg-danger-50/50">
+            <Card className="border-danger-500/30 bg-danger-50/50">
               <CardBody>
                 <h2 className="flex items-center gap-2 text-sm font-bold text-danger-700">
                   <AlertTriangle className="h-4 w-4" aria-hidden="true" />

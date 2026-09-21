@@ -80,10 +80,10 @@ function ChipRow({
 }) {
   const toneClass =
     tone === "danger"
-      ? "border-danger-100 bg-danger-50 text-danger-700"
+      ? "border-danger-500/30 bg-danger-50 text-danger-700"
       : tone === "warning"
-        ? "border-accent-300/70 bg-accent-200/40 text-accent-600"
-        : "border-line bg-white text-ink";
+        ? "border-accent-300/40/30 bg-accent-200/40 text-accent-300"
+        : "border-line bg-surface text-ink";
 
   return (
     <div className="flex items-start justify-between gap-4 border-b border-line/70 py-2.5 last:border-b-0">
@@ -277,7 +277,7 @@ export function FoodIntakeSummary({ intake }: { intake: FoodIntake }) {
           return (
             <li key={definition.id} className="py-3 first:pt-0 last:pb-0">
               <div className="flex items-baseline justify-between gap-3">
-                <h4 className="text-xs font-bold uppercase tracking-wide text-brand-700">
+                <h4 className="text-xs font-bold uppercase tracking-wide text-brand-400">
                   {definition.label}
                 </h4>
                 {!meal.hasMeal && (

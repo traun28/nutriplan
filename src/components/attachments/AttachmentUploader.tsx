@@ -70,14 +70,14 @@ export function AttachmentUploader() {
           "flex flex-col items-center justify-center gap-3 rounded-card border-2 border-dashed px-6 py-10 text-center transition-all",
           dragging
             ? "border-brand-500 bg-brand-50"
-            : "border-line bg-white hover:border-brand-300 hover:bg-canvas",
+            : "border-line bg-surface hover:border-brand-400/50 hover:bg-canvas",
           processing && "pointer-events-none opacity-70",
         )}
       >
         <span
           className={cn(
             "grid h-12 w-12 place-items-center rounded-full",
-            dragging ? "bg-brand-600 text-white" : "bg-brand-50 text-brand-600",
+            dragging ? "bg-brand-700 text-white" : "bg-brand-50 text-brand-400",
           )}
         >
           {processing ? (
@@ -143,10 +143,10 @@ export function AttachmentUploader() {
           <span>{remaining} slot(s) remaining</span>
         )}
         {remaining <= 0 && (
-          <span className="font-semibold text-accent-600">Session full — remove an attachment to add more</span>
+          <span className="font-semibold text-accent-300">Session full — remove an attachment to add more</span>
         )}
         {totalRemaining < ATTACHMENT_LIMITS.maxTotalBytes * 0.15 && (
-          <span className="font-semibold text-accent-600">
+          <span className="font-semibold text-accent-300">
             Approaching the {formatBytes(ATTACHMENT_LIMITS.maxTotalBytes)} session limit
           </span>
         )}

@@ -43,7 +43,7 @@ function Feature({ icon, title, text }: { icon: React.ReactNode; title: string; 
   return (
     <Card>
       <CardBody className="flex gap-3 py-4">
-        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] bg-brand-50 text-brand-700">{icon}</span>
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] bg-brand-50 text-brand-400">{icon}</span>
         <div><p className="text-sm font-bold text-ink">{title}</p><p className="mt-1 text-xs leading-relaxed text-muted">{text}</p></div>
       </CardBody>
     </Card>

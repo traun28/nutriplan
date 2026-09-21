@@ -33,9 +33,9 @@ import { cn } from "@/lib/cn";
 import { formatDateTime } from "@/lib/numbers";
 
 const CONFIDENCE_CLASS: Record<string, string> = {
-  high: "border-brand-200 bg-brand-50 text-brand-700",
-  medium: "border-accent-300/70 bg-accent-200/30 text-accent-600",
-  low: "border-danger-100 bg-danger-50 text-danger-700",
+  high: "border-brand-400/25 bg-brand-50 text-brand-400",
+  medium: "border-accent-300/40/30 bg-accent-200/30 text-accent-300",
+  low: "border-danger-500/30 bg-danger-50 text-danger-700",
   unknown: "border-line bg-canvas text-muted",
 };
 
@@ -85,7 +85,7 @@ export function ExtractionReview({ record, onBack }: Props) {
       <Card>
         <CardBody className="space-y-4">
           <div className="flex items-start gap-3">
-            <Check className="mt-0.5 h-6 w-6 shrink-0 text-brand-600" aria-hidden="true" />
+            <Check className="mt-0.5 h-6 w-6 shrink-0 text-brand-400" aria-hidden="true" />
             <div>
               <h2 className="text-base font-bold text-ink">
                 Information imported from {record.displayName}
@@ -100,7 +100,7 @@ export function ExtractionReview({ record, onBack }: Props) {
                 ))}
               </ul>
               {patch.touchesSafety && (
-                <p className="mt-3 flex items-start gap-2 rounded-[10px] bg-brand-50 p-3 text-xs text-brand-800">
+                <p className="mt-3 flex items-start gap-2 rounded-[10px] bg-brand-50 p-3 text-xs text-brand-300">
                   <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
                   Your existing allergies, intolerances and foods to avoid were
                   kept. New restrictions were added alongside them, not in
@@ -166,7 +166,7 @@ export function ExtractionReview({ record, onBack }: Props) {
             </p>
             {record.extraction?.text && (
               <details className="mt-5 text-left">
-                <summary className="cursor-pointer text-xs font-semibold text-brand-700">
+                <summary className="cursor-pointer text-xs font-semibold text-brand-400">
                   View extracted text ({record.extraction.text.length} chars)
                 </summary>
                 <pre className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap rounded-[10px] bg-canvas p-3 text-xs text-muted">
@@ -191,7 +191,7 @@ export function ExtractionReview({ record, onBack }: Props) {
                     : new Set(items.map((item) => item.id)),
                 )
               }
-              className="font-semibold text-brand-700 hover:underline"
+              className="font-semibold text-brand-400 hover:underline"
             >
               {selected.size === items.length ? "Clear all" : "Select all"}
             </button>
@@ -209,14 +209,14 @@ export function ExtractionReview({ record, onBack }: Props) {
           </div>
 
           {selectedItems.length > 0 && (
-            <Card className="border-brand-200 bg-brand-50/50">
+            <Card className="border-brand-400/25 bg-brand-50/50">
               <CardBody className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm font-bold text-ink">
                     {selectedItems.length} item(s) ready to import
                   </p>
                   {safetyItems.length > 0 && (
-                    <p className="mt-0.5 flex items-center gap-1.5 text-xs text-brand-800">
+                    <p className="mt-0.5 flex items-center gap-1.5 text-xs text-brand-300">
                       <ShieldAlert className="h-3.5 w-3.5" aria-hidden="true" />
                       Includes {safetyItems.length} safety-related addition(s) — you will be asked to confirm.
                     </p>
@@ -270,10 +270,10 @@ function ReviewRow({
 }) {
   const conflictBadge =
     item.conflictType === "different_value"
-      ? { label: "Different from profile", cls: "border-accent-300/70 bg-accent-200/30 text-accent-600" }
+      ? { label: "Different from profile", cls: "border-accent-300/40/30 bg-accent-200/30 text-accent-300" }
       : item.conflictType === "safety_relevant"
-        ? { label: "Safety addition", cls: "border-danger-100 bg-danger-50 text-danger-700" }
-        : { label: "New information", cls: "border-brand-200 bg-brand-50 text-brand-700" };
+        ? { label: "Safety addition", cls: "border-danger-500/30 bg-danger-50 text-danger-700" }
+        : { label: "New information", cls: "border-brand-400/25 bg-brand-50 text-brand-400" };
 
   return (
     <label
@@ -281,7 +281,7 @@ function ReviewRow({
         "flex cursor-pointer items-start gap-3 rounded-card border p-3.5 transition-all",
         checked
           ? "border-brand-400 bg-brand-50/60"
-          : "border-line bg-white hover:border-brand-300",
+          : "border-line bg-surface hover:border-brand-400/50",
         item.safetyRelevant && "border-l-4 border-l-danger-400",
       )}
     >
@@ -314,7 +314,7 @@ function ReviewRow({
         </div>
 
         <div className="mt-2 grid gap-2 text-xs sm:grid-cols-2">
-          <div className="rounded-[10px] bg-white p-2.5">
+          <div className="rounded-[10px] bg-surface p-2.5">
             <p className="font-semibold text-muted">In the document</p>
             <p className="mt-0.5 break-words font-semibold text-ink">
               {item.extractedValue}

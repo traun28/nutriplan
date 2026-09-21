@@ -23,11 +23,11 @@ const PROJECT_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-line bg-white">
+    <footer className="border-t border-line bg-surface">
       <div className="mx-auto grid max-w-6xl gap-10 px-5 py-12 md:grid-cols-[1.5fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-2.5">
-            <span className="grid h-9 w-9 place-items-center rounded-[10px] bg-brand-600 text-white">
+            <span className="grid h-9 w-9 place-items-center rounded-[10px] bg-brand-700 text-white">
               <Leaf className="h-4 w-4" aria-hidden="true" />
             </span>
             <span className="text-base font-bold text-ink">
@@ -53,7 +53,7 @@ export function Footer() {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="text-sm font-medium text-ink transition-colors hover:text-brand-700"
+                  className="text-sm font-medium text-ink transition-colors hover:text-brand-400"
                 >
                   {link.label}
                 </Link>
@@ -71,7 +71,7 @@ export function Footer() {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="text-sm font-medium text-ink transition-colors hover:text-brand-700"
+                  className="text-sm font-medium text-ink transition-colors hover:text-brand-400"
                 >
                   {link.label}
                 </Link>

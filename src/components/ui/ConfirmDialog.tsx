@@ -49,7 +49,7 @@ export function ConfirmDialog({
 
   return (
     <div
-      className="fixed inset-0 z-[100] grid place-items-center bg-ink/40 px-4 py-6 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] grid place-items-center bg-canvas/70 px-4 py-6 backdrop-blur-sm"
       role="presentation"
       onClick={(event) => {
         if (event.target === event.currentTarget) onCancel();
@@ -68,7 +68,7 @@ export function ConfirmDialog({
             className={
               tone === "danger"
                 ? "grid h-10 w-10 shrink-0 place-items-center rounded-full bg-danger-50 text-danger-600"
-                : "grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-700"
+                : "grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-400"
             }
           >
             <AlertTriangle className="h-5 w-5" />

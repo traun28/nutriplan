@@ -1,7 +1,7 @@
+import { Hero } from "@/components/home/Hero";
 import {
   CTASection,
   Features,
-  HomeHero,
   HomeIntro,
   HowItWorks,
   WhyPersonalisation,
@@ -12,7 +12,7 @@ export default function HomePage() {
   return (
     <>
       <SavedProfileBanner />
-      <HomeHero />
+      <Hero />
       <HomeIntro />
       <HowItWorks />
       <Features />

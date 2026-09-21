@@ -94,7 +94,7 @@ function LoginForm() {
       {/* Brand panel */}
       <div className="hidden lg:block">
         <span className="inline-flex items-center gap-2.5">
-          <span className="grid h-11 w-11 place-items-center rounded-[12px] bg-brand-600 text-white">
+          <span className="grid h-11 w-11 place-items-center rounded-[12px] bg-brand-700 text-white">
             <Leaf className="h-5 w-5" aria-hidden="true" />
           </span>
           <span className="text-lg font-bold tracking-tight text-ink">
@@ -120,7 +120,7 @@ function LoginForm() {
             { icon: Lock, text: "Your data stays in your account" },
           ].map((item) => (
             <li key={item.text} className="flex items-center gap-3 text-sm text-ink">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-brand-50 text-brand-600">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-brand-50 text-brand-400">
                 <item.icon className="h-4 w-4" aria-hidden="true" />
               </span>
               {item.text}
@@ -130,7 +130,7 @@ function LoginForm() {
       </div>
 
       {/* Form panel */}
-      <div className="rounded-card border border-line bg-white p-6 shadow-card sm:p-8">
+      <div className="rounded-card border border-line bg-surface p-6 shadow-card sm:p-8">
         <h2 className="text-xl font-bold text-ink">
           {mode === "login" ? "Welcome back" : "Create your account"}
         </h2>
@@ -222,7 +222,7 @@ function LoginForm() {
                   setMode("register");
                   setError(null);
                 }}
-                className="font-semibold text-brand-700 hover:underline"
+                className="font-semibold text-brand-400 hover:underline"
               >
                 Create an account
               </button>
@@ -236,7 +236,7 @@ function LoginForm() {
                   setMode("login");
                   setError(null);
                 }}
-                className="font-semibold text-brand-700 hover:underline"
+                className="font-semibold text-brand-400 hover:underline"
               >
                 Log in
               </button>
@@ -292,7 +292,7 @@ function Field({
           aria-describedby={hint ? hintId : undefined}
           onChange={(event) => onChange(event.target.value)}
           className={cn(
-            "h-11 w-full rounded-[10px] border border-line bg-white pl-10 pr-3.5 text-sm text-ink placeholder:text-muted/70",
+            "h-11 w-full rounded-[10px] border border-line bg-surface pl-10 pr-3.5 text-sm text-ink placeholder:text-muted/70",
             "transition-[border-color,box-shadow] focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15",
           )}
         />
@@ -311,7 +311,7 @@ export default function LoginPage() {
     <Suspense
       fallback={
         <div className="grid min-h-[calc(100vh-8rem)] place-items-center">
-          <Loader2 className="h-6 w-6 animate-spin text-brand-600" aria-hidden="true" />
+          <Loader2 className="h-6 w-6 animate-spin text-brand-400" aria-hidden="true" />
         </div>
       }
     >

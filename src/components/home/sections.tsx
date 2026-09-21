@@ -16,111 +16,10 @@ import {
   Target,
   UserRound,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { Badge, Button, SectionHeader } from "@/components/ui/core";
 import { Reveal } from "@/components/ui/Reveal";
 import { cn } from "@/lib/cn";
-
-/* ------------------------------------------------------------------ */
-/* Hero                                                                */
-/* ------------------------------------------------------------------ */
-
-export function HomeHero() {
-  return (
-    <section className="relative overflow-hidden">
-      {/* Soft decorative blobs */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-brand-200/50 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -left-32 top-40 h-80 w-80 rounded-full bg-accent-200/40 blur-3xl"
-      />
-
-      <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:pb-28 lg:pt-20">
-        <div>
-          <Reveal>
-            <Badge tone="brand">
-              <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-              Smart nutrition, made personal
-            </Badge>
-          </Reveal>
-          <Reveal delay={80}>
-            <h1 className="mt-5 text-4xl font-extrabold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.4rem]">
-              Your Diet.{" "}
-              <span className="text-brand-700">Your Goals.</span> Your Plan.
-            </h1>
-          </Reveal>
-          <Reveal delay={160}>
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
-              Create a personalised meal plan based on your lifestyle,
-              nutritional goals, food preferences and dietary requirements.
-            </p>
-          </Reveal>
-          <Reveal delay={240}>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Button href="/planner" size="lg" icon={<ArrowRight className="h-4 w-4" />}>
-                Create My Diet Plan
-              </Button>
-              <Button href="#how-it-works" size="lg" variant="outline">
-                Learn How It Works
-              </Button>
-            </div>
-          </Reveal>
-          <Reveal delay={320}>
-            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
-              {[
-                "No medical jargon",
-                "Privacy-friendly by design",
-                "Free to use",
-              ].map((point) => (
-                <li
-                  key={point}
-                  className="flex items-center gap-2 text-sm font-medium text-muted"
-                >
-                  <Check className="h-4 w-4 text-brand-600" aria-hidden="true" />
-                  {point}
-                </li>
-              ))}
-            </ul>
-          </Reveal>
-        </div>
-
-        <Reveal delay={200} className="relative">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-card border border-line bg-brand-50 shadow-lift">
-            {/* next/image: served resized + compressed per device, with the
-                intrinsic ratio reserved above so the layout never shifts. */}
-            <Image
-              src="/images/hero-bowl.svg"
-              alt="Fresh balanced meal bowl with vegetables, greens and grains"
-              fill
-              priority
-              sizes="(min-width: 1024px) 45vw, 100vw"
-              className="object-cover"
-            />
-          </div>
-          <div className="absolute -bottom-5 -left-3 rounded-card border border-line bg-white/95 p-4 shadow-pop backdrop-blur sm:-left-6">
-            <div className="flex items-center gap-3">
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-brand-50 text-brand-700">
-                <ShieldAlert className="h-5 w-5" aria-hidden="true" />
-              </span>
-              <div>
-                <p className="text-sm font-bold text-ink">
-                  Allergy-aware by design
-                </p>
-                <p className="text-xs text-muted">
-                  Declared allergens stay out of your plan
-                </p>
-              </div>
-            </div>
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
 
 /* ------------------------------------------------------------------ */
 /* Short introduction                                                  */
@@ -143,7 +42,7 @@ const INTRO_POINTS = [
 
 export function HomeIntro() {
   return (
-    <section className="border-y border-line bg-white">
+    <section className="border-y border-line bg-surface">
       <div className="mx-auto max-w-6xl px-5 py-16">
         <Reveal>
           <SectionHeader
@@ -156,7 +55,7 @@ export function HomeIntro() {
           {INTRO_POINTS.map((point, index) => (
             <Reveal key={point.title} delay={index * 90}>
               <div className="h-full rounded-card border border-line bg-canvas p-6">
-                <span className="text-xs font-bold uppercase tracking-[0.14em] text-brand-600">
+                <span className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
                   0{index + 1}
                 </span>
                 <h3 className="mt-2 text-base font-bold text-ink">
@@ -236,13 +135,13 @@ export function HowItWorks() {
         <ol className="mt-12 grid gap-5 md:grid-cols-5">
           {WORKFLOW_STEPS.map((step, index) => (
             <Reveal key={step.number} delay={index * 80} className="h-full">
-              <li className="relative flex h-full flex-col rounded-card border border-line bg-white p-5 shadow-card">
+              <li className="relative flex h-full flex-col rounded-card border border-line bg-surface p-5 shadow-card">
                 <div className="flex items-center justify-between">
                   <span
                     className={cn(
                       "grid h-10 w-10 place-items-center rounded-[10px]",
                       step.live
-                        ? "bg-brand-600 text-white"
+                        ? "bg-brand-700 text-white"
                         : "bg-line/70 text-muted",
                     )}
                   >
@@ -317,7 +216,7 @@ const FEATURES = [
 
 export function Features() {
   return (
-    <section id="features" className="scroll-mt-24 border-y border-line bg-white">
+    <section id="features" className="scroll-mt-24 border-y border-line bg-surface">
       <div className="mx-auto max-w-6xl px-5 py-20">
         <Reveal>
           <SectionHeader
@@ -330,8 +229,8 @@ export function Features() {
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((feature, index) => (
             <Reveal key={feature.title} delay={(index % 3) * 80}>
-              <article className="group h-full rounded-card border border-line bg-canvas p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-lift">
-                <span className="grid h-11 w-11 place-items-center rounded-[10px] bg-brand-50 text-brand-700 transition-colors duration-200 group-hover:bg-brand-600 group-hover:text-white">
+              <article className="group h-full rounded-card border border-line bg-canvas p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-400/50 hover:shadow-lift">
+                <span className="grid h-11 w-11 place-items-center rounded-[10px] bg-brand-50 text-brand-400 transition-colors duration-200 group-hover:bg-brand-800 group-hover:text-white">
                   <feature.icon className="h-5 w-5" aria-hidden="true" />
                 </span>
                 <h3 className="mt-4 text-base font-bold text-ink">
@@ -389,9 +288,9 @@ export function WhyPersonalisation() {
             {WHY_POINTS.map((point, index) => (
               <li
                 key={point}
-                className="flex items-start gap-4 rounded-card border border-line bg-white p-5 shadow-card"
+                className="flex items-start gap-4 rounded-card border border-line bg-surface p-5 shadow-card"
               >
-                <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-700">
+                <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-400">
                   <Check className="h-4 w-4" strokeWidth={3} aria-hidden="true" />
                 </span>
                 <div>
@@ -438,7 +337,7 @@ export function CTASection() {
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
                 href="/planner"
-                className="inline-flex items-center gap-2 rounded-pill bg-white px-7 py-3.5 text-base font-semibold text-brand-800 shadow-[0_8px_20px_rgba(0,0,0,0.2)] transition-all duration-200 hover:bg-brand-50 hover:shadow-[0_10px_24px_rgba(0,0,0,0.25)] active:translate-y-px"
+                className="inline-flex items-center gap-2 rounded-pill bg-white px-7 py-3.5 text-base font-semibold text-[#06231a] shadow-[0_8px_20px_rgba(0,0,0,0.2)] transition-all duration-200 hover:bg-brand-50 hover:shadow-[0_10px_24px_rgba(0,0,0,0.25)] active:translate-y-px"
               >
                 Start the Planner
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />

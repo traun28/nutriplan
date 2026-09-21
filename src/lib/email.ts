@@ -23,7 +23,7 @@ export const GMAIL_MALFORMED_MESSAGE =
  * must start and end with a letter or digit. Consecutive dots are rejected
  * separately in `isGmailAddress`.
  */
-const GMAIL_LOCAL_RE = /^[a-z0-9](?:[a-z0-9.]{4,28})[a-z0-9]$/;
+const GMAIL_LOCAL_RE = /^[a-z0-9](?:[a-z0-9.+]{4,28})[a-z0-9]$/;
 
 /** True when `value` is an address on gmail.com with a well-formed mailbox. */
 export function isGmailAddress(value: string): boolean {

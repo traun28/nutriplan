@@ -68,7 +68,7 @@ function DatasetsWorkspace() {
 
       <Card className="mb-6 overflow-hidden">
         <CardBody>
-          <p className="text-xs font-bold uppercase tracking-wide text-brand-700">
+          <p className="text-xs font-bold uppercase tracking-wide text-brand-400">
             From data to diet chart
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-4">
@@ -79,7 +79,7 @@ function DatasetsWorkspace() {
               ["04", "Generate", "Build and validate the diet chart"],
             ].map(([number, title, description]) => (
               <div key={number} className="relative rounded-[10px] border border-line bg-canvas p-3">
-                <span className="text-xs font-bold text-brand-600">{number}</span>
+                <span className="text-xs font-bold text-brand-400">{number}</span>
                 <p className="mt-2 text-sm font-bold text-ink">{title}</p>
                 <p className="mt-1 text-xs leading-relaxed text-muted">{description}</p>
               </div>
@@ -110,7 +110,7 @@ function DatasetsWorkspace() {
       </Card>
 
       <ManualStudentEntry onSaved={() => void reload()} />
-      <Card className="mb-6 border-brand-200 bg-brand-50/40">
+      <Card className="mb-6 border-brand-400/25 bg-brand-50/40">
         <CardBody className="flex flex-wrap items-center justify-between gap-4">
           <div><p className="text-sm font-bold text-ink">Need BMI and symptom screening?</p><p className="mt-1 text-xs text-muted">Open the separate Health Screening Analyzer for CSV import and screening reports.</p></div>
           <Button size="sm" href="/health-screening">Open Health Screening</Button>
@@ -121,7 +121,7 @@ function DatasetsWorkspace() {
         <Card>
           <CardBody className="py-10">
             <div className="flex items-center gap-3 text-sm text-muted">
-              <Loader2 className="h-5 w-5 animate-spin text-brand-600" aria-hidden="true" />
+              <Loader2 className="h-5 w-5 animate-spin text-brand-400" aria-hidden="true" />
               Loading your datasets…
             </div>
             <div className="mt-5 space-y-2">
@@ -145,17 +145,17 @@ function DatasetsWorkspace() {
           {state.data.length > 0 && (
             <div className="mb-5 grid gap-3 sm:grid-cols-3">
               <SummaryCard
-                icon={<Database className="h-4 w-4 text-brand-600" aria-hidden="true" />}
+                icon={<Database className="h-4 w-4 text-brand-400" aria-hidden="true" />}
                 label="Datasets"
                 value={String(state.data.length)}
               />
               <SummaryCard
-                icon={<FileText className="h-4 w-4 text-brand-600" aria-hidden="true" />}
+                icon={<FileText className="h-4 w-4 text-brand-400" aria-hidden="true" />}
                 label="Records"
                 value={totalRecords.toLocaleString()}
               />
               <SummaryCard
-                icon={<FileText className="h-4 w-4 text-accent-600" aria-hidden="true" />}
+                icon={<FileText className="h-4 w-4 text-accent-300" aria-hidden="true" />}
                 label="Need review"
                 value={String(needsReview)}
               />

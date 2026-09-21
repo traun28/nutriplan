@@ -13,7 +13,7 @@ export function AsyncError({
   return (
     <div
       role="alert"
-      className="rounded-card border border-danger-100 bg-danger-50/60 p-5"
+      className="rounded-card border border-danger-500/30 bg-danger-50/60 p-5"
     >
       <p className="text-sm font-semibold text-danger-700">
         Unable to load this information
@@ -23,7 +23,7 @@ export function AsyncError({
         <button
           type="button"
           onClick={onRetry}
-          className="mt-3 inline-flex items-center gap-1.5 rounded-pill border border-danger-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-danger-700 transition-colors hover:bg-danger-50"
+          className="mt-3 inline-flex items-center gap-1.5 rounded-pill border border-danger-200 bg-surface px-3.5 py-1.5 text-xs font-semibold text-danger-700 transition-colors hover:bg-danger-50"
         >
           Retry
         </button>

@@ -341,8 +341,8 @@ export function FoodIntakeStep({
                     className={cn(
                       "rounded-pill border px-3.5 py-1.5 text-sm font-medium transition-all duration-150",
                       active
-                        ? "border-brand-500 bg-brand-50 text-brand-800 ring-1 ring-brand-500/30"
-                        : "border-line bg-white text-muted hover:border-brand-300 hover:text-ink",
+                        ? "border-brand-500 bg-brand-50 text-brand-300 ring-1 ring-brand-500/30"
+                        : "border-line bg-surface text-muted hover:border-brand-400/50 hover:text-ink",
                     )}
                   >
                     {option.label}
@@ -465,7 +465,7 @@ function SubSection({
       <div className="mb-4 flex items-start gap-3">
         <span
           aria-hidden="true"
-          className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-brand-50 text-brand-700"
+          className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-brand-50 text-brand-400"
         >
           {icon}
         </span>
@@ -502,7 +502,7 @@ function FoodIntakeAside() {
     <Card>
       <CardBody>
         <div className="flex items-center gap-2 text-sm font-bold text-ink">
-          <Info className="h-4 w-4 text-brand-600" aria-hidden="true" />
+          <Info className="h-4 w-4 text-brand-400" aria-hidden="true" />
           Your eating pattern
         </div>
 

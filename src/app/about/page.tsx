@@ -61,7 +61,7 @@ export default function AboutPage() {
       <Card className="mt-10">
         <CardBody>
           <div className="flex items-center gap-2">
-            <Info className="h-4 w-4 text-brand-600" aria-hidden="true" />
+            <Info className="h-4 w-4 text-brand-400" aria-hidden="true" />
             <h2 className="text-base font-bold text-ink">Purpose</h2>
           </div>
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted">
@@ -79,13 +79,13 @@ export default function AboutPage() {
       <Card className="mt-5">
         <CardBody>
           <div className="flex items-center gap-2">
-            <Workflow className="h-4 w-4 text-brand-600" aria-hidden="true" />
+            <Workflow className="h-4 w-4 text-brand-400" aria-hidden="true" />
             <h2 className="text-base font-bold text-ink">How the system works</h2>
           </div>
           <ol className="mt-5 flex flex-wrap items-center gap-y-3">
             {WORKFLOW.map((step, index) => (
               <li key={step} className="flex items-center">
-                <span className="rounded-pill border border-brand-200 bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-800">
+                <span className="rounded-pill border border-brand-400/25 bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-300">
                   {step}
                 </span>
                 {index < WORKFLOW.length - 1 && (
@@ -114,40 +114,40 @@ export default function AboutPage() {
         <Card className="h-full">
           <CardBody>
             <div className="flex items-center gap-2">
-              <Layers className="h-4 w-4 text-brand-600" aria-hidden="true" />
+              <Layers className="h-4 w-4 text-brand-400" aria-hidden="true" />
               <h2 className="text-base font-bold text-ink">Architecture</h2>
             </div>
             <ul className="mt-4 space-y-2.5 text-sm text-muted">
               <li className="flex gap-2">
-                <span className="font-bold text-brand-600">·</span>
+                <span className="font-bold text-brand-400">·</span>
                 One central <strong className="text-ink">UserProfile</strong> model shared by every page
               </li>
               <li className="flex gap-2">
-                <span className="font-bold text-brand-600">·</span>
+                <span className="font-bold text-brand-400">·</span>
                 Reusable UI components (buttons, cards, form fields, chips)
               </li>
               <li className="flex gap-2">
-                <span className="font-bold text-brand-600">·</span>
+                <span className="font-bold text-brand-400">·</span>
                 A dedicated validation layer separate from the UI
               </li>
               <li className="flex gap-2">
-                <span className="font-bold text-brand-600">·</span>
+                <span className="font-bold text-brand-400">·</span>
                 Deterministic conflict detection for allergies and preferences
               </li>
               <li className="flex gap-2">
-                <span className="font-bold text-brand-600">·</span>
+                <span className="font-bold text-brand-400">·</span>
                 A single storage service that hides where data is kept
               </li>
               <li className="flex gap-2">
-                <span className="font-bold text-brand-600">·</span>
+                <span className="font-bold text-brand-400">·</span>
                 A pure nutrition engine, separate from every UI component
               </li>
               <li className="flex gap-2">
-                <span className="font-bold text-brand-600">·</span>
+                <span className="font-bold text-brand-400">·</span>
                 A rule-based diet generator with an independent safety validator
               </li>
               <li className="flex gap-2">
-                <span className="font-bold text-brand-600">·</span>
+                <span className="font-bold text-brand-400">·</span>
                 An offline dataset importer kept strictly separate from user data
               </li>
             </ul>
@@ -158,7 +158,7 @@ export default function AboutPage() {
         <Card className="h-full">
           <CardBody>
             <div className="flex items-center gap-2">
-              <Database className="h-4 w-4 text-brand-600" aria-hidden="true" />
+              <Database className="h-4 w-4 text-brand-400" aria-hidden="true" />
               <h2 className="text-base font-bold text-ink">Technology stack</h2>
             </div>
             <ul className="mt-4 space-y-3">
@@ -177,7 +177,7 @@ export default function AboutPage() {
       <Card className="mt-5">
         <CardBody>
           <div className="flex items-center gap-2">
-            <FileText className="h-4 w-4 text-brand-600" aria-hidden="true" />
+            <FileText className="h-4 w-4 text-brand-400" aria-hidden="true" />
             <h2 className="text-base font-bold text-ink">What the planner does</h2>
           </div>
           <ul className="mt-5 grid gap-2.5 sm:grid-cols-2">
@@ -195,8 +195,8 @@ export default function AboutPage() {
       </Card>
 
       {/* Disclaimer */}
-      <div className="mt-5 flex gap-3 rounded-card border border-accent-300/70 bg-accent-200/30 p-5">
-        <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-accent-600" aria-hidden="true" />
+      <div className="mt-5 flex gap-3 rounded-card border border-accent-300/40/30 bg-accent-200/30 p-5">
+        <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-accent-300" aria-hidden="true" />
         <p className="text-xs leading-relaxed text-ink/80">
           <strong>Disclaimer:</strong> this is an educational college project.
           It is not a medical application and must not be used as a substitute

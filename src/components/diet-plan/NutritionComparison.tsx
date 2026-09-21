@@ -34,7 +34,7 @@ export function NutritionComparison({ plan }: { plan: DietPlan }) {
       target: summary.targetCalories,
       planned: dailyTotals.calories,
       unit: "kcal",
-      barClass: "bg-brand-600",
+      barClass: "bg-brand-700",
     },
     {
       key: "protein",
@@ -50,7 +50,7 @@ export function NutritionComparison({ plan }: { plan: DietPlan }) {
       target: summary.targetCarbohydrates,
       planned: dailyTotals.carbohydrates,
       unit: "g",
-      barClass: "bg-brand-300",
+      barClass: "bg-brand-400",
     },
     {
       key: "fat",
@@ -160,7 +160,7 @@ export function DayAtAGlance({ plan }: { plan: DietPlan }) {
       {metrics.map((metric) => (
         <div
           key={metric.label}
-          className="rounded-card border border-line bg-white p-4 shadow-card"
+          className="rounded-card border border-line bg-surface p-4 shadow-card"
         >
           <dt className="text-xs font-medium text-muted">{metric.label}</dt>
           <dd>

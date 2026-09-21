@@ -74,7 +74,7 @@ function DietPlanView() {
     return (
       <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
         <header className="mb-8">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-600">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             Your results
           </p>
           <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
@@ -132,8 +132,8 @@ function DietPlanView() {
   if (status === "generating") {
     return (
       <Shell>
-        <div className="flex flex-col items-center rounded-card border border-line bg-white px-6 py-16 text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-brand-600" aria-hidden="true" />
+        <div className="flex flex-col items-center rounded-card border border-line bg-surface px-6 py-16 text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-brand-400" aria-hidden="true" />
           <p className="mt-4 text-base font-bold text-ink" role="status">
             Creating your personalised plan…
           </p>
@@ -149,7 +149,7 @@ function DietPlanView() {
   if (status === "error" && failure) {
     return (
       <Shell>
-        <Card className="border-danger-100">
+        <Card className="border-danger-500/30">
           <CardBody>
             <div className="flex items-start gap-3">
               <AlertTriangle
@@ -224,7 +224,7 @@ function DietPlanView() {
 
       {/* -------------------------- page header -------------------------- */}
       <header className="mb-6 print:hidden">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-600">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
           Your results
         </p>
         <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
@@ -241,19 +241,19 @@ function DietPlanView() {
         className={cn(
           "mb-6 flex flex-col gap-4 rounded-card border p-5 sm:flex-row sm:items-center sm:justify-between print:hidden",
           needsNewPlan
-            ? "border-accent-300/70 bg-accent-200/30"
-            : "border-brand-200 bg-brand-50/70",
+            ? "border-accent-300/40/30 bg-accent-200/30"
+            : "border-brand-400/25 bg-brand-50/70",
         )}
       >
         <div className="flex items-start gap-3">
           {needsNewPlan ? (
             <TriangleAlert
-              className="mt-0.5 h-5 w-5 shrink-0 text-accent-600"
+              className="mt-0.5 h-5 w-5 shrink-0 text-accent-300"
               aria-hidden="true"
             />
           ) : (
             <CheckCircle2
-              className="mt-0.5 h-5 w-5 shrink-0 text-brand-600"
+              className="mt-0.5 h-5 w-5 shrink-0 text-brand-400"
               aria-hidden="true"
             />
           )}
@@ -269,7 +269,7 @@ function DietPlanView() {
                   )}.`}
             </p>
             {justRegenerated && !needsNewPlan && (
-              <p className="mt-1 text-xs font-semibold text-brand-700">
+              <p className="mt-1 text-xs font-semibold text-brand-400">
                 New meal plan generated with alternative choices.
               </p>
             )}
@@ -346,7 +346,7 @@ function DietPlanView() {
           </div>
 
           {plan.validation.warnings.length > 0 && (
-            <div className="mt-4 rounded-card border border-accent-300/70 bg-accent-200/30 p-4">
+            <div className="mt-4 rounded-card border border-accent-300/40/30 bg-accent-200/30 p-4">
               <p className="text-xs font-bold text-ink">Notes about this plan</p>
               <ul className="mt-2 space-y-1">
                 {plan.validation.warnings.map((warning) => (
@@ -407,7 +407,7 @@ function DietPlanView() {
       </Card>
 
       {/* --------------------------- disclaimer -------------------------- */}
-      <p className="mt-6 rounded-card border border-line bg-white p-4 text-xs leading-relaxed text-muted">
+      <p className="mt-6 rounded-card border border-line bg-surface p-4 text-xs leading-relaxed text-muted">
         <strong className="text-ink">Please note:</strong> nutrition values and
         meal suggestions are general estimates for educational planning and may
         vary based on preparation, portion size, ingredients and individual
@@ -426,7 +426,7 @@ function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="mx-auto max-w-3xl px-5 py-16 sm:py-24">
       <header className="mb-8 text-center">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-600">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
           Your results
         </p>
         <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
@@ -491,7 +491,7 @@ function ProfileStrip({ firstName }: { firstName: string }) {
             onClick={() => setOpen((value) => !value)}
             aria-expanded={open}
             aria-controls="profile-summary-details"
-            className="print:hidden inline-flex items-center gap-1.5 rounded-pill border border-line bg-white px-3 py-1.5 text-xs font-semibold text-ink transition-colors hover:border-brand-300 hover:text-brand-700"
+            className="print:hidden inline-flex items-center gap-1.5 rounded-pill border border-line bg-surface px-3 py-1.5 text-xs font-semibold text-ink transition-colors hover:border-brand-400/50 hover:text-brand-400"
           >
             {open ? "Hide profile summary" : "View profile summary"}
             <ChevronDown

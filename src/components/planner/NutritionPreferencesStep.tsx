@@ -344,8 +344,8 @@ export function NutritionPreferencesStep({
           </div>
         )}
 
-        <div className="mt-4 flex gap-2.5 rounded-[10px] border border-accent-300/60 bg-accent-200/30 p-3.5">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-accent-600" aria-hidden="true" />
+        <div className="mt-4 flex gap-2.5 rounded-[10px] border border-accent-300/40/60 bg-accent-200/30 p-3.5">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-accent-300" aria-hidden="true" />
           <p className="text-xs leading-relaxed text-ink/80">
             Declared allergies will be treated as strict exclusions when your
             future meal plan is generated. Allergies always take priority over
@@ -445,8 +445,8 @@ export function NutritionPreferencesStep({
                 className={cn(
                   "rounded-pill border px-3.5 py-1.5 text-sm font-medium transition-all duration-150",
                   active
-                    ? "border-brand-500 bg-brand-50 text-brand-800 ring-1 ring-brand-500/30"
-                    : "border-line bg-white text-muted hover:border-brand-300 hover:text-ink",
+                    ? "border-brand-500 bg-brand-50 text-brand-300 ring-1 ring-brand-500/30"
+                    : "border-line bg-surface text-muted hover:border-brand-400/50 hover:text-ink",
                 )}
               >
                 {cuisine.label}
@@ -485,7 +485,7 @@ export function NutritionPreferencesStep({
           />
         </div>
         <div className="mt-4 flex gap-2.5 rounded-[10px] border border-line bg-canvas p-3.5">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" aria-hidden="true" />
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-brand-400" aria-hidden="true" />
           <p className="text-xs leading-relaxed text-muted">
             Already have a nutrition target from a qualified professional?
             Enter it here. Otherwise, leave these values blank — a suitable
@@ -515,7 +515,7 @@ export function NutritionPreferencesStep({
       {conflicts.length > 0 && (
         <div
           role="alert"
-          className="rounded-card border border-danger-100 bg-danger-50/70 p-5"
+          className="rounded-card border border-danger-500/30 bg-danger-50/70 p-5"
         >
           <div className="flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 shrink-0 text-danger-600" aria-hidden="true" />
@@ -534,7 +534,7 @@ export function NutritionPreferencesStep({
             {conflicts.map((conflict) => (
               <li
                 key={conflict.id}
-                className="flex flex-col gap-3 rounded-[10px] border border-danger-100 bg-white p-3.5 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-3 rounded-[10px] border border-danger-500/30 bg-surface p-3.5 sm:flex-row sm:items-center sm:justify-between"
               >
                 <p className="text-sm leading-relaxed text-ink">
                   {conflict.message}
@@ -548,7 +548,7 @@ export function NutritionPreferencesStep({
                       removeFoodToAvoid(conflict.resolution.value);
                     }
                   }}
-                  className="shrink-0 rounded-pill border border-danger-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-danger-700 transition-colors hover:bg-danger-50"
+                  className="shrink-0 rounded-pill border border-danger-200 bg-surface px-3.5 py-1.5 text-xs font-semibold text-danger-700 transition-colors hover:bg-danger-50"
                 >
                   {conflict.resolution.label}
                 </button>
@@ -580,7 +580,7 @@ function SubSection({
     <section className="border-t border-line pt-8 first:border-t-0 first:pt-0">
       <div className="grid gap-4 md:grid-cols-[210px_1fr]">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-600">
+          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-400">
             Section {letter}
           </p>
           <h3 className="mt-1.5 text-base font-bold text-ink">{title}</h3>
@@ -623,8 +623,8 @@ function NutritionAside() {
                 className={cn(
                   "grid h-5 w-5 shrink-0 place-items-center rounded-full border",
                   checkpoint.done
-                    ? "border-brand-600 bg-brand-600 text-white"
-                    : "border-line bg-white text-muted",
+                    ? "border-brand-600 bg-brand-700 text-white"
+                    : "border-line bg-surface text-muted",
                 )}
               >
                 {checkpoint.done ? (
@@ -646,7 +646,7 @@ function NutritionAside() {
         </ul>
 
         {completion.nutritionComplete && (
-          <div className="mt-4 rounded-[10px] bg-brand-50 p-3 text-xs leading-relaxed text-brand-800">
+          <div className="mt-4 rounded-[10px] bg-brand-50 p-3 text-xs leading-relaxed text-brand-300">
             Goal: <strong>{GOALS.find((g) => g.id === profile.nutritionalInformation.primaryGoal)?.label}</strong>
             {" · "}Diet: <strong>{DIETARY_TYPES.find((d) => d.id === profile.dietaryPreferences.dietaryType)?.label}</strong>
           </div>
