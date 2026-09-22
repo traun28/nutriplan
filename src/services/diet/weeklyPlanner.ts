@@ -39,6 +39,7 @@ import {
   chooseServings,
   generateDietPlan,
   mealFromItems,
+  pantryBoost,
 } from "@/services/diet/dietGenerator";
 import { filterFoods, foodsForCategory } from "@/services/diet/filters";
 import { validateGeneratedDietPlan } from "@/services/diet/planValidator";
@@ -96,7 +97,7 @@ export interface WeeklyPlanData {
   days: WeeklyPlanDay[];
   summary: WeeklySummary;
   targets: WeeklyTargets;
-  options: { budget: BudgetLevel | null };
+  options: { budget: BudgetLevel | null; preferPantry?: boolean };
   provenance: {
     sourceProfileId: string;
     sourceProfileUpdatedAt: string;
@@ -140,6 +141,10 @@ export type WeeklyResult<T> =
 
 export interface GenerateWeeklyOptions {
   budget?: BudgetLevel | null;
+  /** Phase 4 — "Prefer pantry ingredients": remembered on the plan. */
+  preferPantry?: boolean;
+  /** Phase 4 — pantry ingredient names resolved by the caller at generation time. */
+  preferIngredients?: string[];
   startDate?: string | null;
   /** Deterministic seed for tests; omitted in production. */
   baseSeed?: number;
@@ -283,6 +288,7 @@ function generateDay(
   seed: number,
   avoid: string[][],
   preferTags: string[],
+  preferIngredients: string[] = [],
 ) {
   const attempts = [avoid.flat(), avoid[0] ?? [], []];
   let last: ReturnType<typeof generateDietPlan> | null = null;
@@ -291,6 +297,7 @@ function generateDay(
       variationSeed: seed,
       excludeFoodIds: Array.from(new Set(excludeFoodIds)),
       preferTags,
+      preferIngredients,
     });
     if (result.success) return result;
     last = result;
@@ -317,12 +324,14 @@ export function generateWeeklyPlan(
   const startDate = options.startDate && isDateKey(options.startDate) ? options.startDate : null;
   const budget = options.budget ?? null;
   const preferTags = preferTagsFor(budget);
+  const preferPantry = options.preferPantry === true;
+  const preferIngredients = preferPantry ? (options.preferIngredients ?? []) : [];
   const baseSeed = options.baseSeed ?? Math.floor(Math.random() * 1_000_000) + 1;
 
   const plans: DietPlan[] = [];
   for (let i = 0; i < DAYS_PER_WEEK; i += 1) {
     const avoid = [plans[i - 1], plans[i - 2]].filter(Boolean).map((p) => mainFoodIds(p!));
-    const result = generateDay(profile, processed, baseSeed + i * 104_729, avoid, preferTags);
+    const result = generateDay(profile, processed, baseSeed + i * 104_729, avoid, preferTags, preferIngredients);
     if (!result.success) return failureFrom(result);
     plans.push(result.plan);
   }
@@ -336,7 +345,7 @@ export function generateWeeklyPlan(
       days,
       summary: summarise(days, targets),
       targets,
-      options: { budget },
+      options: { budget, preferPantry },
       provenance: {
         sourceProfileId: profile.profileId,
         sourceProfileUpdatedAt: profile.updatedAt ?? "",
@@ -354,6 +363,7 @@ export function regenerateWeeklyDay(
   profile: UserProfile,
   processed: ProcessedProfile | null,
   dayIndex: number,
+  preferIngredients: string[] = [],
 ): WeeklyResult<WeeklyPlanData> {
   if (!processed) {
     return { success: false, reason: "TARGETS_UNAVAILABLE", message: "Your nutrition targets are not available.", details: [] };
@@ -373,6 +383,7 @@ export function regenerateWeeklyDay(
     Math.floor(Math.random() * 1_000_000) + 1,
     avoid,
     preferTagsFor(data.options.budget),
+    data.options.preferPantry ? preferIngredients : [],
   );
   if (!result.success) return failureFrom(result);
   return { success: true, data: withDay(data, dayIndex, result.plan) };
@@ -457,7 +468,7 @@ export function rankAlternatives(
   dayPlan: DietPlan,
   profile: UserProfile,
   slot: PlannerSlot,
-  options: { limit?: number; excludeFoodIds?: string[]; preferTags?: string[] } = {},
+  options: { limit?: number; excludeFoodIds?: string[]; preferTags?: string[]; preferIngredients?: string[] } = {},
 ): MealAlternative[] {
   const current = dayPlan.meals.find((m) => m.type === slot);
   if (!current) return [];
@@ -492,7 +503,7 @@ export function rankAlternatives(
         usedFoodIds,
         usedIngredients,
       }).total;
-      const boost = preferTags.some((t) => food.tags.includes(t)) ? 0.06 : 0;
+      const boost = (preferTags.some((t) => food.tags.includes(t)) ? 0.06 : 0) + pantryBoost(food, options.preferIngredients);
       return { food, score: score + boost };
     })
     .sort((a, b) => b.score - a.score)
@@ -530,6 +541,7 @@ export function alternativesFor(
   dayIndex: number,
   slot: PlannerSlot,
   limit = 6,
+  preferIngredients: string[] = [],
 ): MealAlternative[] {
   const day = data.days.find((d) => d.dayIndex === dayIndex);
   if (!day) return [];
@@ -537,6 +549,7 @@ export function alternativesFor(
     limit,
     excludeFoodIds: sameSlotElsewhere(data, dayIndex, slot),
     preferTags: preferTagsFor(data.options.budget),
+    preferIngredients: data.options.preferPantry ? preferIngredients : [],
   });
 }
 
@@ -572,8 +585,9 @@ export function regenerateWeeklyMeal(
   profile: UserProfile,
   dayIndex: number,
   slot: PlannerSlot,
+  preferIngredients: string[] = [],
 ): WeeklyResult<{ data: WeeklyPlanData; previousName: string; newName: string }> {
-  const options = alternativesFor(data, profile, dayIndex, slot, 4);
+  const options = alternativesFor(data, profile, dayIndex, slot, 4, preferIngredients);
   if (options.length === 0) {
     return {
       success: false,

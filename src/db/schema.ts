@@ -225,3 +225,63 @@ export const mealPlans = pgTable("meal_plans", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [index("meal_plans_user_idx").on(table.userId, table.createdAt)]);
+
+/* ------------------------------------------------------------------ */
+/* Phase 4 — recipes, grocery lists, pantry                            */
+/* ------------------------------------------------------------------ */
+
+/** Saved (favourite) recipes. Recipes themselves are shared read-only data. */
+export const recipeFavorites = pgTable("recipe_favorites", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  recipeId: text("recipe_id").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [uniqueIndex("recipe_favorites_user_recipe_unique").on(table.userId, table.recipeId)]);
+
+/** One grocery list per user (regenerated in place; custom items preserved). */
+export const groceryLists = pgTable("grocery_lists", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  /** Meal plan the list was generated from, if any. */
+  mealPlanId: integer("meal_plan_id"),
+  /** Day indexes included in the last generation (null = whole plan). */
+  dayIndexes: jsonb("day_indexes").$type<number[] | null>(),
+  generatedAt: timestamp("generated_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [uniqueIndex("grocery_lists_user_unique").on(table.userId)]);
+
+export const groceryItems = pgTable("grocery_items", {
+  id: serial("id").primaryKey(),
+  listId: integer("list_id").notNull(),
+  userId: integer("user_id").notNull(),
+  name: text("name").notNull(),
+  category: text("category").notNull().default("other"),
+  quantity: real("quantity"),
+  unit: text("unit"),
+  /** Requirement before pantry subtraction, for display. */
+  requiredQuantity: real("required_quantity"),
+  pantryQuantity: real("pantry_quantity"),
+  pantryUncomparable: boolean("pantry_uncomparable").notNull().default(false),
+  unquantified: boolean("unquantified").notNull().default(false),
+  /** Meals/recipes that need this item. */
+  sources: jsonb("sources").$type<{ dayIndex: number; dayLabel: string; mealLabel: string; recipeId: string; recipeName: string }[]>().notNull().default([]),
+  isCustom: boolean("is_custom").notNull().default(false),
+  purchased: boolean("purchased").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [index("grocery_items_list_idx").on(table.listId)]);
+
+export const pantryItems = pgTable("pantry_items", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  name: text("name").notNull(),
+  category: text("category").notNull().default("other"),
+  quantity: real("quantity"),
+  unit: text("unit"),
+  /** "YYYY-MM-DD" when known. */
+  expiresOn: text("expires_on"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [index("pantry_items_user_idx").on(table.userId, table.name)]);

@@ -558,4 +558,11 @@ export interface GenerationOptions {
    * the nutrition-fit score, and does not invent prices.
    */
   preferTags?: string[];
+  /**
+   * Phase 4 — normalised ingredient names the user already has (pantry).
+   * Another gentle ranking nudge, scaled by how many of a food's
+   * ingredients are on hand. Never bypasses restriction filters or
+   * nutrition-fit scoring.
+   */
+  preferIngredients?: string[];
 }

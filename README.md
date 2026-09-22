@@ -158,6 +158,8 @@ src/
 │   ├── dashboard/              Daily nutrition command centre (Phase 2)
 │   ├── history/                Paginated food history (Phase 2)
 │   ├── meal-plan/              7-day meal planner (Phase 3)
+│   ├── recipes/, recipes/[id]  Recipe library + detail (Phase 4)
+│   ├── grocery/, pantry/       Grocery list + pantry (Phase 4)
 │   ├── nutrition/              Processed nutrition dashboard
 │   ├── diet-plan/              Final diet chart
 │   ├── profile/                Saved-profile management
@@ -176,14 +178,16 @@ src/
 │   ├── dashboard/              Daily summary, today's meals, water, next meal
 │   ├── food-log/               Log Food dialog + food history
 │   ├── meal-plan/              Weekly planner, weekly meal card, saved plans
+│   ├── recipes/, grocery/, pantry/  Phase 4 pages (library, detail, list, pantry)
 │   ├── diet-plan/              Meal cards, comparison, safety summary
 │   ├── dataset/                Insights view + sample-participant loader
 │   └── common/                 NextStepCard, ConflictNotice
 ├── context/                    ProfileContext, NutritionContext, DietPlanContext, DayLogContext,
-│                               MealPlanContext
+│                               MealPlanContext, KitchenContext (favourites, grocery, pantry cache)
 ├── data/
 │   ├── options.ts              Option catalogue + label helpers
 │   ├── foods/                  Food database + its quality checker
+│   ├── recipes/                Authored recipe details (quantities, steps) + ingredient → aisle catalogue
 │   └── dataset/                Participant dataset: schema, mappings,
 │                               normalizer, validator, analytics, loader,
 │                               similarProfiles, participants.clean.json
@@ -192,6 +196,8 @@ src/
 │   ├── nutrition/              bmi, energy, macronutrients, processor, constants
 │   ├── diet/                   config, filters, scoring, generator, validator,
 │   │                           recommendations, personalisation, weeklyPlanner
+│   ├── recipes/                recipeService (search, restriction verdicts, pantry matches)
+│   ├── grocery/                units (compatible-unit maths), groceryBuilder (plan → list)
 │   ├── dataset/                datasetService (analytics, similarity, samples)
 │   └── attachments/            config, pipeline, processors, engine, conflicts,
                                 storage, clientUtils, pdf, office
@@ -582,11 +588,73 @@ on every route, the user id is never read from the client):
 Failure codes: `PROFILE_INCOMPLETE` / `TARGETS_UNAVAILABLE` (409),
 `INSUFFICIENT_OPTIONS` / `VALIDATION_FAILED` (422), database unavailable (503).
 
-## 21. Future enhancements
+## 21. Recipes, grocery list & pantry (Phase 4)
+
+Phase 4 layers a kitchen workflow over the existing data and engines — no
+second food database, no second plan system.
+
+**Recipes.** Every food-database entry *is* a recipe (shared, read-only).
+`src/data/recipes/recipeDetails.ts` adds an authored detail layer for 35 of
+the 53 entries: description, per-serving quantified ingredients, method steps
+and cook time. Where a detail is not authored, the UI says
+“Information not available” / “Quantity not available” — quantities, fibre,
+cooking times and images are never invented. Search and filters
+(`/recipes`) only cover data the recipes actually carry: text, meal type,
+cuisine, dietary type, prep time, calories, protein, difficulty, and (when
+signed in) “hide recipes that conflict with my profile”, which reuses
+`filterFoods`. The detail page (`/recipes/[id]`) shows nutrition per serving,
+ingredients, method, allergens/intolerance flags, and the per-user actions:
+
+- **Save** — `recipe_favorites` (user-scoped).
+- **Add to meal plan** — pick day + meal slot; goes through the Phase 3
+  `/api/meal-plans/:id/replace` path, so the day is re-validated and a
+  conflicting recipe is rejected (422), never silently placed.
+- **Log this meal** — opens the Phase 2 `FoodLogDialog` pre-filled.
+- **Add ingredients to grocery** — appends the recipe's ingredients to the list.
+- **Cooked this recipe** — previews pantry deductions (only for ingredients
+  with comparable units) and applies them *only after confirmation*.
+
+**Grocery list (`/grocery`).** Built from the user's saved 7-day plan (whole
+week or selected days) by `services/grocery/groceryBuilder.ts`: ingredients
+are combined only when units are dimensionally compatible (g↔kg, ml↔l,
+tsp↔tbsp, count units), grouped into Vegetables / Fruits / Grains / Protein /
+Dairy / Pantry / Spices / Other, and traced back to meals (“Used in: Day 1
+Dinner”). Items can be ticked, quantity-edited, deleted, added as custom
+items, cleared when purchased, printed, or exported as CSV. Regenerating
+replaces plan-derived items but keeps custom items and remembered
+“purchased” ticks. Pantry stock is subtracted only when the pantry unit is
+compatible; otherwise the full requirement is shown with a note.
+
+**Pantry (`/pantry`).** Private per-user items (name, quantity, unit,
+category, use-by date, notes) with search/filter, ±quantity buttons,
+“used up”, edit and remove. Use-by dates are shown as *storage reminders*
+using the dates the user entered — not safety guarantees. “Cook with what
+you have” lists recipes ranked by ingredient coverage, filtered through the
+profile's allergies/diet first. In the 7-day planner, **Prefer pantry
+ingredients** adds a small ranking nudge (`GenerationOptions.preferIngredients`)
+that never relaxes restriction filters or nutrition fit; the choice is stored
+on the plan and honoured by regenerate/alternatives.
+
+Tables: `recipe_favorites`, `grocery_lists` (one per user), `grocery_items`,
+`pantry_items` — all owned by `user_id` resolved from the session.
+
+| Method | Route | Purpose |
+|---|---|---|
+| GET | `/api/recipes` | search/filter shared recipes (`q, mealType, cuisine, dietaryType, maxPrep, maxCalories, minProtein, difficulty, safe=1, favorites=1`) |
+| GET | `/api/recipes/:id` | full recipe (+ restriction verdict and favourite flag when signed in) |
+| GET / PUT / DELETE | `/api/recipe-favorites[/:recipeId]` | user's saved recipes |
+| GET / POST | `/api/grocery` | list; add custom items `{items:[…]}` or a recipe's ingredients `{recipeId, servings}` |
+| POST | `/api/grocery/generate` | `{mealPlanId?, dayIndexes?, usePantry?}` → rebuild from the plan |
+| PATCH / DELETE | `/api/grocery/items/:id` | purchased / quantity / unit / name; remove |
+| POST | `/api/grocery/clear-purchased` | remove ticked items |
+| GET / POST | `/api/pantry` · PATCH / DELETE `/api/pantry/:id` | pantry CRUD |
+| GET | `/api/pantry/suggestions` | recipes matching pantry items (restriction-filtered) |
+| POST | `/api/pantry/cook` | `{recipeId, servings, confirm}` preview or apply deductions |
+
+## 22. Future enhancements
 
 - Larger, externally verified food database
-- Grocery-list generation from the weekly plan
-- Recipe/preparation instructions
+- Authored recipe details for the remaining food entries
 - Cloud sync and multi-user accounts
 - Progress tracking over time
 - Review by a qualified nutritionist

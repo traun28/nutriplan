@@ -54,6 +54,7 @@ export function WeeklyPlanner() {
   const [daySelection, setDaySelection] = useState<{ planId: number | null; dayIndex: number } | null>(null);
   const [name, setName] = useState("My Weekly Plan");
   const [budget, setBudget] = useState<BudgetLevel>("medium");
+  const [preferPantry, setPreferPantry] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [failure, setFailure] = useState<ActionResult | null>(null);
   const [logger, setLogger] = useState<LoggerState>({ open: false });
@@ -112,7 +113,7 @@ export function WeeklyPlanner() {
 
   const generate = async () => {
     setFailure(null);
-    const result = await mealPlan.generate({ name, budget, startDate: startDate || null });
+    const result = await mealPlan.generate({ name, budget, startDate: startDate || null, preferPantry });
     if (result.success) show(result.message, "success");
     else setFailure(result);
   };
@@ -140,6 +141,7 @@ export function WeeklyPlanner() {
             <Badge tone="brand">{plan.name}</Badge>
             <Badge>{fmt(plan.data.targets.calories)} kcal/day target</Badge>
             {plan.data.options.budget && <Badge>Budget: {plan.data.options.budget}</Badge>}
+            {plan.data.options.preferPantry && <Badge>Prefers pantry ingredients</Badge>}
           </>
         ) : null
       }
@@ -180,7 +182,7 @@ export function WeeklyPlanner() {
                 {!targetsReady && (
                   <Notice tone="warning" message="Your nutrition targets are not calculated yet. Generation will use your saved profile to calculate them, or you can review them first." action={<Button size="sm" variant="outline" href="/nutrition">Review targets</Button>} />
                 )}
-                <GeneratorForm name={name} setName={setName} budget={budget} setBudget={setBudget} startDate={startDate} setStartDate={setStartDate} />
+                <GeneratorForm name={name} setName={setName} budget={budget} setBudget={setBudget} startDate={startDate} setStartDate={setStartDate} preferPantry={preferPantry} setPreferPantry={setPreferPantry} />
                 <div className="mt-4">
                   <Button onClick={() => void generate()} disabled={mealPlan.busy !== null} icon={<Sparkles className="h-4 w-4" />}>
                     Generate 7-Day Plan
@@ -280,7 +282,7 @@ export function WeeklyPlanner() {
                 <details>
                   <summary className="cursor-pointer text-xs font-semibold text-brand-400">Generate another plan</summary>
                   <div className="mt-3">
-                    <GeneratorForm name={name} setName={setName} budget={budget} setBudget={setBudget} startDate={startDate} setStartDate={setStartDate} compact />
+                    <GeneratorForm name={name} setName={setName} budget={budget} setBudget={setBudget} startDate={startDate} setStartDate={setStartDate} preferPantry={preferPantry} setPreferPantry={setPreferPantry} compact />
                     <Button size="sm" className="mt-3" onClick={() => void generate()} disabled={mealPlan.busy !== null} icon={<Sparkles className="h-3.5 w-3.5" />}>
                       Generate new plan
                     </Button>
@@ -320,6 +322,8 @@ function GeneratorForm({
   setBudget,
   startDate,
   setStartDate,
+  preferPantry,
+  setPreferPantry,
   compact,
 }: {
   name: string;
@@ -328,6 +332,8 @@ function GeneratorForm({
   setBudget: (v: BudgetLevel) => void;
   startDate: string;
   setStartDate: (v: string) => void;
+  preferPantry: boolean;
+  setPreferPantry: (v: boolean) => void;
   compact?: boolean;
 }) {
   const input = "w-full rounded-[10px] border border-line bg-surface px-3 py-2 text-sm text-ink focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15";
@@ -350,6 +356,15 @@ function GeneratorForm({
         <label htmlFor="mp-start" className="text-xs font-semibold text-ink">Start date (optional)</label>
         <input id="mp-start" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={cn(input, "mt-1")} />
         <p className="mt-1 text-[11px] text-muted">Day 1 maps to this date; otherwise Day 1 is Monday.</p>
+      </div>
+      <div className={compact ? "" : "sm:col-span-3"}>
+        <label className="inline-flex items-start gap-2 text-sm text-ink">
+          <input type="checkbox" checked={preferPantry} onChange={(e) => setPreferPantry(e.target.checked)} className="mt-0.5 h-4 w-4 rounded border-line text-brand-500 focus:ring-brand-300" />
+          <span>
+            Prefer pantry ingredients
+            <span className="block text-[11px] text-muted">Nudges the planner toward recipes using what&apos;s in your <a href="/pantry" className="font-semibold text-brand-600 hover:underline">pantry</a>. Allergies, dietary type and nutrition targets are never relaxed.</span>
+          </span>
+        </label>
       </div>
     </div>
   );

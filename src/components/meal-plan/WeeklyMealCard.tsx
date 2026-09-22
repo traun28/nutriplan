@@ -17,6 +17,7 @@ import {
   Timer,
   UtensilsCrossed,
 } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import type { PlannedMeal } from "@/types/profile";
 import type { PlannerSlot } from "@/services/diet/config";
@@ -118,7 +119,9 @@ export function WeeklyMealCard({
         <ul className="mt-4 space-y-2">
           {meal.items.map((item) => (
             <li key={item.foodId} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line/60 pb-2 last:border-b-0 last:pb-0">
-              <span className="text-sm font-semibold text-ink">{item.name}</span>
+              <Link href={`/recipes/${item.foodId}`} className="rounded-sm text-sm font-semibold text-ink hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300" title="View recipe">
+                {item.name}
+              </Link>
               <span className="text-xs font-medium text-muted">
                 {item.portionLabel} · {item.calories} kcal
               </span>

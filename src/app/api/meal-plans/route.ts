@@ -4,7 +4,7 @@
  * targets, validates it and saves it as the current plan.
  */
 import { currentUser, errorResponse, readJson, unauthorized } from "@/services/server/guard";
-import { assertPlanSafe, loadPlanningContext } from "@/services/server/mealPlanService";
+import { assertPlanSafe, loadPlanningContext, pantryIngredientsFor } from "@/services/server/mealPlanService";
 import { cleanPlanName, createMealPlan, listMealPlans } from "@/services/server/mealPlanRepository";
 import { generateWeeklyPlan } from "@/services/diet/weeklyPlanner";
 import { parseBudget } from "@/services/server/mealPlanHttp";
@@ -27,6 +27,7 @@ interface CreateBody {
   name?: unknown;
   startDate?: unknown;
   budget?: unknown;
+  preferPantry?: unknown;
 }
 
 export async function POST(request: Request) {
@@ -48,9 +49,12 @@ export async function POST(request: Request) {
     if (!context.ok) {
       return Response.json({ error: context.message, code: context.code }, { status: context.status });
     }
+    const preferPantry = body.preferPantry === true;
     const generated = generateWeeklyPlan(context.profile, context.processed, {
       budget: parseBudget(body.budget),
       startDate,
+      preferPantry,
+      preferIngredients: await pantryIngredientsFor(user.id, preferPantry),
     });
     if (!generated.success) {
       return Response.json(

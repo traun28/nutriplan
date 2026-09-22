@@ -58,7 +58,7 @@ interface MealPlanContextValue {
   busy: string | null;
   reload: () => Promise<void>;
   openPlan: (id: number) => Promise<ActionResult>;
-  generate: (input: { name?: string; startDate?: string | null; budget?: BudgetLevel | null }) => Promise<ActionResult>;
+  generate: (input: { name?: string; startDate?: string | null; budget?: BudgetLevel | null; preferPantry?: boolean }) => Promise<ActionResult>;
   regeneratePlan: () => Promise<ActionResult>;
   regenerateDay: (dayIndex: number) => Promise<ActionResult>;
   regenerateMeal: (dayIndex: number, slot: PlannerSlot) => Promise<ActionResult>;

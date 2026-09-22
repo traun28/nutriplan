@@ -14,6 +14,8 @@ import {
   validateWeeklyPlanData,
   type WeeklyPlanData,
 } from "@/services/diet/weeklyPlanner";
+import { listPantry } from "@/services/server/kitchenRepository";
+import { normaliseIngredientName } from "@/data/recipes/ingredientCatalog";
 
 export const PROFILE_INCOMPLETE_MESSAGE =
   "Complete your nutrition profile before generating a personalized plan.";
@@ -64,4 +66,19 @@ export function assertPlanSafe(data: WeeklyPlanData, profile: UserProfile): { ok
     message: "The plan did not pass the safety check, so it was not saved.",
     details: result.errors.slice(0, 5),
   };
+}
+
+/**
+ * Phase 4 — pantry ingredient names used by "Prefer pantry ingredients".
+ * Returns [] when the toggle is off, or when the pantry cannot be read
+ * (the preference is a nudge, never a reason to fail generation).
+ */
+export async function pantryIngredientsFor(userId: number, enabled: boolean): Promise<string[]> {
+  if (!enabled) return [];
+  try {
+    const items = await listPantry(userId);
+    return Array.from(new Set(items.filter((i) => i.quantity !== 0).map((i) => normaliseIngredientName(i.name))));
+  } catch {
+    return [];
+  }
 }

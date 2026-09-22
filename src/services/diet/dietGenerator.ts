@@ -219,6 +219,16 @@ export const MAX_GENERATION_ATTEMPTS = 4;
 
 /** Phase 3 — small ranking nudge for `GenerationOptions.preferTags`. */
 const PREFERRED_TAG_BOOST = 0.06;
+/** Phase 4 — maximum nudge when every ingredient of a food is in the pantry. */
+const PANTRY_BOOST_MAX = 0.08;
+
+/** Phase 4 — 0..PANTRY_BOOST_MAX, proportional to the share of ingredients on hand. */
+export function pantryBoost(food: FoodItemRecord, preferIngredients: string[] | undefined): number {
+  if (!preferIngredients || preferIngredients.length === 0 || food.ingredients.length === 0) return 0;
+  const have = new Set(preferIngredients);
+  const matched = food.ingredients.filter((ingredient) => have.has(ingredient)).length;
+  return matched === 0 ? 0 : PANTRY_BOOST_MAX * (matched / food.ingredients.length);
+}
 
 /**
  * Public entry point.
@@ -246,6 +256,7 @@ export function generateDietPlan(
       variationSeed: seed,
       excludeFoodIds: excluded,
       preferTags: options.preferTags,
+      preferIngredients: options.preferIngredients,
     });
 
     if (result.success) {
@@ -389,9 +400,9 @@ function buildPlan(
 
     const preferTags = options.preferTags ?? [];
     const tagBoost = (food: FoodItemRecord) =>
-      preferTags.length > 0 && preferTags.some((tag) => food.tags.includes(tag))
+      (preferTags.length > 0 && preferTags.some((tag) => food.tags.includes(tag))
         ? PREFERRED_TAG_BOOST
-        : 0;
+        : 0) + pantryBoost(food, options.preferIngredients);
     const ranked = candidates
       .map((food) => ({
         food,

@@ -6,7 +6,7 @@
  */
 import { currentUser, errorResponse, notFound, readJson, unauthorized } from "@/services/server/guard";
 import { getMealPlan, updateMealPlan } from "@/services/server/mealPlanRepository";
-import { assertPlanSafe, loadPlanningContext } from "@/services/server/mealPlanService";
+import { assertPlanSafe, loadPlanningContext, pantryIngredientsFor } from "@/services/server/mealPlanService";
 import { parsePlanId } from "@/services/server/mealPlanHttp";
 import {
   generateWeeklyPlan,
@@ -46,23 +46,27 @@ export async function POST(request: Request, { params }: Params) {
     const context = await loadPlanningContext(user.id);
     if (!context.ok) return Response.json({ error: context.message, code: context.code }, { status: context.status });
 
+    const preferPantry = existing.data.options.preferPantry === true;
+    const pantryNames = await pantryIngredientsFor(user.id, preferPantry);
     let next;
     let message: string;
     if (dayIndex === null) {
       const result = generateWeeklyPlan(context.profile, context.processed, {
         budget: existing.data.options.budget,
         startDate: existing.startDate,
+        preferPantry,
+        preferIngredients: pantryNames,
       });
       if (!result.success) return Response.json({ error: result.message, code: result.reason, details: result.details }, { status: 422 });
       next = result.data;
       message = "A fresh 7-day plan was generated.";
     } else if (slot === null) {
-      const result = regenerateWeeklyDay(existing.data, context.profile, context.processed, dayIndex);
+      const result = regenerateWeeklyDay(existing.data, context.profile, context.processed, dayIndex, pantryNames);
       if (!result.success) return Response.json({ error: result.message, code: result.reason }, { status: 422 });
       next = result.data;
       message = `Day ${dayIndex + 1} was regenerated.`;
     } else {
-      const result = regenerateWeeklyMeal(existing.data, context.profile, dayIndex, slot);
+      const result = regenerateWeeklyMeal(existing.data, context.profile, dayIndex, slot, pantryNames);
       if (!result.success) return Response.json({ error: result.message, code: result.reason }, { status: 422 });
       next = result.data.data;
       message = `${result.data.previousName} was replaced with ${result.data.newName}.`;
