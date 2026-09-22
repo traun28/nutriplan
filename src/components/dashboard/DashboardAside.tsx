@@ -56,8 +56,8 @@ export function QuickActions({ onLog, hasPlan }: { onLog: () => void; hasPlan: b
         <Button href="/meal-plan" size="sm" variant="outline" icon={<CalendarCheck className="h-3.5 w-3.5" />} className="col-span-2">
           7-day meal plan
         </Button>
-        <Button href="/history" size="sm" variant="ghost" icon={<BarChart3 className="h-3.5 w-3.5" />} className="col-span-2">
-          View progress
+        <Button href="/analytics" size="sm" variant="ghost" icon={<BarChart3 className="h-3.5 w-3.5" />} className="col-span-2">
+          Nutrition analytics
         </Button>
       </div>
     </Card>

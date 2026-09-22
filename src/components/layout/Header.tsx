@@ -22,6 +22,8 @@ const NAV_ITEMS = [
   { href: "/recipes", label: "Recipes" },
   { href: "/grocery", label: "Grocery" },
   { href: "/pantry", label: "Pantry" },
+  { href: "/analytics", label: "Analytics" },
+  { href: "/progress", label: "Progress" },
   { href: "/profile", label: "My Profile" },
   { href: "/attachments", label: "Attachments" },
   { href: "/datasets", label: "Datasets" },

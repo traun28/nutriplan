@@ -285,3 +285,19 @@ export const pantryItems = pgTable("pantry_items", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [index("pantry_items_user_idx").on(table.userId, table.name)]);
+
+/* ------------------------------------------------------------------ */
+/* Phase 5 — progress tracking                                         */
+/* ------------------------------------------------------------------ */
+
+/** One body-weight record per user per calendar date. */
+export const progressEntries = pgTable("progress_entries", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  /** Local calendar date "YYYY-MM-DD". */
+  entryDate: text("entry_date").notNull(),
+  weightKg: real("weight_kg").notNull(),
+  note: text("note"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [uniqueIndex("progress_entries_user_date_unique").on(table.userId, table.entryDate)]);

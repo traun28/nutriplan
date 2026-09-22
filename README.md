@@ -160,6 +160,7 @@ src/
 │   ├── meal-plan/              7-day meal planner (Phase 3)
 │   ├── recipes/, recipes/[id]  Recipe library + detail (Phase 4)
 │   ├── grocery/, pantry/       Grocery list + pantry (Phase 4)
+│   ├── analytics/, progress/   Nutrition analytics + progress tracking (Phase 5)
 │   ├── nutrition/              Processed nutrition dashboard
 │   ├── diet-plan/              Final diet chart
 │   ├── profile/                Saved-profile management
@@ -179,6 +180,7 @@ src/
 │   ├── food-log/               Log Food dialog + food history
 │   ├── meal-plan/              Weekly planner, weekly meal card, saved plans
 │   ├── recipes/, grocery/, pantry/  Phase 4 pages (library, detail, list, pantry)
+│   ├── analytics/, progress/   Phase 5 analytics (SVG charts), progress tracker
 │   ├── diet-plan/              Meal cards, comparison, safety summary
 │   ├── dataset/                Insights view + sample-participant loader
 │   └── common/                 NextStepCard, ConflictNotice
@@ -198,6 +200,8 @@ src/
 │   │                           recommendations, personalisation, weeklyPlanner
 │   ├── recipes/                recipeService (search, restriction verdicts, pantry matches)
 │   ├── grocery/                units (compatible-unit maths), groceryBuilder (plan → list)
+│   ├── analytics/              nutritionAnalysis (gaps, contributions, score, planned-vs-actual,
+│   │                           weekly aggregation, comparisons), insights
 │   ├── dataset/                datasetService (analytics, similarity, samples)
 │   └── attachments/            config, pipeline, processors, engine, conflicts,
                                 storage, clientUtils, pdf, office
@@ -651,12 +655,56 @@ Tables: `recipe_favorites`, `grocery_lists` (one per user), `grocery_items`,
 | GET | `/api/pantry/suggestions` | recipes matching pantry items (restriction-filtered) |
 | POST | `/api/pantry/cook` | `{recipeId, servings, confirm}` preview or apply deductions |
 
-## 22. Future enhancements
+## 22. Nutrition gap analysis, progress tracking & insights (Phase 5)
+
+Phase 5 adds an analysis layer over stored records — never a second
+nutrition engine. Targets are the Part 6 calculated targets
+(`targetsFromProcessed`); intake is the snapshot saved with each Phase 2
+food-log entry; planned values come from the Phase 3 current plan.
+
+**Vocabulary (shown as compact labels):** *Target* · *Estimated* (logged
+foods) · *Planned* · *Logged* · *Calculated*. Fibre has no data in the food
+database and is shown as “Information not available”.
+
+**Daily view (`/analytics`)** — for any date: target vs estimated per
+nutrient with status (±10 % = within target); gap analysis split into
+*Potential gaps / Strengths / Above target*; per-gap details (estimated,
+target, difference, %, contributing foods, restriction-filtered food
+suggestions from the shared database); “Where it came from” by meal and by
+food with a factual sentence (“Most of today's protein came from lunch and
+dinner (78 %)”); planned vs actual per slot (“Not logged” — never assumed
+skipped) with logging % and calorie/macro differences; today vs yesterday
+table; water; a transparent **daily score** (40 calories · 25 protein · 10
+carbs · 10 fat — full marks within ±10 %, zero at ±50 % · 10 planned meals
+logged · 5 water) with its breakdown; and 4 prioritised insights (show more).
+
+**Weekly view** — Monday-based week: averages over *days with entries only*,
+bar charts for calories / protein / water with target lines and gaps for
+unlogged days, weight points, this-week vs previous-week, weekly insights.
+Charts are dependency-free SVG with visually-hidden data tables.
+
+**Progress (`/progress`)** — weight entries (one per date) add / edit /
+delete, chronological history with deltas, weight-over-time chart (30d /
+90d / 1y / all; a single record is shown as a point, not a trend), body
+metrics via the existing `calculateBmi`, and neutral goal context (profile
+weight vs latest recorded). No predictions or completion dates.
+
+Table: `progress_entries` (user_id, entry_date, weight_kg, note; unique per
+user+date). All routes derive the user from the session.
+
+| Method | Route | Purpose |
+|---|---|---|
+| GET | `/api/analytics?view=day&date=` | daily analysis (gaps, contributions, suggestions, score, planned-vs-actual, comparison, insights) |
+| GET | `/api/analytics?view=week&date=` | weekly points, averages, week-vs-week, weight points, insights |
+| GET / POST | `/api/progress` | history + body metrics; add `{entryDate, weightKg, note?}` |
+| PATCH / DELETE | `/api/progress/:id` | edit / remove an owned entry |
+
+## 23. Future enhancements
 
 - Larger, externally verified food database
 - Authored recipe details for the remaining food entries
 - Cloud sync and multi-user accounts
-- Progress tracking over time
+- Fibre and micronutrient data in the food database
 - Review by a qualified nutritionist
 
 ---

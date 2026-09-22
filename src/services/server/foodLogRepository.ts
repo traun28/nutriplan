@@ -7,7 +7,7 @@
  * Functions throw `RepositoryError` with a safe message; routes translate
  * that into a status code without leaking internals.
  */
-import { and, asc, count, desc, eq, inArray, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, inArray, lte, sql } from "drizzle-orm";
 import { db, hasDatabase } from "@/db";
 import { foodFavorites, foodLogs, userSettings, waterLogs } from "@/db/schema";
 import type {
@@ -352,5 +352,31 @@ export async function deleteFoodLogsByIds(userId: number, ids: number[]): Promis
       .where(and(eq(foodLogs.userId, userId), inArray(foodLogs.id, ids)))
       .returning({ id: foodLogs.id });
     return rows.length;
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Phase 5 — range reads for analytics (inclusive date keys)           */
+/* ------------------------------------------------------------------ */
+
+export async function listFoodLogsInRange(userId: number, fromDate: string, toDate: string): Promise<FoodLogEntry[]> {
+  return run(async () => {
+    const rows = await db
+      .select()
+      .from(foodLogs)
+      .where(and(eq(foodLogs.userId, userId), gte(foodLogs.logDate, fromDate), lte(foodLogs.logDate, toDate)))
+      .orderBy(asc(foodLogs.logDate), asc(foodLogs.loggedTime), asc(foodLogs.createdAt));
+    return rows.map(toEntry);
+  });
+}
+
+export async function listWaterInRange(userId: number, fromDate: string, toDate: string): Promise<WaterEntry[]> {
+  return run(async () => {
+    const rows = await db
+      .select()
+      .from(waterLogs)
+      .where(and(eq(waterLogs.userId, userId), gte(waterLogs.logDate, fromDate), lte(waterLogs.logDate, toDate)))
+      .orderBy(asc(waterLogs.logDate), asc(waterLogs.createdAt));
+    return rows.map(toWater);
   });
 }
