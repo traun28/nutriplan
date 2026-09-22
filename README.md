@@ -157,6 +157,7 @@ src/
 │   ├── review/                 Review + Save
 │   ├── dashboard/              Daily nutrition command centre (Phase 2)
 │   ├── history/                Paginated food history (Phase 2)
+│   ├── meal-plan/              7-day meal planner (Phase 3)
 │   ├── nutrition/              Processed nutrition dashboard
 │   ├── diet-plan/              Final diet chart
 │   ├── profile/                Saved-profile management
@@ -174,10 +175,12 @@ src/
 │   ├── nutrition/              Nutrition dashboard
 │   ├── dashboard/              Daily summary, today's meals, water, next meal
 │   ├── food-log/               Log Food dialog + food history
+│   ├── meal-plan/              Weekly planner, weekly meal card, saved plans
 │   ├── diet-plan/              Meal cards, comparison, safety summary
 │   ├── dataset/                Insights view + sample-participant loader
 │   └── common/                 NextStepCard, ConflictNotice
-├── context/                    ProfileContext, NutritionContext, DietPlanContext, DayLogContext
+├── context/                    ProfileContext, NutritionContext, DietPlanContext, DayLogContext,
+│                               MealPlanContext
 ├── data/
 │   ├── options.ts              Option catalogue + label helpers
 │   ├── foods/                  Food database + its quality checker
@@ -188,7 +191,7 @@ src/
 │   ├── profileStorage.ts       Persistence
 │   ├── nutrition/              bmi, energy, macronutrients, processor, constants
 │   ├── diet/                   config, filters, scoring, generator, validator,
-│   │                           recommendations, personalisation
+│   │                           recommendations, personalisation, weeklyPlanner
 │   ├── dataset/                datasetService (analytics, similarity, samples)
 │   └── attachments/            config, pipeline, processors, engine, conflicts,
                                 storage, clientUtils, pdf, office
@@ -531,10 +534,58 @@ API (session cookie required; user id is never accepted from the client):
 | PATCH / DELETE | `/api/water/:id` | edit / remove |
 | PUT | `/api/water/target` | daily target |
 
+## 20. 7-day meal planner & smart replacement (Phase 3)
+
+`/meal-plan` builds a full week (Day 1–7, each with the meals enabled in the
+profile) on the **server** from the stored profile and nutrition targets.
+Each day is a Part 7 `DietPlan` produced by the same `generateDietPlan`
+engine — one calorie system, the same restriction filters, portion rules
+and independent safety validator — orchestrated by
+`services/diet/weeklyPlanner.ts`, which adds cross-day variety exclusions,
+per-day / per-meal regeneration, ranked & labelled alternatives, serving-size
+updates and the weekly summary. Fibre is reported as "not available"
+because the food database has no fibre values.
+
+- **Generate 7-Day Plan** — name, optional start date (Day 1 maps to that
+  date; otherwise Day 1 = Monday) and a budget level. Budget is a priority
+  over the existing `budget` food tag only — there are no prices.
+- **Day selector → meals → Daily total** with `consumed / target` indicators;
+  **Weekly summary** (averages, meals planned, days on calorie target).
+- **Regenerate plan / day / meal** — each changes only its own scope.
+- **Replace meal** — alternatives pass the same allergy / intolerance /
+  dietary filters, are scaled to the slot's calorie budget and carry
+  computed labels ("Similar calories", "More protein", "Quicker to prepare",
+  dietary type, "Budget-friendly") plus a factual comparison sentence. The
+  swapped day is re-validated before it is saved.
+- **Serving sizes** re-scale through `buildPlannedItem`; restriction
+  failures block the change.
+- **Saved plans** — open, rename, duplicate, delete, set dates, mark as the
+  dashboard's current plan. Generating a new plan never deletes old ones.
+- **Dashboard** — "Planned meals" for the selected date with ✓ Logged / Not
+  logged and "Log this meal" through the Phase 2 logger.
+
+Storage: `meal_plans` (`user_id`, `name`, `start_date`, `is_current`,
+`data` jsonb, timestamps). API (session cookie required; ownership enforced
+on every route, the user id is never read from the client):
+
+| Method | Route | Purpose |
+|---|---|---|
+| GET / POST | `/api/meal-plans` | list own plans / generate + save a new one |
+| GET | `/api/meal-plans/current` | plan shown on the dashboard |
+| GET / PATCH / DELETE | `/api/meal-plans/:id` | open / rename, dates, set current / delete |
+| POST | `/api/meal-plans/:id/regenerate` | `{}` whole plan · `{dayIndex}` · `{dayIndex, slot}` |
+| GET | `/api/meal-plans/:id/alternatives?dayIndex=&slot=` | ranked, labelled alternatives |
+| POST | `/api/meal-plans/:id/replace` | `{dayIndex, slot, foodId}` validated swap |
+| POST | `/api/meal-plans/:id/servings` | `{dayIndex, slot, foodId, servings}` |
+| POST | `/api/meal-plans/:id/duplicate` | copy an owned plan |
+
+Failure codes: `PROFILE_INCOMPLETE` / `TARGETS_UNAVAILABLE` (409),
+`INSUFFICIENT_OPTIONS` / `VALIDATION_FAILED` (422), database unavailable (503).
+
 ## 21. Future enhancements
 
 - Larger, externally verified food database
-- Weekly plans and grocery-list generation
+- Grocery-list generation from the weekly plan
 - Recipe/preparation instructions
 - Cloud sync and multi-user accounts
 - Progress tracking over time

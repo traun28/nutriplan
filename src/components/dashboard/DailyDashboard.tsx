@@ -30,6 +30,7 @@ import {
   RecommendationCard,
 } from "@/components/dashboard/DashboardAside";
 import { FoodLogDialog } from "@/components/food-log/FoodLogDialog";
+import { PlannedMealsCard } from "@/components/dashboard/PlannedMealsCard";
 import { Toast, useToast } from "@/components/ui/Toast";
 import { shiftDateKey, targetsFromProcessed, toDateKey } from "@/services/foodLog/calculations";
 import type { FoodLogEntry, FoodLogMealType } from "@/services/foodLog/types";
@@ -170,7 +171,8 @@ function DailyDashboardView() {
         <DailySummary totals={day.totals} targets={targets} loading={loading} hasTargets={hasTargets} targetsStale={isStale && hasTargets} />
 
         <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
-          <div id="todays-meals" className="scroll-mt-24">
+          <div id="todays-meals" className="scroll-mt-24 space-y-5">
+            <PlannedMealsCard date={day.selectedDate} entries={day.entries} onLog={openLogger} />
             <TodaysMeals
               entries={day.entries}
               loading={loading}

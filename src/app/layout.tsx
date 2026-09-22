@@ -6,6 +6,7 @@ import { NutritionProvider } from "@/context/NutritionContext";
 import { DietPlanProvider } from "@/context/DietPlanContext";
 import { AttachmentsProvider } from "@/context/AttachmentsContext";
 import { DayLogProvider } from "@/context/DayLogContext";
+import { MealPlanProvider } from "@/context/MealPlanContext";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { FloatingAssistantButton } from "@/components/layout/FloatingAssistantButton";
@@ -30,12 +31,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <DietPlanProvider>
               <AttachmentsProvider>
                 <DayLogProvider>
+                  <MealPlanProvider>
                   <div className="flex min-h-screen flex-col">
                     <Header />
                     <main className="flex-1">{children}</main>
                     <Footer />
                     <FloatingAssistantButton />
                   </div>
+                  </MealPlanProvider>
                 </DayLogProvider>
               </AttachmentsProvider>
             </DietPlanProvider>

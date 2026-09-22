@@ -202,3 +202,26 @@ export const userSettings = pgTable("user_settings", {
   data: jsonb("data").$type<{ waterTargetMl?: number }>().notNull().default({}),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [uniqueIndex("user_settings_user_unique").on(table.userId)]);
+
+/* ------------------------------------------------------------------ */
+/* Phase 3 — 7-day meal plans                                          */
+/* ------------------------------------------------------------------ */
+
+/**
+ * One saved weekly plan. Each day is a full Part 7 `DietPlan` (meals,
+ * totals, validation) stored as JSON — the same shape `diet_plans` uses —
+ * so the existing meal components and validators work unchanged.
+ */
+export const mealPlans = pgTable("meal_plans", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  name: text("name").notNull(),
+  /** Optional "YYYY-MM-DD" the plan's Day 1 is anchored to. */
+  startDate: text("start_date"),
+  /** Marks the plan the dashboard reads from; at most one per user. */
+  isCurrent: boolean("is_current").notNull().default(false),
+  /** WeeklyPlanData — days[], summary, provenance (see services/diet/weeklyPlanner). */
+  data: jsonb("data").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [index("meal_plans_user_idx").on(table.userId, table.createdAt)]);

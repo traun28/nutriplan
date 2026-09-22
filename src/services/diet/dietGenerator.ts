@@ -217,6 +217,9 @@ export function mealFromItems(
  */
 export const MAX_GENERATION_ATTEMPTS = 4;
 
+/** Phase 3 — small ranking nudge for `GenerationOptions.preferTags`. */
+const PREFERRED_TAG_BOOST = 0.06;
+
 /**
  * Public entry point.
  *
@@ -242,6 +245,7 @@ export function generateDietPlan(
     const result = buildPlan(profile, processed, {
       variationSeed: seed,
       excludeFoodIds: excluded,
+      preferTags: options.preferTags,
     });
 
     if (result.success) {
@@ -383,6 +387,11 @@ function buildPlan(
     const candidates =
       withinPrepLimit.length >= 2 ? withinPrepLimit : allCandidates;
 
+    const preferTags = options.preferTags ?? [];
+    const tagBoost = (food: FoodItemRecord) =>
+      preferTags.length > 0 && preferTags.some((tag) => food.tags.includes(tag))
+        ? PREFERRED_TAG_BOOST
+        : 0;
     const ranked = candidates
       .map((food) => ({
         food,
@@ -395,8 +404,9 @@ function buildPlan(
           usedIngredients,
           datasetFitFor,
         }),
+        boost: tagBoost(food),
       }))
-      .sort((a, b) => b.score.total - a.score.total);
+      .sort((a, b) => b.score.total + b.boost - (a.score.total + a.boost));
 
     // Controlled variation: choose among the best few, never at random
     // from the whole pool, so quality stays high while plans differ.

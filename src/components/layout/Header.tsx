@@ -18,6 +18,7 @@ const NAV_ITEMS = [
   { href: "/planner", label: "Diet Planner" },
   { href: "/nutrition", label: "Nutrition" },
   { href: "/diet-plan", label: "Diet Plan" },
+  { href: "/meal-plan", label: "7-Day Plan" },
   { href: "/profile", label: "My Profile" },
   { href: "/attachments", label: "Attachments" },
   { href: "/datasets", label: "Datasets" },

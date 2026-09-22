@@ -11,6 +11,7 @@ const EXPLORE_LINKS = [
   { href: "/history", label: "Food History" },
   { href: "/nutrition", label: "Nutrition Profile" },
   { href: "/diet-plan", label: "Diet Plan" },
+  { href: "/meal-plan", label: "7-Day Plan" },
   { href: "/health-screening", label: "Health Screening" },
 ];
 

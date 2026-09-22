@@ -11,6 +11,7 @@ import {
   ArrowRight,
   BarChart3,
   Calculator,
+  CalendarCheck,
   Clock,
   Droplets,
   History,
@@ -51,6 +52,9 @@ export function QuickActions({ onLog, hasPlan }: { onLog: () => void; hasPlan: b
         </Button>
         <Button href="/history" size="sm" variant="outline" icon={<History className="h-3.5 w-3.5" />}>
           Food history
+        </Button>
+        <Button href="/meal-plan" size="sm" variant="outline" icon={<CalendarCheck className="h-3.5 w-3.5" />} className="col-span-2">
+          7-day meal plan
         </Button>
         <Button href="/history" size="sm" variant="ghost" icon={<BarChart3 className="h-3.5 w-3.5" />} className="col-span-2">
           View progress
