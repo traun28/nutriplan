@@ -276,3 +276,51 @@ checked manually before the demonstration:
 
 No claim of "all tests passed" is made beyond the 49 automated logic tests and
 5 toolchain checks listed above.
+
+## E. Phase 8 — final production readiness pass
+
+Environment: Node 22.22.3, embedded PostgreSQL 18.4 (`npm run db:local`), fresh
+`npm ci`, production server (`npm run build && npm run start`). API-level
+verification with `curl` against two accounts (A, B); no headless browser was
+available, so responsive/visual checks were code-level only.
+
+| Command | Result |
+|---|---|
+| `npm run typecheck` | 0 errors |
+| `npm run lint` | 0 errors, 0 warnings |
+| `npm run build` | compiled, 23/23 pages, all routes present |
+| `npm run engine:check` | ENGINE: ALL 34 PASS (new food-database integrity check included) |
+
+**End-to-end flow (user A):** register → complete profile (`PUT /api/profile`) →
+`/api/analytics` targets (2618 kcal / 84 g protein) → generate 7-day plan
+(`POST /api/meal-plans` 201) → log food, water, weight, pantry item, grocery
+item → recipes / favourites / pantry suggestions → assistant chat, actions,
+recommendations, conversations → dataset upload → validate (mapping) → import
+(64 / 3 rejected / 1 duplicate) → records, stats, CSV + HTML export → logout
+(401 afterwards) → login → every entity still present.
+
+**Authorization:** every owned resource (food log, water, progress, pantry,
+grocery item, meal plan + duplicate/replace/regenerate/alternatives/servings,
+dataset + records/stats/analysis/export/explain/delete) returns 404 for user B
+and 401 anonymously. `/api/recipes` is intentionally public read-only.
+
+**Input validation:** malformed JSON → 400 on every mutating route; water
+< 10 ml / > 5000 ml, servings ≤ 0 / > 20, duplicate progress date (409),
+invalid date keys, non-Gmail e-mail, short password, duplicate account (409),
+wrong password (401) all rejected with safe messages, no stack traces.
+
+**Uploads:** empty (400), random bytes (422, not stored), missing required
+columns (staged with blocking report), PDF bytes named `.csv` (rejected by
+signature), `.exe` (unsupported), attachment > 10 MB (413), corrupt PDF
+(`status: failed`, no crash).
+
+**Bugs fixed:** assistant classified "How much protein have I eaten today?" as
+a general fact; `next.config.ts` shipped a hard-coded LAN IP in
+`allowedDevOrigins`; `/api/plan` was requested twice on every page load by two
+providers; production without `DATABASE_URL` silently used the in-memory dev
+store (now 503 on auth routes); missing `scope="col"`/labels on several
+dataset tables, search inputs and selects; `validateFoodDatabase()` was never
+executed anywhere (now part of `engine:check`).
+
+**Not verified here:** real browser rendering at 320 px, screen-reader
+behaviour, XLSX upload path, an LLM provider (rule-based fallback only).
