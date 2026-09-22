@@ -271,7 +271,7 @@ export function StudentTable(props: Props) {
           <div className="flex items-center gap-2">
             <label className="flex items-center gap-1">
               Rows
-              <select value={pageSize} onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }} className="rounded border border-line bg-surface px-1.5 py-1 text-xs">
+              <select value={pageSize} onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }} aria-label="Rows per page" className="rounded border border-line bg-surface px-1.5 py-1 text-xs">
                 {[10, 25, 50, 100].map((n) => <option key={n} value={n}>{n}</option>)}
               </select>
             </label>
