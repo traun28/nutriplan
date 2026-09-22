@@ -6,8 +6,7 @@
  * Passwords are never returned or logged.
  */
 import { eq } from "drizzle-orm";
-import { db } from "@/db";
-import { hasDatabase } from "@/db";
+import { databaseRequiredError, db, hasDatabase } from "@/db";
 import { users } from "@/db/schema";
 import {
   createSession,
@@ -40,6 +39,10 @@ export async function POST(request: Request) {
   if (password.length < 8)
     return badRequest("Password must be at least 8 characters.");
   if (fullName.length < 2) return badRequest("Please enter your name.");
+
+  if (databaseRequiredError) {
+    return Response.json({ error: databaseRequiredError }, { status: 503 });
+  }
 
   try {
     if (!hasDatabase) {

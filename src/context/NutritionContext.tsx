@@ -28,6 +28,7 @@ import type {
 } from "@/types/profile";
 import { useProfile } from "@/context/ProfileContext";
 import { useAuth } from "@/context/AuthContext";
+import { fetchSavedPlan } from "@/services/planSync";
 import { isProcessedProfileCurrent } from "@/lib/freshness";
 
 /** Loaded on demand so the landing page does not bundle the engine. */
@@ -87,11 +88,7 @@ export function NutritionProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
-    void fetch("/api/plan")
-      .then(async (response) => {
-        if (!response.ok) throw new Error("Could not load saved nutrition.");
-        return (await response.json()) as { processed: ProcessedProfile | null };
-      })
+    void fetchSavedPlan()
       .then((data) => {
         if (cancelled || !data.processed) return;
         setProcessed(data.processed);

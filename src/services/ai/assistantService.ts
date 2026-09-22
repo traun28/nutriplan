@@ -87,6 +87,9 @@ export function detectIntent(raw: string, hour: number): Intent {
     return { id: "why_low", nutrient };
   }
   if (/\b(explain|analy[sz]e|analysis|review|how (am|did) i (do|doing)|summari[sz]e)\b.*\b(nutrition|today|intake|day|eating)\b/.test(t) || /\b(show|check) my nutrition\b/.test(t)) return { id: "explain_day" };
+  // "How much protein have I eaten/had/logged today?" is a question about the
+  // user's own log, not a general nutrition fact.
+  if (/\bhow (much|many)\b.*\b(have i|did i|i have|i've)\b.*\b(eat|eaten|had|consumed|logged|drunk|drank)\b/.test(t) && !/\b(water|ml|litre|liter|glass)\b/.test(t)) return { id: "explain_day" };
 
   if (/\b(replace|swap|change|substitute|alternative)\b/.test(t) && (slot || /\bmeal\b/.test(t))) return { id: "replace_meal", slot, offset: tomorrow };
   if (/\b(pantry|what can i (make|cook)|what('s| is) in my (kitchen|fridge)|from what i have)\b/.test(t)) return { id: "pantry" };

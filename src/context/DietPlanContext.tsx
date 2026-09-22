@@ -21,6 +21,7 @@ import {
 import type { GenerationFailureReason } from "@/types/profile";
 import { useProfile } from "@/context/ProfileContext";
 import { useAuth } from "@/context/AuthContext";
+import { fetchSavedPlan } from "@/services/planSync";
 import { useNutrition } from "@/context/NutritionContext";
 import type {
   DietPlan,
@@ -117,11 +118,7 @@ export function DietPlanProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
-    void fetch("/api/plan")
-      .then(async (response) => {
-        if (!response.ok) throw new Error("Could not load saved plan.");
-        return (await response.json()) as { plan: DietPlan | null };
-      })
+    void fetchSavedPlan()
       .then((data) => {
         if (cancelled || !data.plan) return;
         setPlan(data.plan);
