@@ -1,5 +1,5 @@
 /**
- * Phase 1 engine regression checks — run with: npx tsx scripts/engineCheck.ts
+ * Engine regression checks — run with: npm run engine:check
  * Tests the nutrition processor and diet generator against realistic and
  * adversarial inputs. Exits non-zero on any failure.
  */
@@ -15,6 +15,7 @@ import { rehydrateProfile } from "../src/lib/profileNormalize";
 import { generateDietPlan, regenerateDietPlan } from "../src/services/diet/dietGenerator";
 import { validateGeneratedDietPlan } from "../src/services/diet/planValidator";
 import { FOOD_BY_ID } from "../src/data/foods/foodDatabase";
+import { validateFoodDatabase } from "../src/data/foods/validateDatabase";
 import type { UserProfile, ProcessedProfile } from "../src/types/profile";
 
 let failures = 0;
@@ -304,6 +305,17 @@ if (planNoRestrictions.success) {
     `${planNoRestrictions.plan.dailyTotals.calories} vs ${target} (${Math.round(drift * 100)}%)`,
   );
 }
+
+/* ------------------------------------------------------------------ */
+/* 4. Food database integrity                                          */
+/* ------------------------------------------------------------------ */
+
+const databaseIssues = validateFoodDatabase();
+check(
+  "Food database: no integrity issues",
+  databaseIssues.length === 0,
+  databaseIssues.slice(0, 3).map((issue) => `${issue.foodId}: ${issue.problem}`).join("; "),
+);
 
 /* ------------------------------------------------------------------ */
 console.log(failures === 0 ? `\nENGINE: ALL ${passes} PASS` : `\nENGINE: ${failures} FAILURES / ${passes} pass`);
