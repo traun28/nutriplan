@@ -11,7 +11,10 @@ import { Database, FileText, Loader2 } from "lucide-react";
 import { useCallback } from "react";
 import { useState } from "react";
 import { RequireAuth } from "@/components/auth/RequireAuth";
-import { DatasetUploader } from "@/components/dataset/DatasetUploader";
+import { DatasetUploader, type DatasetUploadResult } from "@/components/dataset/DatasetUploader";
+import { ImportReview } from "@/components/dataset/ImportReview";
+import { DatasetAnalyzer } from "@/components/dataset/analyzer/DatasetAnalyzer";
+import { Toast, useToast } from "@/components/ui/Toast";
 import {
   DatasetLibrary,
   type DatasetRow,
@@ -20,7 +23,6 @@ import { AsyncError } from "@/hooks/AsyncError";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { apiClient } from "@/services/apiClient";
 import { Button, Card, CardBody, SectionHeader } from "@/components/ui/core";
-import { NutritionGapAnalysis } from "@/components/dataset/NutritionGapAnalysis";
 import { ManualStudentEntry } from "@/components/dataset/ManualStudentEntry";
 
 export default function DatasetsPage() {
@@ -33,6 +35,8 @@ export default function DatasetsPage() {
 
 function DatasetsWorkspace() {
   const [analysisId, setAnalysisId] = useState<number | null>(null);
+  const [staged, setStaged] = useState<DatasetUploadResult | null>(null);
+  const { toast, show: showToast, dismiss: dismissToast } = useToast();
   const load = useCallback(async () => {
     const data = await apiClient.get<{ datasets: DatasetRow[] }>("/api/datasets");
     return data.datasets;
@@ -73,10 +77,10 @@ function DatasetsWorkspace() {
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-4">
             {[
-              ["01", "Enter", "Complete the participant details"],
-              ["02", "Store", "Keep the source and cleaned record"],
-              ["03", "Process", "Calculate BMI, calories and macros"],
-              ["04", "Generate", "Build and validate the diet chart"],
+              ["01", "Upload", "Select a CSV, XLSX, DOCX or PDF file"],
+              ["02", "Validate", "Check columns, types, duplicates and gaps"],
+              ["03", "Import", "Confirm the preview; invalid rows are rejected"],
+              ["04", "Analyze", "Search, filter, review, chart and export"],
             ].map(([number, title, description]) => (
               <div key={number} className="relative rounded-[10px] border border-line bg-canvas p-3">
                 <span className="text-xs font-bold text-brand-400">{number}</span>
@@ -86,9 +90,9 @@ function DatasetsWorkspace() {
             ))}
           </div>
           <p className="mt-4 text-xs leading-relaxed text-muted">
-            Select <strong>Analyze dataset</strong> to review every student without
-            changing your personal planner. Dataset records, calculations, and reports
-            remain in this independent workspace.
+            Nothing is imported until you confirm the validation report. Select{" "}
+            <strong>Analyze dataset</strong> on an imported dataset to review every student
+            without changing your personal planner.
           </p>
         </CardBody>
       </Card>
@@ -101,13 +105,38 @@ function DatasetsWorkspace() {
           </p>
           <div className="mt-5">
             <DatasetUploader
-              onUploaded={() => {
+              onUploaded={(result) => {
+                setStaged(result);
                 void reload();
               }}
             />
           </div>
         </CardBody>
       </Card>
+
+      {staged && (
+        <div className="mb-6">
+          <ImportReview
+            key={staged.dataset.id}
+            datasetId={staged.dataset.id}
+            fileName={staged.dataset.fileName}
+            initialReport={staged.report}
+            fileWarnings={staged.warnings}
+            onImported={({ imported, rejected }) => {
+              const id = staged.dataset.id;
+              setStaged(null);
+              showToast(`Imported ${imported.toLocaleString()} record${imported === 1 ? "" : "s"}${rejected > 0 ? `; ${rejected} rejected` : ""}.`);
+              void reload();
+              setAnalysisId(id);
+            }}
+            onCancelled={() => {
+              setStaged(null);
+              showToast("Upload cancelled — nothing was imported.");
+              void reload();
+            }}
+          />
+        </div>
+      )}
 
       <ManualStudentEntry onSaved={() => void reload()} />
       <Card className="mb-6 border-brand-400/25 bg-brand-50/40">
@@ -181,12 +210,28 @@ function DatasetsWorkspace() {
             datasets={state.data}
             onChanged={() => void reload()}
             onDelete={remove}
-            onAnalyze={setAnalysisId}
+            onAnalyze={(id) => {
+              setAnalysisId(id);
+              setTimeout(() => document.getElementById("dataset-analyzer")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+            }}
+            onResume={(row) => setStaged({ dataset: row, report: row.validation!, warnings: row.warnings })}
           />
-          <NutritionGapAnalysis datasetId={analysisId} />
+          {analysisId !== null && (() => {
+            const ds = state.data.find((d) => d.id === analysisId);
+            if (!ds || ds.recordCount === 0) return null;
+            return (
+              <div className="mt-6">
+                <DatasetAnalyzer
+                  dataset={{ id: ds.id, displayName: ds.displayName, fileName: ds.fileName, recordCount: ds.recordCount, createdAt: ds.createdAt, columns: ds.columns }}
+                  onClose={() => setAnalysisId(null)}
+                />
+              </div>
+            );
+          })()}
         </>
       )}
 
+      <Toast toast={toast} onDismiss={dismissToast} />
       <Card className="mt-6">
         <CardBody className="text-xs leading-relaxed text-muted">
           <p className="font-semibold text-ink">Dataset &amp; profile separation</p>

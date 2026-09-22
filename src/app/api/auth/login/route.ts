@@ -6,7 +6,7 @@
  * Only @gmail.com addresses are accepted (see `@/lib/email`).
  */
 import { eq } from "drizzle-orm";
-import { db, hasDatabase } from "@/db";
+import { databaseRequiredError, db, hasDatabase } from "@/db";
 import { users } from "@/db/schema";
 import {
   createSession,
@@ -37,6 +37,10 @@ export async function POST(request: Request) {
   // Accounts are Gmail-only, so anything else can never match a stored user.
   const emailError = validateGmailAddress(email);
   if (emailError) return badRequest(emailError);
+
+  if (databaseRequiredError) {
+    return Response.json({ error: databaseRequiredError }, { status: 503 });
+  }
 
   try {
     if (!hasDatabase) {

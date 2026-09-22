@@ -14,9 +14,17 @@ import { cn } from "@/lib/cn";
 
 const NAV_ITEMS = [
   { href: "/", label: "Home" },
+  { href: "/dashboard", label: "Dashboard" },
   { href: "/planner", label: "Diet Planner" },
   { href: "/nutrition", label: "Nutrition" },
   { href: "/diet-plan", label: "Diet Plan" },
+  { href: "/meal-plan", label: "7-Day Plan" },
+  { href: "/recipes", label: "Recipes" },
+  { href: "/grocery", label: "Grocery" },
+  { href: "/pantry", label: "Pantry" },
+  { href: "/analytics", label: "Analytics" },
+  { href: "/progress", label: "Progress" },
+  { href: "/assistant", label: "Assistant" },
   { href: "/profile", label: "My Profile" },
   { href: "/attachments", label: "Attachments" },
   { href: "/datasets", label: "Datasets" },

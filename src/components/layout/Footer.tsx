@@ -6,10 +6,12 @@ import { Leaf } from "lucide-react";
 
 const EXPLORE_LINKS = [
   { href: "/", label: "Home" },
+  { href: "/dashboard", label: "Dashboard" },
   { href: "/planner", label: "Diet Planner" },
-  { href: "/review", label: "Review" },
+  { href: "/history", label: "Food History" },
   { href: "/nutrition", label: "Nutrition Profile" },
   { href: "/diet-plan", label: "Diet Plan" },
+  { href: "/meal-plan", label: "7-Day Plan" },
   { href: "/health-screening", label: "Health Screening" },
 ];
 

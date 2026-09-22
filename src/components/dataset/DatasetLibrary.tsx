@@ -25,6 +25,7 @@ import { formatBytes } from "@/services/attachments/config";
 import { Button, Card, CardBody } from "@/components/ui/core";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { cn } from "@/lib/cn";
+import type { ValidationReport } from "@/services/dataset/validationTypes";
 
 export interface DatasetRow {
   id: number;
@@ -55,12 +56,17 @@ export interface DatasetRow {
   previewRows: string[][];
   warnings: string[];
   createdAt: string;
+  /** Phase 7 */
+  validation?: ValidationReport | null;
+  importedRows?: number | null;
+  rejectedRows?: number | null;
 }
 
 const STATUS_UI: Record<string, { label: string; cls: string }> = {
   uploading: { label: "Uploading", cls: "border-line bg-surface text-muted" },
   processing: { label: "Processing", cls: "border-line bg-surface text-muted" },
   ready: { label: "Ready", cls: "border-brand-400/25 bg-brand-50 text-brand-400" },
+  staged: { label: "Awaiting import", cls: "border-accent-300/40 bg-accent-200/30 text-accent-300" },
   needs_review: {
     label: "Needs review",
     cls: "border-accent-300/40/30 bg-accent-200/30 text-accent-300",
@@ -89,11 +95,14 @@ export function DatasetLibrary({
   onChanged,
   onDelete,
   onAnalyze,
+  onResume,
 }: {
   datasets: DatasetRow[];
   onChanged: () => void;
   onDelete: (id: number) => Promise<boolean>;
   onAnalyze: (id: number) => void;
+  /** Phase 7: reopen the validation report of a staged (not yet imported) upload. */
+  onResume?: (dataset: DatasetRow) => void;
 }) {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -278,10 +287,15 @@ export function DatasetLibrary({
                         {dataset.recordCount > 0 && (
                           <Button
                             size="sm"
-                            variant="outline"
+                            variant="primary"
                             onClick={() => onAnalyze(dataset.id)}
                           >
                             Analyze dataset
+                          </Button>
+                        )}
+                        {dataset.status === "staged" && dataset.validation && onResume && (
+                          <Button size="sm" variant="secondary" onClick={() => onResume(dataset)}>
+                            Review &amp; import
                           </Button>
                         )}
                         {dataset.previewRows.length > 0 && (

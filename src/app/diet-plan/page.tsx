@@ -304,6 +304,13 @@ function DietPlanView() {
             Print Diet Plan
           </Button>
           <Button
+            href="/dashboard"
+            variant="ghost"
+            icon={<ArrowRight className="h-4 w-4" />}
+          >
+            Track Today
+          </Button>
+          <Button
             href="/planner?step=1"
             variant="ghost"
             icon={<PencilLine className="h-4 w-4" />}

@@ -29,6 +29,7 @@ import {
   kindFromExtension,
 } from "@/services/attachments/config";
 import { buildQualityReport } from "@/data/dataset/validator";
+import { deriveRecordFields } from "@/services/dataset/validation";
 import type { AttachmentKind } from "@/types/attachment";
 import type {
   DatasetParticipant,
@@ -92,6 +93,102 @@ async function extractStructured(bytes: Uint8Array, fileName: string, kind: Atta
       return processTxt(bytes, fileName, provenance);
     default:
       return null;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Phase 7 — table extraction only (no normalisation, no persistence)  */
+/* ------------------------------------------------------------------ */
+
+export interface ExtractedTable {
+  ok: true;
+  kind: AttachmentKind;
+  headers: string[];
+  rows: string[][];
+  totalRows: number;
+  truncated: boolean;
+  warnings: string[];
+  signature: string;
+}
+
+export interface ExtractFailure {
+  ok: false;
+  status: DatasetStatus;
+  statusDetail: string;
+  kind: AttachmentKind;
+  signature: string;
+}
+
+/** Upper bound on rows held for validation/import in one upload. */
+export const MAX_TABLE_ROWS = 5000;
+
+/**
+ * Verifies type/size/signature and extracts the first header + rows grid
+ * from the file. Used by the staged upload → validate → import workflow.
+ */
+export async function extractTable(
+  bytes: Uint8Array,
+  fileName: string,
+): Promise<ExtractedTable | ExtractFailure> {
+  const signature = hexSignature(bytes);
+  const failWith = (status: DatasetStatus, statusDetail: string): ExtractFailure => ({
+    ok: false, status, statusDetail, kind: "unsupported", signature,
+  });
+
+  if (bytes.length === 0) return failWith("unsupported", "The file is empty.");
+  if (bytes.length > ATTACHMENT_LIMITS.maxFileSizeBytes) {
+    return failWith("failed", `The file is larger than the ${Math.round(ATTACHMENT_LIMITS.maxFileSizeBytes / (1024 * 1024))} MB limit.`);
+  }
+
+  const byExt = kindFromExtension(fileName);
+  const bySig = detectBySignature(bytes);
+  let kind: AttachmentKind = bySig ?? byExt ?? "unsupported";
+  if (bySig === "zip" && byExt && ["docx", "xlsx", "pptx", "odt"].includes(byExt)) kind = byExt;
+  if (kind === "zip" || kind === "doc" || kind === "xls" || kind === "ppt") {
+    return failWith("unsupported", `${kind.toUpperCase()} is not a supported dataset format. Convert it to CSV, XLSX or DOCX and upload again.`);
+  }
+  if (kind === "image") return failWith("unsupported", "Image files cannot be read as datasets. Upload a CSV, XLSX, DOCX, PDF or JSON file.");
+  if (kind === "unsupported") return failWith("unsupported", "This file type is not supported for dataset import.");
+
+  try {
+    const extraction = await extractStructured(bytes, fileName, kind);
+    if (!extraction) return failWith("unsupported", "This format is not supported for dataset import.");
+
+    const table = extraction.tables?.[0];
+    let headers: string[] = (table?.headers ?? []).map((h) => String(h ?? "").trim());
+    let rows: string[][] = table?.rows ?? [];
+    if (rows.length === 0 && extraction.fields.length > 0) {
+      headers = ["Field", "Value"];
+      rows = extraction.fields.map((f) => [f.key, String(f.value ?? f.rawValue)]);
+    }
+    if (headers.length === 0 || rows.length === 0) {
+      return failWith("failed", "No table with a header row and data rows was found in this file.");
+    }
+    // Defensive: strip control characters (Postgres jsonb rejects NUL) and cap
+    // cell length so a malicious or corrupt file cannot bloat storage.
+    const clean = (c: unknown, max: number) => String(c ?? "").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F\uFFFD]/g, "").slice(0, max);
+    const safeHeaders = headers.map((h) => clean(h, 120));
+    // A "table" whose header is mostly unreadable is a binary/corrupt file, not a dataset.
+    const readable = safeHeaders.join("").replace(/[^\x20-\x7E\u00A0-\uFFFF]/g, "");
+    if (safeHeaders.every((h) => h === "") || readable.length < headers.join("").length * 0.6) {
+      return failWith("failed", "The file does not look like a readable dataset (the header row is not text). Export it as CSV or XLSX and upload again.");
+    }
+    const safeRows = rows.slice(0, MAX_TABLE_ROWS).map((r) => r.map((c) => clean(c, 500)));
+    return {
+      ok: true,
+      kind,
+      headers: safeHeaders,
+      rows: safeRows,
+      totalRows: rows.length,
+      truncated: rows.length > MAX_TABLE_ROWS,
+      warnings: [
+        ...(rows.length > MAX_TABLE_ROWS ? [`Only the first ${MAX_TABLE_ROWS.toLocaleString()} rows were kept (of ${rows.length.toLocaleString()}).`] : []),
+        ...extraction.warnings.filter((w) => !/No structured profile/i.test(w)).slice(0, 5),
+      ],
+      signature,
+    };
+  } catch {
+    return failWith("failed", "The file could not be read. It may be corrupt, password protected or not a real dataset file.");
   }
 }
 
@@ -270,11 +367,16 @@ function fail(
   };
 }
 
-/** Maps quality status → a persistable row shape. */
-export function toRecordRows(datasetId: number, records: DatasetParticipant[]) {
-  return records.map((record, index) => ({
+/** Maps a normalised record → persistable row shape (incl. Phase 7 derived columns). */
+export function toRecordRows(datasetId: number, records: DatasetParticipant[], startRow = 1) {
+  return records.map((record, index) => toRecordRow(datasetId, startRow + index, record));
+}
+
+export function toRecordRow(datasetId: number, rowIndex: number, record: DatasetParticipant) {
+  const derived = deriveRecordFields(record);
+  return {
     datasetId,
-    rowIndex: index + 1,
+    rowIndex,
     data: record as unknown as Record<string, unknown>,
     qualityStatus: record.quality.status,
     issues: record.quality.issues,
@@ -284,5 +386,11 @@ export function toRecordRows(datasetId: number, records: DatasetParticipant[]) {
     heightCm: record.heightCm,
     weightKg: record.weightKg,
     activityLevel: record.activityLevel,
-  }));
+    participantId: record.participantId || null,
+    name: record.name || null,
+    gender: record.genderSource || null,
+    bmi: derived.bmi,
+    recordStatus: derived.recordStatus,
+    nutritionStatus: derived.nutritionStatus,
+  };
 }

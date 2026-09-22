@@ -217,6 +217,19 @@ export function mealFromItems(
  */
 export const MAX_GENERATION_ATTEMPTS = 4;
 
+/** Phase 3 — small ranking nudge for `GenerationOptions.preferTags`. */
+const PREFERRED_TAG_BOOST = 0.06;
+/** Phase 4 — maximum nudge when every ingredient of a food is in the pantry. */
+const PANTRY_BOOST_MAX = 0.08;
+
+/** Phase 4 — 0..PANTRY_BOOST_MAX, proportional to the share of ingredients on hand. */
+export function pantryBoost(food: FoodItemRecord, preferIngredients: string[] | undefined): number {
+  if (!preferIngredients || preferIngredients.length === 0 || food.ingredients.length === 0) return 0;
+  const have = new Set(preferIngredients);
+  const matched = food.ingredients.filter((ingredient) => have.has(ingredient)).length;
+  return matched === 0 ? 0 : PANTRY_BOOST_MAX * (matched / food.ingredients.length);
+}
+
 /**
  * Public entry point.
  *
@@ -242,6 +255,8 @@ export function generateDietPlan(
     const result = buildPlan(profile, processed, {
       variationSeed: seed,
       excludeFoodIds: excluded,
+      preferTags: options.preferTags,
+      preferIngredients: options.preferIngredients,
     });
 
     if (result.success) {
@@ -383,6 +398,11 @@ function buildPlan(
     const candidates =
       withinPrepLimit.length >= 2 ? withinPrepLimit : allCandidates;
 
+    const preferTags = options.preferTags ?? [];
+    const tagBoost = (food: FoodItemRecord) =>
+      (preferTags.length > 0 && preferTags.some((tag) => food.tags.includes(tag))
+        ? PREFERRED_TAG_BOOST
+        : 0) + pantryBoost(food, options.preferIngredients);
     const ranked = candidates
       .map((food) => ({
         food,
@@ -395,8 +415,9 @@ function buildPlan(
           usedIngredients,
           datasetFitFor,
         }),
+        boost: tagBoost(food),
       }))
-      .sort((a, b) => b.score.total - a.score.total);
+      .sort((a, b) => b.score.total + b.boost - (a.score.total + a.boost));
 
     // Controlled variation: choose among the best few, never at random
     // from the whole pool, so quality stays high while plans differ.

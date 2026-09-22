@@ -552,4 +552,17 @@ export interface GenerationOptions {
   variationSeed?: number;
   /** Food ids to skip this round (used by "Regenerate"). */
   excludeFoodIds?: string[];
+  /**
+   * Phase 3 — food tags to favour when ranking candidates (e.g. "budget").
+   * A gentle tie-breaker only: it never overrides restriction filters or
+   * the nutrition-fit score, and does not invent prices.
+   */
+  preferTags?: string[];
+  /**
+   * Phase 4 — normalised ingredient names the user already has (pantry).
+   * Another gentle ranking nudge, scaled by how many of a food's
+   * ingredients are on hand. Never bypasses restriction filters or
+   * nutrition-fit scoring.
+   */
+  preferIngredients?: string[];
 }

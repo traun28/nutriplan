@@ -45,3 +45,16 @@ export async function readJson<T>(request: Request): Promise<T | null> {
     return null;
   }
 }
+
+/** Translates a thrown value into a safe JSON error response. */
+export function errorResponse(error: unknown, fallback = "The server could not complete that request."): Response {
+  const status =
+    typeof error === "object" && error !== null && "status" in error && typeof (error as { status: unknown }).status === "number"
+      ? (error as { status: number }).status
+      : 500;
+  const message =
+    status < 500 || status === 503
+      ? (error instanceof Error && error.message) || fallback
+      : fallback;
+  return Response.json({ error: message }, { status });
+}

@@ -6,7 +6,22 @@ import { apiClient, toUserMessage } from "@/services/apiClient";
 import { Badge, Card, CardBody } from "@/components/ui/core";
 import type { DatasetNutritionAnalysis, NutrientAssessment, ParticipantNutritionAnalysis } from "@/services/dataset/nutritionGapAnalysis";
 
-interface Props { datasetId: number | null; }
+interface Props {
+  datasetId: number | null;
+  /** Phase 7: active filter query string — analysis is limited to the selected records. */
+  filterQuery?: string;
+  refreshKey?: number;
+}
+
+interface NutrientCount { key: string; label: string; unit: string; assessed: number; below: number; adequate: number; above: number }
+interface AnalysisResponse {
+  analysis: DatasetNutritionAnalysis;
+  scope: "all" | "selected";
+  filters: string[];
+  analysedRecords: number;
+  truncated: boolean;
+  nutrientCounts: NutrientCount[];
+}
 
 const severityTone: Record<string, string> = {
   adequate: "border-brand-400/25 bg-brand-50 text-brand-400",
@@ -84,7 +99,7 @@ function ParticipantReport({ participant }: { participant: ParticipantNutritionA
         <h4 className="text-sm font-bold text-ink">Nutrient details</h4>
         <div className="mt-2 overflow-x-auto rounded-[10px] border border-line">
           <table className="w-full min-w-[720px] border-collapse text-xs">
-            <thead className="bg-canvas text-left text-muted"><tr><th className="px-3 py-2">Nutrient</th><th className="px-3 py-2">Actual</th><th className="px-3 py-2">Target / reference</th><th className="px-3 py-2">Difference</th><th className="px-3 py-2">Status</th><th className="px-3 py-2">Coverage</th></tr></thead>
+            <thead className="bg-canvas text-left text-muted"><tr><th scope="col" className="px-3 py-2">Nutrient</th><th scope="col" className="px-3 py-2">Actual</th><th scope="col" className="px-3 py-2">Target / reference</th><th scope="col" className="px-3 py-2">Difference</th><th scope="col" className="px-3 py-2">Status</th><th scope="col" className="px-3 py-2">Coverage</th></tr></thead>
             <tbody>{participant.nutrients.map((item) => <AssessmentRow key={item.key} item={item} />)}</tbody>
           </table>
         </div>
@@ -113,8 +128,9 @@ function ParticipantReport({ participant }: { participant: ParticipantNutritionA
   );
 }
 
-export function NutritionGapAnalysis({ datasetId }: Props) {
+export function NutritionGapAnalysis({ datasetId, filterQuery = "", refreshKey = 0 }: Props) {
   const [analysis, setAnalysis] = useState<DatasetNutritionAnalysis | null>(null);
+  const [meta, setMeta] = useState<Omit<AnalysisResponse, "analysis"> | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
@@ -130,11 +146,16 @@ export function NutritionGapAnalysis({ datasetId }: Props) {
       return;
     }
     setLoading(true); setError(null);
-    void apiClient.get<{ analysis: DatasetNutritionAnalysis }>(`/api/datasets/${datasetId}/analysis`)
-      .then((data) => { setAnalysis(data.analysis); setSelectedId(data.analysis.participants[0]?.participantId ?? null); })
+    void apiClient.get<AnalysisResponse>(`/api/datasets/${datasetId}/analysis${filterQuery ? `?${filterQuery}` : ""}`)
+      .then((data) => {
+        setAnalysis(data.analysis);
+        setMeta({ scope: data.scope, filters: data.filters, analysedRecords: data.analysedRecords, truncated: data.truncated, nutrientCounts: data.nutrientCounts });
+        setSelectedId(data.analysis.participants[0]?.participantId ?? null);
+        setPage(1);
+      })
       .catch((err) => setError(toUserMessage(err, "The dataset analysis could not be loaded.")))
       .finally(() => setLoading(false));
-  }, [datasetId]);
+  }, [datasetId, filterQuery, refreshKey]);
 
   const filtered = useMemo(() => {
     if (!analysis) return [];
@@ -151,16 +172,27 @@ export function NutritionGapAnalysis({ datasetId }: Props) {
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
   const visibleParticipants = filtered.slice((page - 1) * pageSize, page * pageSize);
 
-  if (datasetId === null) return <Card><CardBody><p className="text-sm text-muted">Choose <strong>Analyze dataset</strong> on an uploaded dataset to see participant reports and nutritional gaps.</p></CardBody></Card>;
+  if (datasetId === null) return null;
   if (loading) return <Card><CardBody><p className="text-sm text-muted">Analyzing validated records…</p></CardBody></Card>;
   if (error) return <Card><CardBody><p role="alert" className="text-sm text-danger-700">{error}</p></CardBody></Card>;
   if (!analysis) return null;
 
   return (
-    <Card className="mt-6">
+    <Card>
       <CardBody className="space-y-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div><p className="text-xs font-bold uppercase tracking-wide text-brand-400">Nutrition gap analysis</p><h2 className="mt-1 text-xl font-bold text-ink">What the uploaded data shows</h2><p className="mt-1 text-sm text-muted">Actual records only. Missing reference targets remain clearly marked as not assessable.</p></div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wide text-brand-400">Nutrition gap analysis</p>
+            <h2 className="mt-1 text-xl font-bold text-ink">Potential gaps based on recorded data</h2>
+            <p className="mt-1 text-sm text-muted">Actual records only. Missing reference targets remain clearly marked as not assessable. Excluded records are omitted.</p>
+            {meta && (
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                <Badge tone={meta.scope === "selected" ? "warning" : "brand"}>{meta.scope === "selected" ? `Selected records (${meta.analysedRecords})` : `All records (${meta.analysedRecords})`}</Badge>
+                {meta.filters.map((f) => <Badge key={f} tone="neutral" className="px-2 py-0.5 text-[11px]">{f}</Badge>)}
+                {meta.truncated && <Badge tone="warning">Analysed the first {meta.analysedRecords.toLocaleString()} records</Badge>}
+              </div>
+            )}
+          </div>
           <BarChart3 className="h-6 w-6 text-brand-400" aria-hidden="true" />
         </div>
         <div className="grid gap-3 sm:grid-cols-4">
@@ -169,8 +201,27 @@ export function NutritionGapAnalysis({ datasetId }: Props) {
           <Metric label="Complete nutrition" value={analysis.completeNutritionParticipants} />
           <Metric label="Commonest gap" value={analysis.commonGap ? `${analysis.commonGap.label} (${analysis.commonGap.percentage}%)` : "None identified"} />
         </div>
+        {meta && meta.nutrientCounts.some((n) => n.assessed > 0) && (
+          <div className="overflow-x-auto rounded-[10px] border border-line">
+            <table className="w-full min-w-[520px] text-left text-xs">
+              <caption className="px-3 py-2 text-left text-xs font-bold text-ink">Records below / within / above the calculated reference, per nutrient</caption>
+              <thead className="bg-canvas text-[11px] uppercase tracking-wide text-muted"><tr><th scope="col" className="px-3 py-2">Nutrient</th><th scope="col" className="px-3 py-2 text-right">Assessed</th><th scope="col" className="px-3 py-2 text-right">Below target</th><th scope="col" className="px-3 py-2 text-right">Adequate</th><th scope="col" className="px-3 py-2 text-right">Above reference</th></tr></thead>
+              <tbody>
+                {meta.nutrientCounts.filter((n) => n.assessed > 0).map((n) => (
+                  <tr key={n.key} className="border-t border-line">
+                    <th scope="row" className="px-3 py-1.5 font-semibold text-ink">{n.label}</th>
+                    <td className="px-3 py-1.5 text-right tabular-nums">{n.assessed}</td>
+                    <td className="px-3 py-1.5 text-right tabular-nums">{n.below} ({n.assessed ? Math.round((n.below / n.assessed) * 100) : 0}%)</td>
+                    <td className="px-3 py-1.5 text-right tabular-nums">{n.adequate} ({n.assessed ? Math.round((n.adequate / n.assessed) * 100) : 0}%)</td>
+                    <td className="px-3 py-1.5 text-right tabular-nums">{n.above} ({n.assessed ? Math.round((n.above / n.assessed) * 100) : 0}%)</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{analysis.averages.map((item) => <Metric key={item.label} label={`Average ${item.label}`} value={item.value === null ? "Not available" : `${item.value} ${item.unit}`} detail={`${item.count} records with data`} />)}</div>
-        <div className="rounded-[10px] border border-line bg-canvas p-4"><h3 className="text-sm font-bold text-ink">Student records</h3><div className="mt-3 flex flex-col gap-2 sm:flex-row"><div className="relative flex-1"><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden="true" /><input value={query} onChange={(event) => { setQuery(event.target.value); setPage(1); }} placeholder="Search ID or name" className="h-10 w-full rounded-[10px] border border-line bg-surface pl-9 pr-3 text-sm" /></div><select value={filter} onChange={(event) => { setFilter(event.target.value); setPage(1); }} className="h-10 rounded-[10px] border border-line bg-surface px-3 text-sm"><option value="all">All participants</option><option value="needs_review">Needs review</option>{analysis.participants[0]?.nutrients.map((nutrient) => <option key={nutrient.key} value={nutrient.key}>{nutrient.label} needs review</option>)}</select></div><div className="mt-3 overflow-x-auto rounded-[10px] border border-line bg-surface"><table className="w-full min-w-[700px] border-collapse text-xs"><thead className="bg-canvas text-left text-muted"><tr><th className="px-3 py-2">ID</th><th className="px-3 py-2">Name</th><th className="px-3 py-2">Age</th><th className="px-3 py-2">Calories</th><th className="px-3 py-2">Protein</th><th className="px-3 py-2">Fibre</th><th className="px-3 py-2">Status</th><th className="px-3 py-2" /></tr></thead><tbody>{visibleParticipants.map((participant) => { const calories = participant.nutrients.find((item) => item.key === "caloriesKcal"); const protein = participant.nutrients.find((item) => item.key === "proteinG"); const fibre = participant.nutrients.find((item) => item.key === "dietaryFibreG"); return <tr key={participant.participantId} className={`border-t border-line/70 ${selectedId === participant.participantId ? "bg-brand-50" : ""}`}><td className="px-3 py-2 font-semibold text-ink">{participant.participantId || "—"}</td><td className="px-3 py-2 text-ink">{participant.name || "Unnamed"}</td><td className="px-3 py-2 text-muted">{participant.age ?? "—"}</td><td className="px-3 py-2 text-muted">{calories?.actual ?? "—"}</td><td className="px-3 py-2 text-muted">{protein?.actual ?? "—"}</td><td className="px-3 py-2 text-muted">{fibre?.actual ?? "—"}</td><td className="px-3 py-2"><span className={`rounded-pill border px-2 py-1 text-[11px] font-semibold ${severityTone[participant.gaps[0]?.severity ?? "not_assessable"]}`}>{participant.qualityStatus === "clean" ? (participant.gaps.length ? "Needs review" : "Adequate") : participant.qualityStatus.replace("_", " ")}</span></td><td className="px-3 py-2"><button type="button" onClick={() => setSelectedId(participant.participantId)} className="font-semibold text-brand-400 hover:underline">View</button></td></tr>; })}</tbody></table></div><div className="mt-3 flex items-center justify-between text-xs text-muted"><span>{filtered.length} matching student(s)</span><div className="flex gap-2"><button type="button" disabled={page <= 1} onClick={() => setPage((current) => current - 1)} className="rounded border border-line px-2 py-1 disabled:opacity-40">Previous</button><span className="px-2 py-1">Page {page} of {pageCount}</span><button type="button" disabled={page >= pageCount} onClick={() => setPage((current) => current + 1)} className="rounded border border-line px-2 py-1 disabled:opacity-40">Next</button></div></div></div>
+        <div className="rounded-[10px] border border-line bg-canvas p-4"><h3 className="text-sm font-bold text-ink">Student records</h3><div className="mt-3 flex flex-col gap-2 sm:flex-row"><div className="relative flex-1"><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden="true" /><input value={query} onChange={(event) => { setQuery(event.target.value); setPage(1); }} placeholder="Search ID or name" aria-label="Search participants by ID or name" className="h-10 w-full rounded-[10px] border border-line bg-surface pl-9 pr-3 text-sm" /></div><select value={filter} onChange={(event) => { setFilter(event.target.value); setPage(1); }} aria-label="Filter participants" className="h-10 rounded-[10px] border border-line bg-surface px-3 text-sm"><option value="all">All participants</option><option value="needs_review">Needs review</option>{analysis.participants[0]?.nutrients.map((nutrient) => <option key={nutrient.key} value={nutrient.key}>{nutrient.label} needs review</option>)}</select></div><div className="mt-3 overflow-x-auto rounded-[10px] border border-line bg-surface"><table className="w-full min-w-[700px] border-collapse text-xs"><thead className="bg-canvas text-left text-muted"><tr><th scope="col" className="px-3 py-2">ID</th><th scope="col" className="px-3 py-2">Name</th><th scope="col" className="px-3 py-2">Age</th><th scope="col" className="px-3 py-2">Calories</th><th scope="col" className="px-3 py-2">Protein</th><th scope="col" className="px-3 py-2">Fibre</th><th scope="col" className="px-3 py-2">Status</th><th scope="col" className="px-3 py-2"><span className="sr-only">Actions</span></th></tr></thead><tbody>{visibleParticipants.map((participant) => { const calories = participant.nutrients.find((item) => item.key === "caloriesKcal"); const protein = participant.nutrients.find((item) => item.key === "proteinG"); const fibre = participant.nutrients.find((item) => item.key === "dietaryFibreG"); return <tr key={participant.participantId} className={`border-t border-line/70 ${selectedId === participant.participantId ? "bg-brand-50" : ""}`}><td className="px-3 py-2 font-semibold text-ink">{participant.participantId || "—"}</td><td className="px-3 py-2 text-ink">{participant.name || "Unnamed"}</td><td className="px-3 py-2 text-muted">{participant.age ?? "—"}</td><td className="px-3 py-2 text-muted">{calories?.actual ?? "—"}</td><td className="px-3 py-2 text-muted">{protein?.actual ?? "—"}</td><td className="px-3 py-2 text-muted">{fibre?.actual ?? "—"}</td><td className="px-3 py-2"><span className={`rounded-pill border px-2 py-1 text-[11px] font-semibold ${severityTone[participant.gaps[0]?.severity ?? "not_assessable"]}`}>{participant.qualityStatus === "clean" ? (participant.gaps.length ? "Needs review" : "Adequate") : participant.qualityStatus.replace("_", " ")}</span></td><td className="px-3 py-2"><button type="button" onClick={() => setSelectedId(participant.participantId)} className="font-semibold text-brand-400 hover:underline">View</button></td></tr>; })}</tbody></table></div><div className="mt-3 flex items-center justify-between text-xs text-muted"><span>{filtered.length} matching student(s)</span><div className="flex gap-2"><button type="button" disabled={page <= 1} onClick={() => setPage((current) => current - 1)} className="rounded border border-line px-2 py-1 disabled:opacity-40">Previous</button><span className="px-2 py-1">Page {page} of {pageCount}</span><button type="button" disabled={page >= pageCount} onClick={() => setPage((current) => current + 1)} className="rounded border border-line px-2 py-1 disabled:opacity-40">Next</button></div></div></div>
         {selected && <ParticipantReport participant={selected} />}
         <details className="rounded-[10px] border border-line p-4"><summary className="cursor-pointer text-sm font-bold text-ink">How the analysis is calculated</summary><ul className="mt-3 list-disc space-y-1 pl-5 text-xs leading-relaxed text-muted">{analysis.methodology.map((item) => <li key={item}>{item}</li>)}</ul></details>
       </CardBody>
