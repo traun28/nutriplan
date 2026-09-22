@@ -9,7 +9,7 @@ import {
   getDatasetRecords,
   updateDataset,
 } from "@/services/server/repository";
-import { currentUser, notFound, serverError, unauthorized, badRequest } from "@/services/server/guard";
+import { currentUser, notFound, unauthorized, badRequest } from "@/services/server/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -59,7 +59,9 @@ export async function DELETE(_request: Request, { params }: Params) {
   const datasetId = Number(id);
   if (!Number.isInteger(datasetId)) return badRequest("Invalid dataset id.");
 
-  const okDeleted = await deleteDataset(user.id, datasetId);
-  if (!okDeleted) return serverError("The dataset could not be deleted.");
+    const okDeleted = await deleteDataset(user.id, datasetId);
+  // False means the row did not exist or belongs to another user —
+  // report it as not found, never as a phantom success.
+  if (!okDeleted) return notFound("That dataset could not be found.");
   return Response.json({ ok: true });
 }

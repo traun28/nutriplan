@@ -282,8 +282,11 @@ export async function deleteDataset(userId: number, id: number): Promise<boolean
       .returning({ id: datasets.id });
     if (deleted.length > 0) {
       await db.delete(datasetRecords).where(eq(datasetRecords.datasetId, id));
+      return true;
     }
-    return true;
+    // Nothing matched (not found, or not owned by this user) — the route
+    // must report that honestly instead of claiming a delete it never made.
+    return false;
   } catch {
     return false;
   }
@@ -316,7 +319,7 @@ export async function getDatasetRecords(userId: number, datasetId: number, limit
   if (!hasDatabase) return getDevDatasetRecords(userId, datasetId, limit, offset);
   try {
     const owned = await getDataset(userId, datasetId);
-    if (!owned) return { rows: [], total: owned === null ? 0 : 0 };
+    if (!owned) return { rows: [], total: 0 };
     const rows = await db
       .select()
       .from(datasetRecords)

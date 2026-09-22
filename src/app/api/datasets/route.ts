@@ -57,6 +57,10 @@ export async function POST(request: Request) {
     return Response.json({ error: "The upload could not be read." }, { status: 400 });
   }
 
+  if (bytes.length === 0) {
+    return Response.json({ error: "The uploaded file is empty." }, { status: 400 });
+  }
+
   const row = await createDataset(user.id, {
     fileName,
     displayName: fileName,

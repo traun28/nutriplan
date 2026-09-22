@@ -4,5 +4,8 @@
 .next/
 node_modules/
 
+# Local embedded PostgreSQL data (created by `npm run db:local`)
+.pgdata/
+
 # Generated hero stills live at /home/user/video-src (see scripts/hero-video/README.md).
 /home/user/video-src/
