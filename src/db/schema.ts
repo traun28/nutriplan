@@ -96,6 +96,15 @@ export const datasets = pgTable("datasets", {
   /** Limited sample rows for preview (never the whole file in the list view). */
   previewRows: jsonb("preview_rows").$type<string[][]>().notNull().default([]),
   warnings: jsonb("warnings").$type<string[]>().notNull().default([]),
+  /** Phase 7: validation report from the upload → validate step (staged uploads). */
+  validation: jsonb("validation"),
+  /** Phase 7: confirmed header → field mapping used at import time. */
+  columnMapping: jsonb("column_mapping").$type<Record<string, string>>(),
+  /** Phase 7: number of rows the user chose to import vs. rejected. */
+  importedRows: integer("imported_rows"),
+  rejectedRows: integer("rejected_rows"),
+  /** Phase 7: raw header + rows held between validate and import; cleared after import. */
+  stagedTable: jsonb("staged_table").$type<{ headers: string[]; rows: string[][] }>(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -115,7 +124,32 @@ export const datasetRecords = pgTable("dataset_records", {
   heightCm: real("height_cm"),
   weightKg: real("weight_kg"),
   activityLevel: text("activity_level"),
-});
+  /* ---- Phase 7 additive columns (nullable, so existing rows are untouched) ---- */
+  /** Searchable identifier / display name mirrors (no other PII is indexed). */
+  participantId: text("participant_id"),
+  name: text("name"),
+  gender: text("gender"),
+  /** BMI from calculateBmi() — same methodology as the user's own analytics. */
+  bmi: real("bmi"),
+  /** complete | incomplete | needs_review — derived from the actual data. */
+  recordStatus: text("record_status"),
+  /** Calories vs calculated reference: below_target | adequate | above_reference | not_assessable. */
+  nutritionStatus: text("nutrition_status"),
+  /** Review workflow: marked reviewed by the owner (never auto-set). */
+  reviewed: boolean("reviewed").default(false),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+  /** Excluded from analytics by the owner — never deleted silently. */
+  excluded: boolean("excluded").default(false),
+  /** Free-text reason for review/exclusion (owner-entered). */
+  reviewNote: text("review_note"),
+  /** Last owner edit — prior values are kept here for traceability. */
+  editedAt: timestamp("edited_at", { withTimezone: true }),
+  editHistory: jsonb("edit_history").$type<Array<{ at: string; field: string; from: unknown; to: unknown }>>(),
+}, (table) => [
+  index("dataset_records_dataset_row_idx").on(table.datasetId, table.rowIndex),
+  index("dataset_records_dataset_status_idx").on(table.datasetId, table.recordStatus),
+  index("dataset_records_dataset_pid_idx").on(table.datasetId, table.participantId),
+]);
 
 /* ------------------------------------------------------------------ */
 /* Attachments                                                         */

@@ -1,17 +1,14 @@
 /**
  * GET  /api/datasets — list the signed-in user's uploaded datasets (metadata
  * only; records live in their own table and are paged on the detail route).
- * POST /api/datasets — upload + process a dataset file (DOCX, PDF, CSV,
- * XLSX, JSON, XML, TXT …), then persist the normalised records.
+ * POST /api/datasets — upload + validate a dataset file (CSV, XLSX, DOCX,
+ * PDF, JSON, XML, TXT …). Phase 7: nothing is imported here — the response is
+ * a validation report; records are written by POST /api/datasets/:id/import
+ * once the user has reviewed the preview and confirmed the column mapping.
  */
-import {
-  createDataset,
-  insertDatasetRecords,
-  listDatasets,
-  updateDataset,
-} from "@/services/server/repository";
+import { listDatasets } from "@/services/server/repository";
 import { currentUser, unauthorized, serverError } from "@/services/server/guard";
-import { ingestDataset, toRecordRows } from "@/services/dataset/ingest";
+import { publicDataset, stageUpload } from "@/services/dataset/importService";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,7 +17,7 @@ export async function GET() {
   const user = await currentUser();
   if (!user) return unauthorized();
   try {
-    return Response.json({ datasets: await listDatasets(user.id) });
+    return Response.json({ datasets: (await listDatasets(user.id)).map(publicDataset) });
   } catch {
     return serverError("Could not load your datasets.");
   }
@@ -61,49 +58,10 @@ export async function POST(request: Request) {
     return Response.json({ error: "The uploaded file is empty." }, { status: 400 });
   }
 
-  const row = await createDataset(user.id, {
-    fileName,
-    displayName: fileName,
-    kind: "unknown",
-    mimeType,
-    fileSizeBytes: bytes.length,
-    status: "processing",
-    statusDetail: "Processing your dataset…",
-  });
-
-  if (!row) return serverError("Could not start the upload.");
-
-  const result = await ingestDataset(bytes, fileName, mimeType);
-
-  if (result.records.length > 0) {
-    const inserted = await insertDatasetRecords(row.id, toRecordRows(row.id, result.records));
-    if (!inserted) {
-      await updateDataset(user.id, row.id, {
-        status: "failed",
-        statusDetail: "The dataset was read but its records could not be saved.",
-      });
-      return serverError("The dataset records could not be saved.");
-    }
+  // Phase 7: staged workflow — validate now, import only after confirmation.
+  const staged = await stageUpload(user.id, bytes, fileName, mimeType);
+  if (!staged.ok) {
+    return Response.json({ error: staged.error, dataset: staged.dataset ?? null }, { status: staged.status });
   }
-
-  const updated = await updateDataset(user.id, row.id, {
-    kind: result.kind,
-    status: result.status,
-    statusDetail: result.statusDetail,
-    recordCount: result.recordCount,
-    columns: result.columns,
-    quality: result.quality as unknown as Record<string, unknown> | null,
-    statistics: result.statistics as unknown as Record<string, unknown> | null,
-    previewRows: result.previewRows,
-    warnings: result.warnings,
-  });
-
-  return Response.json({ dataset: updated ?? row, result: {
-    status: result.status,
-    statusDetail: result.statusDetail,
-    recordCount: result.recordCount,
-    columns: result.columns,
-    previewRows: result.previewRows,
-    warnings: result.warnings,
-  } });
+  return Response.json({ dataset: staged.dataset, report: staged.report, warnings: staged.fileWarnings ?? [] });
 }

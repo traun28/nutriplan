@@ -10,6 +10,7 @@ import {
   updateDataset,
 } from "@/services/server/repository";
 import { currentUser, notFound, unauthorized, badRequest } from "@/services/server/guard";
+import { publicDataset } from "@/services/dataset/importService";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -32,7 +33,7 @@ export async function GET(_request: Request, { params }: Params) {
   const offset = Math.max(Number(url.searchParams.get("offset") ?? 0) || 0, 0);
 
   const { rows, total } = await getDatasetRecords(user.id, datasetId, limit, offset);
-  return Response.json({ dataset, records: rows, total });
+  return Response.json({ dataset: publicDataset(dataset), records: rows, total });
 }
 
 export async function PATCH(request: Request, { params }: Params) {
@@ -43,12 +44,14 @@ export async function PATCH(request: Request, { params }: Params) {
   const datasetId = Number(id);
   if (!Number.isInteger(datasetId)) return badRequest("Invalid dataset id.");
 
-  const body = (await request.json().catch(() => ({}))) as { imported?: boolean };
-  const updated = await updateDataset(user.id, datasetId, {
-    imported: body.imported === true,
-  });
+  const body = (await request.json().catch(() => ({}))) as { imported?: boolean; displayName?: string };
+  const values: { imported?: boolean; displayName?: string } = {};
+  if (typeof body.imported === "boolean") values.imported = body.imported;
+  if (typeof body.displayName === "string" && body.displayName.trim()) values.displayName = body.displayName.trim().slice(0, 120);
+  if (Object.keys(values).length === 0) return badRequest("Nothing to update.");
+  const updated = await updateDataset(user.id, datasetId, values);
   if (!updated) return notFound("That dataset could not be found.");
-  return Response.json({ dataset: updated });
+  return Response.json({ dataset: publicDataset(updated) });
 }
 
 export async function DELETE(_request: Request, { params }: Params) {

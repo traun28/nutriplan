@@ -136,7 +136,11 @@ export const COLUMN_ALIASES: Record<string, string[]> = {
 
 /** Maps one raw header string to a canonical field name, or null. */
 export function resolveColumn(rawHeader: string): string | null {
-  const normalised = rawHeader.trim().toLowerCase().replace(/[_\s]+/g, " ");
+  const trimmed = rawHeader.trim();
+  // Canonical field names (e.g. "heightCm", "caloriesKcal") always resolve
+  // to themselves — used by manual entry and record editing.
+  if (Object.prototype.hasOwnProperty.call(COLUMN_ALIASES, trimmed)) return trimmed;
+  const normalised = trimmed.toLowerCase().replace(/[_\s]+/g, " ");
   for (const [field, aliases] of Object.entries(COLUMN_ALIASES)) {
     if (aliases.some((alias) => alias === normalised)) return field;
   }

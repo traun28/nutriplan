@@ -13,7 +13,7 @@ export const ATTACHMENT_LIMITS: AttachmentLimits = {
   maxAttachments: 8,
   maxTotalBytes: 40 * 1024 * 1024, // 40 MB across the session
   maxExtractedTextChars: 200_000,
-  maxCsvRows: 2_000,
+  maxCsvRows: 5_000,
   maxSpreadsheetRows: 5_000,
   maxArchiveEntries: 50,
   maxArchiveTotalBytes: 25 * 1024 * 1024,

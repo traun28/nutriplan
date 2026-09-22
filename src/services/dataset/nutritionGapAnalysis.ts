@@ -116,6 +116,15 @@ function targetFor(
   return null;
 }
 
+/**
+ * Calculated calorie reference for a dataset record, using the same
+ * processUserProfile() pipeline as the user's own plan. Null when the record
+ * lacks age/height/weight/activity. Exposed for Phase 7 record derivation.
+ */
+export function calorieReferenceFor(record: DatasetParticipant): number | null {
+  return targetFor("caloriesKcal", record);
+}
+
 function classify(actual: number | null, target: number | null): Pick<NutrientAssessment, "status" | "severity" | "difference" | "percentageOfTarget"> {
   if (actual === null || target === null || target <= 0) {
     return { status: "not_assessable", severity: "not_assessable", difference: null, percentageOfTarget: null };

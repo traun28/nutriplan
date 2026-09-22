@@ -1,0 +1,68 @@
+Student ID,Full Name,Age,Sex,Height (cm),Weight (kg),Activity,Breakfast,Lunch,Dinner,Snacks,Calories,Protein (g),Carbs,Fat (g),Fiber,Sugar,Sodium (mg),House
+S1001,Student 1,21,Female,183.2,62.8,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1582,43,198,74,26,33,1276,Red
+S1002,Student 2,22,Male,164.6,55.8,Light,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1884,75,288,43,30,60,2393,Red
+S1003,Student 3,22,Male,151.7,54.9,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1671,75,214,58,28,39,2347,Red
+S1004,Student 4,17,Male,170.4,73.8,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1774,63,204,75,29,33,2216,Blue
+S1005,Student 5,21,Male,166.3,86.6,Light,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1812,63,256,55,12,56,1814,Blue
+S1006,Student 6,21,Male,175.5,58.0,Moderate,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1657,44,210,72,14,51,2063,Red
+S1007,Student 7,17,Female,176.8,70.8,Active,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2048,60,267,84,12,25,1752,Blue
+S1008,Student 8,17,Female,152.1,76.6,Moderate,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2053,81,294,58,10,49,1927,Red
+S1009,Student 9,17,Female,167.3,54.8,Active,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1838,58,213,87,25,25,1540,Blue
+S1010,Student 10,22,Female,169.2,84.8,Moderate,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2091,67,320,57,22,34,1509,Red
+S1011,Student 11,18,Female,155.3,74.6,Moderate,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2032,40,304,77,10,29,2058,Blue
+S1012,Student 12,21,Female,183.4,76.1,Active,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1736,72,193,69,22,45,1412,Blue
+S1013,Student 13,22,Female,152.2,48.0,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1784,53,292,50,13,20,2360,Red
+S1014,Student 14,24,Female,153.6,61.4,Light,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1451,41,198,53,30,36,1911,Blue
+S1015,Student 15,23,Male,154.3,83.2,Light,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2093,69,302,70,13,41,2716,Blue
+S1016,Student 16,23,Male,179.0,52.3,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1735,41,232,73,26,39,2516,Red
+S1017,Student 17,20,Female,168.1,85.9,Light,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1871,62,237,74,29,32,2850,Red
+S1018,Student 18,22,Male,175.9,55.2,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2107,73,306,62,18,50,1730,Red
+S1019,Student 19,21,Male,165.7,87.2,Light,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1713,62,273,45,25,32,1891,Red
+S1020,Student 20,23,Male,171.8,85.5,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2081,40,302,81,22,32,2179,Red
+S1021,Student 21,22,Male,177.6,60.0,Light,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2080,86,281,69,15,28,1256,Red
+S1022,Student 22,23,Female,178.2,51.6,Light,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2313,78,301,82,27,55,1468,Red
+S1023,Student 23,16,Male,178.0,77.7,Active,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2282,46,314,87,16,33,1257,Blue
+S1024,Student 24,19,Female,160.3,55.8,Light,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1873,77,263,56,11,42,2138,Blue
+S1025,Student 25,24,Male,154.6,51.8,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1675,72,184,68,14,31,1489,Blue
+S1026,Student 26,17,Male,169.5,59.7,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2228,73,315,75,17,32,1767,Red
+S1027,Student 27,17,Male,167.8,70.3,Moderate,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1729,88,196,68,24,52,2292,Blue
+S1028,Student 28,24,Female,183.0,76.5,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1717,56,231,68,22,48,1847,Red
+S1029,Student 29,19,Female,165.0,54.6,Light,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1840,59,211,89,18,28,2157,Red
+S1030,Student 30,17,Female,163.9,66.9,Active,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1756,82,237,50,20,46,1600,Blue
+S1031,Student 31,21,Male,153.2,61.5,Active,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2074,61,297,68,20,53,2477,Blue
+S1032,Student 32,24,Female,183.6,50.1,Moderate,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1676,90,238,46,11,31,1753,Red
+S1033,Student 33,22,Female,179.7,75.4,Moderate,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1805,56,283,49,12,37,1317,Red
+S1034,Student 34,22,Male,181.3,57.1,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1426,41,202,56,18,27,2129,Red
+S1035,Student 35,21,Male,184.8,63.8,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1465,57,213,42,15,36,1303,Red
+S1036,Student 36,19,Male,182.6,73.3,Moderate,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1739,73,232,58,21,21,1712,Red
+S1037,Student 37,16,Female,150.6,67.8,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2053,52,311,70,30,47,2544,Blue
+S1038,Student 38,24,Male,179.2,62.7,Moderate,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2043,72,258,84,16,60,1486,Blue
+S1039,Student 39,21,Female,184.4,82.7,Active,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1706,40,198,80,15,23,1373,Blue
+S1040,Student 40,24,Male,173.5,57.7,Light,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1616,55,255,42,18,48,1207,Blue
+S1041,Student 41,21,Female,183.7,88.8,Light,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1787,75,262,55,21,31,1202,Blue
+S1042,Student 42,22,Male,152.9,57.6,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1747,81,231,55,18,25,1494,Blue
+S1043,Student 43,16,Male,163.8,58.5,Active,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1695,80,239,45,20,51,1506,Blue
+S1044,Student 44,18,Male,151.5,82.6,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2247,72,289,86,28,34,1374,Red
+S1045,Student 45,16,Male,154.7,61.2,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1911,46,276,68,30,54,2594,Red
+S1046,Student 46,23,Male,159.2,65.6,Active,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2025,44,308,74,18,24,2932,Blue
+S1047,Student 47,19,Female,175.5,54.2,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2223,87,297,71,25,38,2770,Red
+S1048,Student 48,19,Male,152.7,51.6,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1975,56,257,79,25,23,2194,Blue
+S1049,Student 49,17,Female,174.2,75.4,Active,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2001,58,312,58,13,55,1608,Blue
+S1050,Student 50,17,Female,182.8,45.8,Active,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1717,69,199,72,16,33,1352,Red
+S1051,Student 51,18,Female,176.2,56.8,Sedentary,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1850,63,213,78,21,34,2219,Blue
+S1052,Student 52,22,Male,150.9,45.2,Active,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2027,71,295,65,21,44,1847,Red
+S1053,Student 53,21,Male,150.1,78.8,Moderate,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1599,65,210,52,18,43,1333,Blue
+S1054,Student 54,22,Male,185.0,71.5,Moderate,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2175,63,289,88,13,23,2909,Blue
+S1055,Student 55,18,Female,158.7,57.0,Active,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1834,72,260,52,10,60,2019,Red
+S1056,Student 56,17,Female,151.7,78.0,Active,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1912,68,215,81,11,55,1460,Red
+S1057,Student 57,23,Male,164.5,57.7,Moderate,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1816,56,246,65,25,55,2569,Blue
+S1058,Student 58,17,Male,155.9,52.3,Active,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,2093,53,308,71,20,48,2075,Red
+S1059,Student 59,24,Female,156.7,49.1,Moderate,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1566,61,203,60,28,32,1241,Blue
+S1060,Student 60,22,Male,164.5,68.6,Active,"Idli, Sambar","Rice, Dal, Vegetable curry","Chapati, Paneer curry",Banana,1837,64,249,61,18,56,1937,Red
+S1001,Student 1 dup,19,Male,170,65,Light,Idli,Rice,Chapati,,2100,70,260,60,20,30,1500,Red
+S2001,Neg Age,-5,Female,160,55,Light,Idli,Rice,Chapati,,1900,60,240,55,20,30,1500,Red
+S2002,Text Weight,20,Female,160,heavy,Light,Idli,Rice,Chapati,,1900,60,240,55,20,30,1500,Red
+S2003,Missing Height,21,Male,,70,Moderate,Idli,Rice,Chapati,,2200,70,270,60,20,30,1500,Red
+S2004,Tall,22,Male,260,70,Moderate,Idli,Rice,Chapati,,2200,70,270,60,20,30,1500,Red
+S2005,Bad kcal,22,Male,175,70,Moderate,Idli,Rice,Chapati,,9000,70,270,60,20,30,1500,Red
+,No ID,22,Male,175,70,Moderate,Idli,Rice,Chapati,,2200,70,270,60,20,30,1500,Red

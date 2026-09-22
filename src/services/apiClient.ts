@@ -28,18 +28,22 @@ export class ApiError extends Error {
   status: number | null;
   /** True when retrying could plausibly succeed. */
   retryable: boolean;
+  /** Parsed JSON error body (e.g. field-level validation errors), if any. */
+  details: Record<string, unknown> | null;
 
   constructor(
     kind: ApiErrorKind,
     message: string,
     status: number | null = null,
     retryable = false,
+    details: Record<string, unknown> | null = null,
   ) {
     super(message);
     this.name = "ApiError";
     this.kind = kind;
     this.status = status;
     this.retryable = retryable;
+    this.details = details;
   }
 }
 
@@ -119,9 +123,11 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 
     if (!response.ok) {
       let serverMessage: string | undefined;
+      let details: Record<string, unknown> | null = null;
       try {
         const parsed = (await response.json()) as { error?: string };
         serverMessage = parsed?.error;
+        if (parsed && typeof parsed === "object") details = parsed as Record<string, unknown>;
       } catch {
         // non-JSON error body — fall back to the status-based message
       }
@@ -131,6 +137,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
         friendlyMessage(status, serverMessage),
         status,
         status >= 500 || status === 408 || status === 429,
+        details,
       );
     }
 

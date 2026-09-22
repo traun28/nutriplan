@@ -3,10 +3,10 @@
 /**
  * Part 15 — Dataset upload workspace.
  *
- * Drag & drop (or browse) a dataset file — DOCX, PDF, CSV, XLSX, JSON, XML,
- * TXT — then process it. The file is uploaded to /api/datasets, which runs
- * the real ingestion pipeline server-side; the preview and quality report
- * shown afterwards come from that response, never from invented data.
+ * Drag & drop (or browse) a dataset file — CSV, XLSX, DOCX, PDF, JSON, XML,
+ * TXT — then upload it. Phase 7: /api/datasets only VALIDATES the file and
+ * returns a report (column mapping, quality, errors, preview). Records are
+ * written only when the user confirms in the ImportReview step.
  */
 import { AlertTriangle, CheckCircle2, FileUp, Loader2, X } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
@@ -14,22 +14,25 @@ import { apiClient, toUserMessage } from "@/services/apiClient";
 import { ATTACHMENT_LIMITS, formatBytes } from "@/services/attachments/config";
 import { Button } from "@/components/ui/core";
 import { cn } from "@/lib/cn";
+import type { ValidationReport } from "@/services/dataset/validationTypes";
 
 const ACCEPTED =
   ".docx,.pdf,.csv,.tsv,.xlsx,.json,.xml,.txt,.html,.htm,.odt,.pptx,.rtf";
 
+/** Phase 7: the upload response is a validation report — nothing is imported yet. */
 export interface DatasetUploadResult {
   dataset: {
     id: number;
     fileName: string;
+    displayName: string;
     kind: string;
     status: string;
     recordCount: number;
     columns: string[];
-    previewRows: string[][];
     warnings: string[];
   };
-  statusDetail: string;
+  report: ValidationReport;
+  warnings: string[];
 }
 
 interface Props {
@@ -81,10 +84,9 @@ export function DatasetUploader({ onUploaded }: Props) {
         selected.type,
       );
       setProgress(100);
+      const q = result.report.quality;
       setSuccess(
-        result.dataset.recordCount > 0
-          ? `Processed ${result.dataset.recordCount} record(s) from ${selected.name}.`
-          : `${selected.name} was uploaded, but no records were detected.`,
+        `Validated ${q.totalRows.toLocaleString()} row(s) from ${selected.name} — ${q.importableRows.toLocaleString()} can be imported. Review the report below before importing.`,
       );
       setSelected(null);
       onUploaded(result);
@@ -145,7 +147,7 @@ export function DatasetUploader({ onUploaded }: Props) {
             {dragging
               ? "Drop your dataset here"
               : busy
-                ? "Processing your dataset…"
+                ? "Uploading and validating…"
                 : "Drag & drop your dataset here, or click to browse"}
           </p>
           <p className="mt-1 text-xs text-muted">
@@ -185,7 +187,7 @@ export function DatasetUploader({ onUploaded }: Props) {
           </div>
           <div className="flex gap-2">
             <Button size="sm" onClick={() => void process()}>
-              Process dataset
+              Upload &amp; validate
             </Button>
             <button
               type="button"

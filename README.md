@@ -748,7 +748,75 @@ messages / 30 actions per minute.
 Environment variables (all optional): `AI_PROVIDER`, `AI_API_KEY`,
 `AI_MODEL`, `AI_BASE_URL`, `AI_TIMEOUT_MS`.
 
-## 24. Future enhancements
+## 24. Student Dataset Analyzer (Phase 7)
+
+Phase 7 improves the existing Dataset Management module (`/datasets`) into a
+validated, reviewable Student Dataset Analyzer. It reuses the Part 11
+normaliser/validator, `calculateBmi()`, the Phase 6 AI provider and the
+existing nutrition gap analysis — no second calculation engine.
+
+**Upload workflow** — Select → Upload → **Validate** → Review → **Import valid
+rows** / Cancel. `POST /api/datasets` now only *stages* the file (type/size/
+signature checks, first table extracted, up to 5 000 rows) and returns a
+validation report; the raw table is held on the dataset row (`staged_table`)
+until the user confirms via `POST /api/datasets/:id/import`, which writes the
+records and clears the staged copy. Cancelling deletes the staged row. Nothing
+is imported without confirmation.
+
+**Validation report** (`src/services/dataset/validation.ts`) — column summary
+(detected / required / optional / unknown) with a **column-mapping** step:
+exact aliases from `COLUMN_ALIASES` are applied, loose matches are only
+*suggested* and must be confirmed (`POST /api/datasets/:id/validate` with
+`{ mapping }`). Quality counts (total / valid / invalid / duplicate / missing /
+invalid numeric / unknown columns / processed / importable), per-field
+completeness (total / filled / missing / % / invalid), **duplicates by
+participant ID** (rows + which fields differ; never by name, never auto-
+deleted), row error report (row / field / problem / expected format) and a
+preview of parsed rows. Rows with parse errors (negative or non-numeric
+values, missing ID) are rejected; incomplete / needs-review rows are imported
+*with* their status.
+
+**Derived per-record columns** (additive, nullable — no reset): `participant_id`,
+`name`, `gender`, `bmi`, `record_status` (complete / incomplete / needs_review),
+`nutrition_status` (calories vs the calculated reference: below_target /
+adequate / above_reference / not_assessable), review fields (`reviewed`,
+`reviewed_at`, `excluded`, `review_note`, `edited_at`, `edit_history`).
+Pre-Phase-7 rows are back-filled lazily from their stored record.
+
+**Analyzer** (`src/components/dataset/analyzer/*`) — one filter set drives
+three tabs: *Students* (server-side search by name/ID, filters for age, BMI,
+gender, record/quality/nutrition status, incomplete, reviewed, excluded;
+sortable columns; column chooser; page/total/next/prev), *Dashboard*
+(filter-aware totals, averages only with ≥5 valid values, calorie-status
+counts, age/weight/height/BMI/calorie/protein distributions with text
+summaries, descriptive group comparison — no ranking) and *Gap analysis*
+(existing analysis, now filter-aware with below/adequate/above counts per
+nutrient). Everything is labelled "All records" or "Selected records".
+
+**Individual view & review** — `GET/PATCH /api/datasets/:id/records/:recordId`:
+profile, measurements + BMI, recorded vs calculated nutrition, meals, quality
+issues, "Potential outlier" flags. Owners can correct values (re-validated with
+the import rules, history kept), mark reviewed, add a note, or exclude a
+record from analytics — records are never silently deleted.
+
+**Exports** — `GET /api/datasets/:id/export?format=csv` (filtered, formula-
+injection safe, no notes/history) and `?format=report` (self-contained
+printable HTML with dataset name, dates, counts, quality summary, statistics,
+inline SVG charts + tables, active filters; print → PDF).
+
+**AI** — `POST /api/datasets/:id/explain` sends *aggregates only* (counts,
+means, distributions — no names or IDs) to the Phase 6 provider and returns
+labelled explanatory text; without a provider a rule-based summary is
+returned. It never modifies records.
+
+**Performance & security** — search/filter/sort/paging/aggregation in SQL
+with indexes on `(dataset_id, row_index | record_status | participant_id)`;
+20 s in-process stats cache keyed by user + dataset + query, busted on edits;
+ownership re-checked on every route (client ids are lookup keys only);
+LIKE-escaped search; control characters stripped from cells; unreadable /
+binary files rejected before storage.
+
+## 25. Future enhancements
 
 - Larger, externally verified food database
 - Authored recipe details for the remaining food entries
