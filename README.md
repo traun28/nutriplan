@@ -699,7 +699,56 @@ user+date). All routes derive the user from the session.
 | GET / POST | `/api/progress` | history + body metrics; add `{entryDate, weightKg, note?}` |
 | PATCH / DELETE | `/api/progress/:id` | edit / remove an owned entry |
 
-## 23. Future enhancements
+## 23. AI nutrition assistant, recommendations & safe actions (Phase 6)
+
+Phase 6 upgrades the Part 13 in-browser assistant into a server-side,
+data-grounded assistant with optional AI phrasing, a small recommendation
+engine and confirm-to-apply actions. Nothing in the design changed: the
+`/assistant` page keeps the same card, header and bubble styling.
+
+**How a message is answered** — `POST /api/assistant/chat`
+
+1. `detectIntent` (deterministic rules) classifies the message.
+2. The handler loads only the context groups it needs through `AiContext`
+   (`src/services/ai/contextBuilder.ts`): Profile, Nutrition (today's logs +
+   targets from the existing engine), MealPlan, Pantry, Recipe favourites,
+   Grocery, Daily/Weekly analytics (Phase 5), Progress. Each group is loaded
+   at most once per request.
+3. Structured tools (`src/services/ai/tools.ts`) build cards from real data:
+   meal suggestions sized to *remaining* targets via Phase 3 filters /
+   scaling, replacements via Phase 3 `alternativesFor`, pantry matches via
+   Phase 4 `recipesForPantry`, recipes via `searchRecipes`.
+4. If `AI_PROVIDER` + `AI_API_KEY` are set, the provider is asked to phrase
+   the prose using only the verified facts and the grounded answer; on any
+   provider failure (unavailable, timeout, 429, empty/invalid output) the
+   grounded text is returned unchanged. Cards, numbers and actions never
+   come from the model.
+
+**Actions** — `POST /api/assistant/actions`: `log_food`, `replace_meal`,
+`add_water` (and client-side `navigate`). The route re-validates every field,
+re-checks the food against the user's *current* allergy / intolerance / diet
+/ foods-to-avoid settings, and then calls the same functions the UI uses
+(`createFoodLog`, Phase 3 `replaceWeeklyMeal` + `assertPlanSafe`, `addWater`).
+
+**Recommendations** — `GET /api/assistant/recommendations` returns at most
+four items (missing targets/plan, protein below target, next meal that fits,
+pantry recipe, outstanding grocery items, water) each with a factual reason;
+rendered as "Smart suggestions" on the dashboard aside.
+
+**Conversations** — `ai_conversations` / `ai_messages` tables, scoped by
+user id: list, open, continue, clear (`PATCH {clear:true}`), delete.
+Message payloads store only the cards/actions shown, never profile data.
+
+**Safety & privacy** — medical/medication questions get a fixed
+professional-referral reply; the provider receives compact summaries (diet,
+restrictions, today's totals/targets, pantry names) and never names,
+e-mail, ids, tokens or unrelated records. Per-user rate limit: 20 chat
+messages / 30 actions per minute.
+
+Environment variables (all optional): `AI_PROVIDER`, `AI_API_KEY`,
+`AI_MODEL`, `AI_BASE_URL`, `AI_TIMEOUT_MS`.
+
+## 24. Future enhancements
 
 - Larger, externally verified food database
 - Authored recipe details for the remaining food entries

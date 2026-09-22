@@ -301,3 +301,31 @@ export const progressEntries = pgTable("progress_entries", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [uniqueIndex("progress_entries_user_date_unique").on(table.userId, table.entryDate)]);
+
+/* ------------------------------------------------------------------ */
+/* Phase 6 — AI assistant conversations                                */
+/* ------------------------------------------------------------------ */
+
+/** One chat thread per user; only metadata is stored here. */
+export const aiConversations = pgTable("ai_conversations", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  title: text("title").notNull().default("New conversation"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [index("ai_conversations_user_idx").on(table.userId, table.updatedAt)]);
+
+/**
+ * Messages in a thread. `payload` holds the structured cards/actions the
+ * assistant produced (food ids, nutrition figures, links) — never profile
+ * data, credentials or provider details.
+ */
+export const aiMessages = pgTable("ai_messages", {
+  id: serial("id").primaryKey(),
+  conversationId: integer("conversation_id").notNull(),
+  userId: integer("user_id").notNull(),
+  role: text("role").notNull(),
+  content: text("content").notNull(),
+  payload: jsonb("payload").$type<Record<string, unknown> | null>(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [index("ai_messages_conversation_idx").on(table.conversationId, table.createdAt)]);

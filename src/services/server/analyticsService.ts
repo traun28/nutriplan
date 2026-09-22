@@ -31,7 +31,7 @@ import {
 } from "@/services/analytics/nutritionAnalysis";
 import { buildDailyInsights, buildWeeklyInsights } from "@/services/analytics/insights";
 
-async function loadTargets(userId: number) {
+export async function loadTargets(userId: number) {
   const profile = await getProfile(userId);
   let processed = await getProcessed(userId);
   let stale = false;

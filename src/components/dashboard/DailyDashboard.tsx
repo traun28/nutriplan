@@ -31,6 +31,7 @@ import {
 } from "@/components/dashboard/DashboardAside";
 import { FoodLogDialog } from "@/components/food-log/FoodLogDialog";
 import { PlannedMealsCard } from "@/components/dashboard/PlannedMealsCard";
+import { SmartRecommendations } from "@/components/assistant/SmartRecommendations";
 import { Toast, useToast } from "@/components/ui/Toast";
 import { shiftDateKey, targetsFromProcessed, toDateKey } from "@/services/foodLog/calculations";
 import type { FoodLogEntry, FoodLogMealType } from "@/services/foodLog/types";
@@ -72,7 +73,14 @@ function DailyDashboardView() {
   const [logger, setLogger] = useState<LoggerState>({ open: false, entry: null });
   const [hour, setHour] = useState<number | null>(null);
   useEffect(() => {
-    const task = setTimeout(() => setHour(new Date().getHours()), 0);
+    const task = setTimeout(() => {
+      setHour(new Date().getHours());
+      // Phase 6 — the assistant can deep-link to the logger with ?log=1.
+      if (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("log") === "1") {
+        setLogger((current) => ({ ...current, open: true, entry: null }));
+        window.history.replaceState(null, "", window.location.pathname);
+      }
+    }, 0);
     return () => clearTimeout(task);
   }, []);
 
@@ -198,6 +206,7 @@ function DailyDashboardView() {
             {nextMeal && <NextMealCard meal={nextMeal} onLog={openLogger} />}
             <WaterTracker loading={loading} onNotice={notice} />
             {!loading && <RecommendationCard tips={tips} />}
+            {day.isToday && <SmartRecommendations refreshKey={`${day.entries.length}:${day.waterTotalMl}`} />}
           </aside>
         </div>
       </div>
