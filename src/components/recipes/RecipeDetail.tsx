@@ -52,9 +52,13 @@ export function RecipeDetail({ recipe }: { recipe: Recipe }) {
   const [servings, setServings] = useState("1");
 
   // Per-user verdict (restrictions + favourite) — one request, cached favourites.
+  const { loadFavorites } = kitchen;
+  useEffect(() => {
+    if (user) void loadFavorites();
+  }, [user, loadFavorites]);
+
   useEffect(() => {
     if (!user) return;
-    if (kitchen.favoriteIds === null) void kitchen.loadFavorites();
     const controller = new AbortController();
     fetch(`/api/recipes/${encodeURIComponent(recipe.id)}`, { signal: controller.signal, credentials: "same-origin" })
       .then((r) => (r.ok ? r.json() : null))
@@ -63,7 +67,7 @@ export function RecipeDetail({ recipe }: { recipe: Recipe }) {
       })
       .catch(() => undefined);
     return () => controller.abort();
-  }, [user, recipe.id, kitchen]);
+  }, [user, recipe.id]);
 
   const favorite = kitchen.isFavorite(recipe.id);
   const plan = mealPlan.plan;
@@ -142,7 +146,7 @@ export function RecipeDetail({ recipe }: { recipe: Recipe }) {
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-5 py-10 sm:py-14">
+    <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <Link href="/recipes" className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 hover:underline">
         <ArrowLeft className="h-4 w-4" aria-hidden="true" /> All recipes
       </Link>

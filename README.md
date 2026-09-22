@@ -84,7 +84,7 @@ and descriptions only.
 
 | Variable | Required | Description |
 |---|---|---|
-| `DATABASE_URL` | **Yes** (production) | PostgreSQL connection string used by the app and by Drizzle (`npm run db:push`). Without it, `npm run dev` falls back to a temporary in-memory store for accounts and datasets; `npm run start` refuses to sign users in (HTTP 503) so nothing is silently lost. |
+| `DATABASE_URL` | **Yes** (production) | PostgreSQL connection string used by the app and by Drizzle (`npm run db:push`). In local development it defaults to the embedded database started by `npm run db:local`, so `npm run dev` works without a `.env`; while that database is down the APIs answer with an accurate HTTP 503 and `/api/health` reports the connection failure. In production a missing `DATABASE_URL` makes `npm run start` refuse to sign users in (HTTP 503) so nothing is silently lost. |
 | `AI_PROVIDER` | No | `openai`, `anthropic` or `none` (default). Enables LLM-phrased assistant replies and dataset explanations. |
 | `AI_API_KEY` | No | Provider API key. Never logged, never returned to the client. |
 | `AI_MODEL` | No | Model name; defaults `gpt-4o-mini` / `claude-3-5-haiku-latest`. |
@@ -116,26 +116,29 @@ npm run db:push
 
 `db:push` is additive (`drizzle-kit push`); it never drops user data on its own.
 
-**Option B — zero-install local PostgreSQL**
+**Option B — zero-install local PostgreSQL (default in development)**
 
 ```bash
 npm run db:local     # starts an embedded PostgreSQL on 127.0.0.1:5432 (data in ./.pgdata, git-ignored)
+npm run db:push      # creates/updates the tables
 ```
 
-Keep that terminal open, set in `.env`:
-
-```
-DATABASE_URL=postgresql://nutriplan:nutriplan@127.0.0.1:5432/nutriplan
-```
-
-and run `npm run db:push` in a second terminal. Delete `.pgdata/` only if you
-intentionally want a fresh local database.
+Keep that terminal open and run `npm run dev`. Outside production the app and
+`db:push` default to this cluster's connection string
+(`postgresql://nutriplan:nutriplan@127.0.0.1:5432/nutriplan`), so no `.env` is
+required; set `DATABASE_URL` only to use a different database. Delete `.pgdata/`
+only if you intentionally want a fresh local database.
 
 ## 7. Development
 
 ```bash
-npm run dev          # http://localhost:3000 with hot reload
+npm run db:local     # terminal 1 — embedded PostgreSQL (see §6 Option B)
+npm run db:push      # once — create/update tables
+npm run dev          # terminal 2 — http://localhost:3000 with hot reload
 ```
+
+`GET /api/health` reports the live database connection status and, when the
+database is unreachable, a short reason with HTTP 503.
 
 Accounts are **Gmail-only** (`src/lib/email.ts`): sign-up and sign-in accept
 `@gmail.com` addresses and reject other domains on both the form and the API.

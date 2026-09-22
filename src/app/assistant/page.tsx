@@ -14,9 +14,9 @@ export default async function AssistantPage({ searchParams }: { searchParams: Pr
   const initialPrompt = typeof q === "string" && q.trim().length > 0 && q.length <= 200 ? q.trim() : undefined;
   return (
     <RequireAuth>
-      <div className="mx-auto flex h-[calc(100dvh-8rem)] min-h-[480px] max-w-3xl flex-col px-3 py-4 sm:px-5 sm:py-6">
+      <div className="mx-auto flex h-[calc(100dvh-8rem)] min-h-[420px] w-full max-w-4xl flex-col px-2 py-3 sm:px-5 sm:py-5">
         <AssistantProvider>
-          <div className="flex h-full flex-col overflow-hidden rounded-card border border-line bg-surface shadow-sm">
+          <div className="flex h-full min-w-0 flex-col overflow-hidden rounded-card border border-line bg-surface shadow-sm">
             <AssistantChat initialPrompt={initialPrompt} />
           </div>
         </AssistantProvider>

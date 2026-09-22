@@ -60,8 +60,8 @@ function ProfileView() {
   // so the screen is never a large blank area while loading.
   if (!hydrated) {
     return (
-      <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
-        <header className="mb-8">
+      <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <header className="mb-6">
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             My Profile
           </p>
@@ -72,11 +72,11 @@ function ProfileView() {
             Loading your saved information…
           </p>
         </header>
-        <div className="grid gap-5 lg:grid-cols-[300px_1fr]">
-          <div className="h-64 animate-pulse rounded-card bg-line/40" />
+        <div className="grid gap-4 sm:gap-5 xl:grid-cols-[280px_1fr]">
+          <div className="h-44 animate-pulse rounded-card bg-line/40" />
           <div className="space-y-4">
-            <div className="h-40 animate-pulse rounded-card bg-line/40" />
-            <div className="h-40 animate-pulse rounded-card bg-line/30" />
+            <div className="h-28 animate-pulse rounded-card bg-line/40" />
+            <div className="h-28 animate-pulse rounded-card bg-line/30" />
           </div>
         </div>
       </div>
@@ -86,7 +86,7 @@ function ProfileView() {
   /* --------------------- corrupted storage state -------------------- */
   if (storageStatus === "corrupt") {
     return (
-      <div className="mx-auto grid max-w-2xl place-items-center px-5 py-24">
+      <div className="mx-auto grid w-full max-w-2xl place-items-center px-4 py-10 sm:px-6">
         <Card>
           <CardBody>
             <div className="flex items-start gap-3">
@@ -123,7 +123,7 @@ function ProfileView() {
   /* ------------------------- empty profile -------------------------- */
   if (!hasSavedProfile && !completion.hasAnyData) {
     return (
-      <div className="mx-auto grid max-w-3xl place-items-center px-5 py-24">
+      <div className="mx-auto grid w-full max-w-3xl place-items-center px-4 py-10 sm:px-6">
         <EmptyState
           icon={<UserRound className="h-6 w-6" aria-hidden="true" />}
           title="No saved profile yet"
@@ -141,8 +141,8 @@ function ProfileView() {
   const firstName = profile.personalDetails.fullName.trim().split(" ")[0];
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
-      <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             My Profile
@@ -215,7 +215,7 @@ function ProfileView() {
         </div>
       )}
 
-      <div className="grid items-start gap-5 lg:grid-cols-[300px_1fr]">
+      <div className="grid items-start gap-4 sm:gap-5 xl:grid-cols-[280px_1fr]">
         {/* --------------------- completion sidebar -------------------- */}
         <Card>
           <div className="border-b border-line bg-brand-50/60 px-5 py-3.5">
@@ -295,7 +295,7 @@ function ProfileView() {
         </Card>
 
         {/* ------------------------ profile detail --------------------- */}
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid gap-4 sm:gap-5 md:grid-cols-2">
           <PersonalDetailsSummary details={profile.personalDetails} />
           <NutritionSummaryCard nutrition={profile.nutritionalInformation} />
           <div className="sm:col-span-2">

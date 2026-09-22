@@ -5,6 +5,10 @@
  * category, expiry, notes) with search/filter, quick quantity updates,
  * "mark used", storage reminders for items near their date, and recipe
  * suggestions built from what's on hand (restriction-filtered on the server).
+ *
+ * Layout: one main content area — search + category filter above the
+ * pantry results. Recipe suggestions sit in a compact section below the
+ * list; there is no secondary column of empty space.
  */
 import {
   CalendarClock,
@@ -73,6 +77,7 @@ function daysUntil(dateKey: string, today: string): number {
 
 export function PantryManager() {
   const kitchen = useKitchen();
+  const { loadPantry } = kitchen;
   const { toast, show, dismiss } = useToast();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
@@ -83,9 +88,11 @@ export function PantryManager() {
   >("idle");
   const today = useMemo(() => toDateKey(new Date()), []);
 
+  // `loadPantry` is referentially stable, so this runs once per user and can
+  // never loop on status changes or repeated failures.
   useEffect(() => {
-    void kitchen.loadPantry();
-  }, [kitchen]);
+    void loadPantry();
+  }, [loadPantry]);
 
   const items = useMemo(() => kitchen.pantry ?? [], [kitchen.pantry]);
 
@@ -138,6 +145,7 @@ export function PantryManager() {
     );
   }, [items, query, category]);
 
+  // Slim dividers inside one list — categories are never separate panels.
   const grouped = useMemo(() => {
     const map = new Map<string, PantryItemRecord[]>();
     for (const item of filtered)
@@ -216,67 +224,84 @@ export function PantryManager() {
         />
       )}
 
-      <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
-        <div>
-          <div className="mb-4 grid gap-3 rounded-card border border-line bg-surface p-4 shadow-sm sm:grid-cols-[1fr_180px_auto] sm:items-end">
-            <TextField
-              label="Search pantry"
-              value={query}
-              onChange={setQuery}
-              placeholder="Search by name or note…"
-              icon={<Search className="h-4 w-4" aria-hidden="true" />}
-              autoComplete="off"
-            />
-            <SelectField
-              label="Category"
-              value={category}
-              onChange={setCategory}
-              options={[
-                { value: "all", label: "All categories" },
-                ...CATEGORY_OPTIONS,
-              ]}
-            />
+      {/* search + category filter (one compact toolbar) */}
+      <div className="grid gap-3 rounded-card border border-line bg-surface p-4 shadow-sm sm:grid-cols-[1fr_180px_auto] sm:items-end">
+        <TextField
+          label="Search pantry"
+          value={query}
+          onChange={setQuery}
+          placeholder="Search by name or note…"
+          icon={<Search className="h-4 w-4" aria-hidden="true" />}
+          autoComplete="off"
+        />
+        <SelectField
+          label="Category"
+          value={category}
+          onChange={setCategory}
+          options={[
+            { value: "all", label: "All categories" },
+            ...CATEGORY_OPTIONS,
+          ]}
+        />
+        <Button
+          onClick={() => setEditing("new")}
+          icon={<Plus className="h-4 w-4" />}
+        >
+          Add item
+        </Button>
+      </div>
+
+      {/* main pantry results */}
+      {kitchen.pantryStatus === "loading" && kitchen.pantry === null && (
+        <div className="mt-4 space-y-3" aria-busy="true" aria-label="Loading pantry">
+          <div className="skeleton h-10" />
+          <div className="skeleton h-28" />
+        </div>
+      )}
+
+      {kitchen.pantry !== null && items.length === 0 && (
+        <EmptyState
+          className="mt-4"
+          icon={<Package className="h-6 w-6" aria-hidden="true" />}
+          title="Your pantry is empty"
+          description="Add staples like rice, oats, lentils or eggs. NutriPlan will use them to trim your grocery list and suggest recipes."
+          action={
             <Button
               onClick={() => setEditing("new")}
               icon={<Plus className="h-4 w-4" />}
             >
-              Add item
+              Add your first item
             </Button>
-          </div>
+          }
+        />
+      )}
+      {items.length > 0 && filtered.length === 0 && (
+        <p className="mt-4 rounded-card border border-dashed border-line px-4 py-6 text-center text-sm text-muted">
+          {category === "all"
+            ? "No pantry items match your search."
+            : `No ${groceryCategoryLabel(category).toLowerCase()} pantry items${query.trim() ? " match your search" : " yet"}.`}
+        </p>
+      )}
 
-          {kitchen.pantryStatus === "loading" && kitchen.pantry === null && (
-            <div className="h-64 animate-pulse rounded-card bg-line/30" />
-          )}
-
-          {kitchen.pantry !== null && items.length === 0 && (
-            <EmptyState
-              icon={<Package className="h-6 w-6" aria-hidden="true" />}
-              title="Your pantry is empty"
-              description="Add staples like rice, oats, lentils or eggs. NutriPlan will use them to trim your grocery list and suggest recipes."
-              action={
-                <Button
-                  onClick={() => setEditing("new")}
-                  icon={<Plus className="h-4 w-4" />}
-                >
-                  Add your first item
-                </Button>
-              }
-            />
-          )}
-          {items.length > 0 && filtered.length === 0 && (
-            <p className="rounded-card border border-dashed border-line p-6 text-center text-sm text-muted">
-              No pantry items match your search.
-            </p>
-          )}
-
-          <div className="space-y-4">
-            {grouped.map((group) => (
-              <Card key={group.id}>
-                <CardBody>
-                  <h2 className="text-sm font-bold uppercase tracking-wide text-brand-500">
+      {filtered.length > 0 && (
+        <Card className="mt-4">
+          <CardBody className="p-4 sm:p-5">
+            <h2 className="flex items-center justify-between text-sm font-bold text-ink">
+              Pantry items
+              <span className="text-xs font-semibold text-muted">
+                {filtered.length} shown
+              </span>
+            </h2>
+            <div className="mt-2">
+              {grouped.map((group) => (
+                <section key={group.id} aria-label={group.label}>
+                  <h3 className="mt-3 border-b border-line pb-1 text-xs font-bold uppercase tracking-wide text-brand-500 first:mt-0">
                     {group.label}
-                  </h2>
-                  <ul className="mt-2 divide-y divide-line">
+                    <span className="ml-2 font-semibold normal-case tracking-normal text-muted">
+                      {group.items.length}
+                    </span>
+                  </h3>
+                  <ul className="divide-y divide-line">
                     {group.items.map((item) => (
                       <PantryRow
                         key={item.id}
@@ -287,93 +312,85 @@ export function PantryManager() {
                       />
                     ))}
                   </ul>
-                </CardBody>
-              </Card>
-            ))}
-          </div>
-        </div>
+                </section>
+              ))}
+            </div>
+          </CardBody>
+        </Card>
+      )}
 
-        <aside className="space-y-4">
-          <Card>
-            <CardBody>
-              <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
-                <ChefHat
-                  className="h-4 w-4 text-brand-500"
-                  aria-hidden="true"
-                />{" "}
-                Cook with what you have
-              </h2>
-              {items.length === 0 && (
-                <p className="mt-1 text-xs text-muted">
-                  Add a few pantry items to see recipe ideas.
-                </p>
-              )}
-              {suggestStatus === "loading" && (
-                <p className="mt-2 flex items-center gap-2 text-xs text-muted">
-                  <Loader2
-                    className="h-3.5 w-3.5 animate-spin"
-                    aria-hidden="true"
-                  />{" "}
-                  Finding recipes…
-                </p>
-              )}
-              {suggestStatus === "error" && (
-                <p className="mt-2 text-xs text-danger-700">
-                  Suggestions could not be loaded.
-                </p>
-              )}
-              {suggestions &&
-                items.length > 0 &&
-                suggestions.length === 0 &&
-                suggestStatus === "idle" && (
-                  <p className="mt-1 text-xs text-muted">
-                    No recipes use these ingredients yet. Try adding staples
-                    like rice, oats, lentils, paneer or eggs.
-                  </p>
-                )}
-              {suggestions && suggestions.length > 0 && (
-                <>
-                  <p className="mt-1 text-xs text-muted">
-                    You have {suggestions[0].matched.slice(0, 3).join(", ")}…
-                    here&apos;s what fits your profile:
-                  </p>
-                  <ul className="mt-3 space-y-3">
-                    {suggestions.map((s) => (
-                      <li
-                        key={s.recipe.id}
-                        className="rounded-lg border border-line bg-canvas p-3"
+      {/* cook with what you have — compact section below the results */}
+      <Card className="mt-4">
+        <CardBody className="p-4 sm:p-5">
+          <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
+            <ChefHat className="h-4 w-4 text-brand-500" aria-hidden="true" />{" "}
+            Cook with what you have
+          </h2>
+          {items.length === 0 && (
+            <p className="mt-1 text-xs text-muted">
+              Add a few pantry items to see recipe ideas.
+            </p>
+          )}
+          {suggestStatus === "loading" && (
+            <p className="mt-2 flex items-center gap-2 text-xs text-muted">
+              <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />{" "}
+              Finding recipes…
+            </p>
+          )}
+          {suggestStatus === "error" && (
+            <p className="mt-2 text-xs text-danger-700">
+              Suggestions could not be loaded.
+            </p>
+          )}
+          {suggestions &&
+            items.length > 0 &&
+            suggestions.length === 0 &&
+            suggestStatus === "idle" && (
+              <p className="mt-1 text-xs text-muted">
+                No recipes use these ingredients yet. Try adding staples like
+                rice, oats, lentils, paneer or eggs.
+              </p>
+            )}
+          {suggestions && suggestions.length > 0 && (
+            <>
+              <p className="mt-1 text-xs text-muted">
+                You have {suggestions[0].matched.slice(0, 3).join(", ")}… here&apos;s
+                what fits your profile:
+              </p>
+              <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+                {suggestions.map((s) => (
+                  <li
+                    key={s.recipe.id}
+                    className="rounded-lg border border-line bg-canvas p-3"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <Link
+                        href={`/recipes/${s.recipe.id}`}
+                        className="text-sm font-semibold text-ink hover:text-brand-600"
                       >
-                        <div className="flex items-start justify-between gap-2">
-                          <Link
-                            href={`/recipes/${s.recipe.id}`}
-                            className="text-sm font-semibold text-ink hover:text-brand-600"
-                          >
-                            {s.recipe.name}
-                          </Link>
-                          <Badge tone={s.coverage >= 75 ? "brand" : undefined}>
-                            {s.coverage}% on hand
-                          </Badge>
-                        </div>
-                        <p className="mt-1 text-xs text-muted">
-                          {s.recipe.calories} kcal · {s.recipe.proteinGrams} g
-                          protein
-                          {s.missing.length > 0 && (
-                            <>
-                              {" "}
-                              · missing: {s.missing.slice(0, 3).join(", ")}
-                              {s.missing.length > 3 ? "…" : ""}
-                            </>
-                          )}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
-            </CardBody>
-          </Card>
-        </aside>
-      </div>
+                        {s.recipe.name}
+                      </Link>
+                      <Badge tone={s.coverage >= 75 ? "brand" : undefined}>
+                        {s.coverage}% on hand
+                      </Badge>
+                    </div>
+                    <p className="mt-1 text-xs text-muted">
+                      {s.recipe.calories} kcal · {s.recipe.proteinGrams} g protein
+                      {s.missing.length > 0 && (
+                        <>
+                          {" "}
+                          · missing: {s.missing.slice(0, 3).join(", ")}
+                          {s.missing.length > 3 ? "…" : ""}
+                        </>
+                      )}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </CardBody>
+      </Card>
 
       <PantryDialog
         key={editing === "new" ? "new" : (editing?.id ?? "closed")}
@@ -450,9 +467,7 @@ function PantryRow({
             </Badge>
           )}
         </div>
-        {item.notes && (
-          <p className="mt-0.5 text-xs text-muted">{item.notes}</p>
-        )}
+        {item.notes && <p className="mt-0.5 text-xs text-muted">{item.notes}</p>}
       </div>
       <div className="flex shrink-0 items-center gap-1">
         {item.quantity !== null && item.unit && (
@@ -481,7 +496,7 @@ function PantryRow({
           type="button"
           onClick={() => setConfirm("used")}
           disabled={busy}
-          className="rounded-md px-2 py-1 text-xs font-semibold text-muted hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+          className="whitespace-nowrap rounded-md px-2 py-1 text-xs font-semibold text-muted hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
           aria-label={`Mark ${item.name} as used up`}
         >
           Used up

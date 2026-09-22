@@ -130,7 +130,7 @@ function DailyDashboardView() {
         : `Your nutrition log for ${formatLongDate(day.selectedDate)}.`;
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       {/* ------------------------------ header ----------------------------- */}
       <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>

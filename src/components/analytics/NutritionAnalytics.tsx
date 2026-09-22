@@ -195,13 +195,13 @@ function Skeleton() {
   return (
     <div className="grid gap-5 lg:grid-cols-[1fr_320px]" aria-busy="true" aria-label="Loading analysis">
       <div className="space-y-5">
+        <div className="skeleton h-24" />
         <div className="skeleton h-40" />
-        <div className="skeleton h-64" />
-        <div className="skeleton h-48" />
+        <div className="skeleton h-32" />
       </div>
       <div className="space-y-5">
-        <div className="skeleton h-40" />
-        <div className="skeleton h-56" />
+        <div className="skeleton h-24" />
+        <div className="skeleton h-36" />
       </div>
     </div>
   );

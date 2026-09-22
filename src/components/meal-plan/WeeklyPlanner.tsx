@@ -404,7 +404,7 @@ function formatKey(key: string): string {
 
 function Shell({ children, badges }: { children: React.ReactNode; badges?: React.ReactNode }) {
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <header className="mb-6">
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">Weekly planner</p>
         <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">Your 7-Day Meal Plan</h1>

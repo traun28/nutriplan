@@ -117,6 +117,9 @@ export async function getSessionUser(token: string | undefined): Promise<Session
 
     return rows[0] ?? null;
   } catch {
+    // Session lookup failure (store unreachable or query error) reads as
+    // "no session" here; `unauthorized()` in the guard probes the store so
+    // a real outage is still answered with an accurate 503.
     return null;
   }
 }

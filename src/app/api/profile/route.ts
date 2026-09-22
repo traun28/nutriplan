@@ -13,7 +13,7 @@ import {
   saveProcessed,
   saveProfile,
 } from "@/services/server/repository";
-import { currentUser, serverError, unauthorized, badRequest } from "@/services/server/guard";
+import { currentUser, errorResponse, unauthorized, badRequest } from "@/services/server/guard";
 import { rehydrateProfile, normalizeProfileForStorage } from "@/lib/profileNormalize";
 import type { DietPlan, ProcessedProfile } from "@/types/profile";
 
@@ -30,8 +30,8 @@ export async function GET() {
       getPlan(user.id),
     ]);
     return Response.json({ profile, processed, plan });
-  } catch {
-    return serverError("Could not load your saved profile.");
+  } catch (error) {
+    return errorResponse(error, "Could not load your saved profile.");
   }
 }
 
@@ -53,8 +53,7 @@ export async function PUT(request: Request) {
       // Re-hydrate through the canonical default shape, then normalise, so a
       // partial or older payload can never produce a broken profile.
       const cleaned = normalizeProfileForStorage(rehydrateProfile(body.profile));
-      const okProfile = await saveProfile(user.id, cleaned);
-      if (!okProfile) return serverError("Could not save your profile.");
+      await saveProfile(user.id, cleaned);
     }
     if (body.processed !== undefined) {
       if (body.processed === null) {
@@ -67,15 +66,18 @@ export async function PUT(request: Request) {
       if (body.plan !== null) await savePlan(user.id, body.plan);
     }
     return Response.json({ ok: true });
-  } catch {
-    return serverError("Could not save your profile.");
+  } catch (error) {
+    return errorResponse(error, "Could not save your profile.");
   }
 }
 
 export async function DELETE() {
   const user = await currentUser();
   if (!user) return unauthorized();
-  const okDeleted = await deleteProfile(user.id);
-  if (!okDeleted) return serverError("Your profile could not be deleted.");
-  return Response.json({ ok: true });
+  try {
+    await deleteProfile(user.id);
+    return Response.json({ ok: true });
+  } catch (error) {
+    return errorResponse(error, "Your profile could not be deleted.");
+  }
 }

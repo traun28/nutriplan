@@ -128,8 +128,8 @@ export function ProgressTracker() {
         <div className="space-y-5">
           {status === "loading" && entries === null && (
             <div className="space-y-5" aria-busy="true" aria-label="Loading progress">
-              <div className="skeleton h-56" />
-              <div className="skeleton h-64" />
+              <div className="skeleton h-32" />
+              <div className="skeleton h-44" />
             </div>
           )}
 

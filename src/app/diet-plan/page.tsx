@@ -72,7 +72,7 @@ function DietPlanView() {
   /* ----------------------------- loading ------------------------------ */
   if (!hydrated) {
     return (
-      <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
+      <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <header className="mb-8">
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             Your results
@@ -212,7 +212,7 @@ function DietPlanView() {
   const needsNewPlan = planStale || targetsStale;
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14 print:max-w-none print:px-0 print:py-0">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8 print:max-w-none print:px-0 print:py-0">
       {/* Print-only document header */}
       <div className="hidden print:mb-6 print:block">
         <h1 className="text-xl font-bold">PERSONALISED DIET PLAN</h1>
@@ -431,7 +431,7 @@ function DietPlanView() {
 
 function Shell({ children }: { children: ReactNode }) {
   return (
-    <div className="mx-auto max-w-3xl px-5 py-16 sm:py-24">
+    <div className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
       <header className="mb-8 text-center">
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
           Your results

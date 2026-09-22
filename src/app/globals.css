@@ -71,6 +71,11 @@
   body {
     @apply bg-canvas font-sans text-ink antialiased;
     text-rendering: optimizeLegibility;
+    /* Defense-in-depth after fixing the real overflow sources (nav wrapping,
+       table widths, fixed-width grids): never let an edge case create a
+       horizontal scrollbar. Content is never clipped because every wide
+       element is already inside its own scroll container. */
+    overflow-x: clip;
   }
 
   ::selection {

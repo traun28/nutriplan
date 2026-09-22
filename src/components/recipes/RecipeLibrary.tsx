@@ -94,9 +94,10 @@ export function RecipeLibrary() {
   }, [deferredQuery, filters, user, safeOnly, hasRestrictions, view]);
 
   // Favourites are cached in context so toggles reflect everywhere.
+  const { loadFavorites } = kitchen;
   useEffect(() => {
-    if (user && kitchen.favoriteIds === null) void kitchen.loadFavorites();
-  }, [user, kitchen]);
+    if (user) void loadFavorites();
+  }, [user, loadFavorites]);
 
   useEffect(() => {
     const controller = new AbortController();

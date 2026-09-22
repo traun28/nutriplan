@@ -43,7 +43,7 @@ const INTRO_POINTS = [
 export function HomeIntro() {
   return (
     <section className="border-y border-line bg-surface">
-      <div className="mx-auto max-w-6xl px-5 py-16">
+      <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
         <Reveal>
           <SectionHeader
             eyebrow="What is this?"
@@ -123,7 +123,7 @@ const WORKFLOW_STEPS = [
 export function HowItWorks() {
   return (
     <section id="how-it-works" className="scroll-mt-24">
-      <div className="mx-auto max-w-6xl px-5 py-20">
+      <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
         <Reveal>
           <SectionHeader
             eyebrow="How it works"
@@ -217,7 +217,7 @@ const FEATURES = [
 export function Features() {
   return (
     <section id="features" className="scroll-mt-24 border-y border-line bg-surface">
-      <div className="mx-auto max-w-6xl px-5 py-20">
+      <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
         <Reveal>
           <SectionHeader
             eyebrow="Key features"
@@ -267,7 +267,7 @@ const WHY_POINTS = [
 export function WhyPersonalisation() {
   return (
     <section>
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 lg:grid-cols-2">
+      <div className="mx-auto grid w-full max-w-6xl items-center gap-8 px-4 py-10 sm:px-6 sm:py-12 lg:grid-cols-2 lg:px-8">
         <Reveal>
           <div>
             <SectionHeader
@@ -314,9 +314,9 @@ export function WhyPersonalisation() {
 
 export function CTASection() {
   return (
-    <section className="px-5 pb-24">
+    <section className="px-4 pb-14 sm:px-6">
       <Reveal>
-        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-card bg-brand-800 px-8 py-16 text-center shadow-lift sm:px-12">
+        <div className="relative mx-auto w-full max-w-6xl overflow-hidden rounded-card bg-brand-800 px-6 py-10 text-center shadow-lift sm:px-10">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-brand-600/60 blur-3xl"

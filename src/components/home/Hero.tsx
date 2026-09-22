@@ -31,7 +31,7 @@ export function Hero() {
         className="absolute inset-0 bg-gradient-to-t from-canvas via-transparent to-canvas/40"
       />
 
-      <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[1.15fr_0.85fr] lg:pb-28 lg:pt-24">
+      <div className="relative mx-auto grid w-full max-w-6xl items-center gap-8 px-4 pb-12 pt-10 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:px-8 lg:pb-16 lg:pt-14">
         <div>
           <motion.div
             initial={reduce ? false : { opacity: 0, y: 16 }}

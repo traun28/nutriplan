@@ -31,28 +31,52 @@ import {
   updateDevDataset,
 } from "@/services/server/devStore";
 
+/**
+ * Driver failures surface as an accurate 503 instead of being swallowed as
+ * "no data" — a database outage must never look like an empty profile.
+ */
+export class RepositoryError extends Error {
+  status: number;
+  constructor(message: string, status = 503) {
+    super(message);
+    this.name = "RepositoryError";
+    this.status = status;
+  }
+}
+
+const DB_UNAVAILABLE =
+  "The database is not available right now. Please try again shortly.";
+
+async function run<T>(work: () => Promise<T>): Promise<T> {
+  if (!hasDatabase) throw new RepositoryError(DB_UNAVAILABLE, 503);
+  try {
+    return await work();
+  } catch (error) {
+    if (error instanceof RepositoryError) throw error;
+    throw new RepositoryError(DB_UNAVAILABLE, 503);
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* Profile                                                             */
 /* ------------------------------------------------------------------ */
 
 export async function getProfile(userId: number): Promise<UserProfile | null> {
-  try {
+  return run(async () => {
     const rows = await db
       .select()
       .from(profiles)
       .where(eq(profiles.userId, userId))
       .limit(1);
     return (rows[0]?.data as UserProfile) ?? null;
-  } catch {
-    return null;
-  }
+  });
 }
 
 export async function saveProfile(
   userId: number,
   data: UserProfile,
 ): Promise<boolean> {
-  try {
+  return run(async () => {
     const existing = await db
       .select({ id: profiles.id })
       .from(profiles)
@@ -71,20 +95,16 @@ export async function saveProfile(
       });
     }
     return true;
-  } catch {
-    return false;
-  }
+  });
 }
 
 export async function deleteProfile(userId: number): Promise<boolean> {
-  try {
+  return run(async () => {
     await db.delete(profiles).where(eq(profiles.userId, userId));
     await db.delete(processedProfiles).where(eq(processedProfiles.userId, userId));
     await db.delete(dietPlans).where(eq(dietPlans.userId, userId));
     return true;
-  } catch {
-    return false;
-  }
+  });
 }
 
 /* ------------------------------------------------------------------ */
@@ -92,23 +112,21 @@ export async function deleteProfile(userId: number): Promise<boolean> {
 /* ------------------------------------------------------------------ */
 
 export async function getProcessed(userId: number): Promise<ProcessedProfile | null> {
-  try {
+  return run(async () => {
     const rows = await db
       .select()
       .from(processedProfiles)
       .where(eq(processedProfiles.userId, userId))
       .limit(1);
     return (rows[0]?.data as ProcessedProfile) ?? null;
-  } catch {
-    return null;
-  }
+  });
 }
 
 export async function saveProcessed(
   userId: number,
   data: ProcessedProfile,
 ): Promise<boolean> {
-  try {
+  return run(async () => {
     const existing = await db
       .select({ id: processedProfiles.id })
       .from(processedProfiles)
@@ -129,26 +147,22 @@ export async function saveProcessed(
       });
     }
     return true;
-  } catch {
-    return false;
-  }
+  });
 }
 
 export async function getPlan(userId: number): Promise<DietPlan | null> {
-  try {
+  return run(async () => {
     const rows = await db
       .select()
       .from(dietPlans)
       .where(eq(dietPlans.userId, userId))
       .limit(1);
     return (rows[0]?.data as DietPlan) ?? null;
-  } catch {
-    return null;
-  }
+  });
 }
 
 export async function savePlan(userId: number, data: DietPlan): Promise<boolean> {
-  try {
+  return run(async () => {
     const existing = await db
       .select({ id: dietPlans.id })
       .from(dietPlans)
@@ -166,9 +180,7 @@ export async function savePlan(userId: number, data: DietPlan): Promise<boolean>
       });
     }
     return true;
-  } catch {
-    return false;
-  }
+  });
 }
 
 /* ------------------------------------------------------------------ */
@@ -176,36 +188,30 @@ export async function savePlan(userId: number, data: DietPlan): Promise<boolean>
 /* ------------------------------------------------------------------ */
 
 export async function listAttachments(userId: number) {
-  try {
+  return run(async () => {
     return await db
       .select()
       .from(attachments)
       .where(eq(attachments.userId, userId))
       .orderBy(desc(attachments.createdAt));
-  } catch {
-    return [];
-  }
+  });
 }
 
 export async function insertAttachment(
   userId: number,
   values: typeof attachments.$inferInsert,
 ) {
-  try {
+  return run(async () => {
     const rows = await db.insert(attachments).values({ ...values, userId }).returning();
     return rows[0] ?? null;
-  } catch {
-    return null;
-  }
+  });
 }
 
 export async function deleteAttachment(userId: number, id: number): Promise<boolean> {
-  try {
+  return run(async () => {
     await db.delete(attachments).where(and(eq(attachments.id, id), eq(attachments.userId, userId)));
     return true;
-  } catch {
-    return false;
-  }
+  });
 }
 
 /* ------------------------------------------------------------------ */
@@ -214,15 +220,13 @@ export async function deleteAttachment(userId: number, id: number): Promise<bool
 
 export async function listDatasets(userId: number) {
   if (!hasDatabase) return listDevDatasets(userId);
-  try {
+  return run(async () => {
     return await db
       .select()
       .from(datasets)
       .where(eq(datasets.userId, userId))
       .orderBy(desc(datasets.createdAt));
-  } catch {
-    return [];
-  }
+  });
 }
 
 export async function createDataset(
@@ -230,15 +234,13 @@ export async function createDataset(
   values: Partial<typeof datasets.$inferInsert>,
 ) {
   if (!hasDatabase) return createDevDataset(values as Record<string, unknown>, userId);
-  try {
+  return run(async () => {
     const rows = await db
       .insert(datasets)
       .values({ ...values, userId } as typeof datasets.$inferInsert)
       .returning();
     return rows[0] ?? null;
-  } catch {
-    return null;
-  }
+  });
 }
 
 export async function updateDataset(
@@ -247,35 +249,31 @@ export async function updateDataset(
   values: Partial<typeof datasets.$inferInsert>,
 ) {
   if (!hasDatabase) return updateDevDataset(userId, id, values as Record<string, unknown>);
-  try {
+  return run(async () => {
     const rows = await db
       .update(datasets)
       .set(values)
       .where(and(eq(datasets.id, id), eq(datasets.userId, userId)))
       .returning();
     return rows[0] ?? null;
-  } catch {
-    return null;
-  }
+  });
 }
 
 export async function getDataset(userId: number, id: number) {
   if (!hasDatabase) return getDevDataset(userId, id);
-  try {
+  return run(async () => {
     const rows = await db
       .select()
       .from(datasets)
       .where(and(eq(datasets.id, id), eq(datasets.userId, userId)))
       .limit(1);
     return rows[0] ?? null;
-  } catch {
-    return null;
-  }
+  });
 }
 
 export async function deleteDataset(userId: number, id: number): Promise<boolean> {
   if (!hasDatabase) return deleteDevDataset(userId, id);
-  try {
+  return run(async () => {
     const deleted = await db
       .delete(datasets)
       .where(and(eq(datasets.id, id), eq(datasets.userId, userId)))
@@ -287,9 +285,7 @@ export async function deleteDataset(userId: number, id: number): Promise<boolean
     // Nothing matched (not found, or not owned by this user) — the route
     // must report that honestly instead of claiming a delete it never made.
     return false;
-  } catch {
-    return false;
-  }
+  });
 }
 
 export async function insertDatasetRecords(
@@ -304,20 +300,18 @@ export async function insertDatasetRecords(
     );
     return true;
   }
-  try {
+  return run(async () => {
     // Chunked to stay well within parameter limits.
     for (let i = 0; i < records.length; i += 200) {
       await db.insert(datasetRecords).values(records.slice(i, i + 200));
     }
     return true;
-  } catch {
-    return false;
-  }
+  });
 }
 
 export async function getDatasetRecords(userId: number, datasetId: number, limit = 25, offset = 0) {
   if (!hasDatabase) return getDevDatasetRecords(userId, datasetId, limit, offset);
-  try {
+  return run(async () => {
     const owned = await getDataset(userId, datasetId);
     if (!owned) return { rows: [], total: 0 };
     const rows = await db
@@ -328,7 +322,5 @@ export async function getDatasetRecords(userId: number, datasetId: number, limit
       .limit(limit)
       .offset(offset);
     return { rows, total: owned.recordCount };
-  } catch {
-    return { rows: [], total: 0 };
-  }
+  });
 }

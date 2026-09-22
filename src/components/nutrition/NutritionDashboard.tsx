@@ -52,7 +52,7 @@ function NutritionDashboardView() {
 
   if (!hydrated) {
     return (
-      <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
+      <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <header className="mb-8">
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             Nutrition profile
@@ -75,7 +75,7 @@ function NutritionDashboardView() {
   /* ---------------------- no profile at all ---------------------- */
   if (!hasSavedProfile && !completion.hasAnyData) {
     return (
-      <div className="mx-auto grid max-w-3xl place-items-center px-5 py-24">
+      <div className="mx-auto grid w-full max-w-3xl place-items-center px-4 py-10 sm:px-6">
         <EmptyState
           icon={<Calculator className="h-6 w-6" aria-hidden="true" />}
           title="No nutrition profile is available yet"
@@ -93,7 +93,7 @@ function NutritionDashboardView() {
   const showResults = processed !== null && processed.status === "complete";
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">

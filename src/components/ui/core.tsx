@@ -127,7 +127,7 @@ export function CardBody({
   className?: string;
   children: ReactNode;
 }) {
-  return <div className={cn("p-5 sm:p-7", className)}>{children}</div>;
+  return <div className={cn("p-4 sm:p-5", className)}>{children}</div>;
 }
 
 /* ------------------------------------------------------------------ */
@@ -228,22 +228,22 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center rounded-card border border-dashed border-line bg-surface/60 px-6 py-10 text-center",
+        "flex flex-col items-center rounded-card border border-dashed border-line bg-surface/60 px-5 py-8 text-center",
         className,
       )}
     >
       {icon && (
-        <div className="grid h-12 w-12 place-items-center rounded-full bg-brand-50 text-brand-400">
+        <div className="grid h-11 w-11 place-items-center rounded-full bg-brand-50 text-brand-400">
           {icon}
         </div>
       )}
-      <h3 className="mt-4 text-base font-bold text-ink">{title}</h3>
+      <h3 className="mt-3 text-base font-bold text-ink">{title}</h3>
       {description && (
         <p className="mt-1.5 max-w-md text-sm leading-relaxed text-muted">
           {description}
         </p>
       )}
-      {action && <div className="mt-5">{action}</div>}
+      {action && <div className="mt-4">{action}</div>}
     </div>
   );
 }

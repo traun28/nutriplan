@@ -3,10 +3,35 @@
  *
  * One place that resolves the session from the cookie, so no route handler
  * has to know how authentication is stored. Returns null when unauthorised
- * (never throws), which lets routes answer 401 cleanly.
+ * (never throws), which lets routes answer 401 cleanly. When the database
+ * is unreachable, `unauthorized()` probes it and answers an accurate 503
+ * instead of pretending the visitor is signed out.
  */
+import { sql } from "drizzle-orm";
 import { cookies } from "next/headers";
+import { db } from "@/db";
 import { getSessionUser, SESSION_COOKIE, type SessionUser } from "@/services/server/auth";
+
+const DB_UNAVAILABLE_MESSAGE =
+  "The database is not available right now. Please try again shortly.";
+
+/** Short-lived reachability probe so outage answers stay accurate without
+ *  hammering the database on every unauthorised request. */
+let reachability: { at: number; ok: boolean } | null = null;
+const PROBE_TTL_MS = 3_000;
+
+export async function databaseReachable(): Promise<boolean> {
+  if (reachability && Date.now() - reachability.at < PROBE_TTL_MS) {
+    return reachability.ok;
+  }
+  try {
+    await db.execute(sql`select 1`);
+    reachability = { at: Date.now(), ok: true };
+  } catch {
+    reachability = { at: Date.now(), ok: false };
+  }
+  return reachability.ok;
+}
 
 export async function currentUser(): Promise<SessionUser | null> {
   try {
@@ -18,11 +43,19 @@ export async function currentUser(): Promise<SessionUser | null> {
   }
 }
 
-export function unauthorized() {
+export async function unauthorized() {
+  if (!(await databaseReachable())) {
+    return Response.json({ error: DB_UNAVAILABLE_MESSAGE }, { status: 503 });
+  }
   return Response.json(
     { error: "You need to sign in to do that." },
     { status: 401 },
   );
+}
+
+/** True when the database cannot currently be queried. */
+export async function sessionStoreUnavailable(): Promise<boolean> {
+  return !(await databaseReachable());
 }
 
 export function badRequest(message: string) {
