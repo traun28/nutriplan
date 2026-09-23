@@ -352,7 +352,7 @@ export function FoodLogDialog({
 
       {/* ---------------------------- quantity ---------------------------- */}
       {food && (
-        <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_1fr]">
+        <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <div>
             <FieldLabel htmlFor="food-log-servings" required hint={`1 serving = ${food.servingSize.quantity} ${unitLabel(food.servingSize.unit)}`}>
               Quantity (servings)

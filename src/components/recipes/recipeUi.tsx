@@ -15,12 +15,12 @@ const dietaryTypeLabel = (id: string) => labelFor(DIETARY_TYPES, id);
 
 export function PageShell({ eyebrow, title, intro, badges, children }: { eyebrow: string; title: string; intro: string; badges?: ReactNode; children: ReactNode }) {
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
-      <header className="mb-6">
+    <div className="page-container page-section">
+      <header className="mb-5">
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">{eyebrow}</p>
-        <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">{title}</h1>
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">{intro}</p>
-        {badges && <div className="mt-3 flex flex-wrap items-center gap-2">{badges}</div>}
+        <h1 className="mt-1.5 text-2xl font-bold tracking-tight text-ink sm:text-[1.7rem]">{title}</h1>
+        <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted">{intro}</p>
+        {badges && <div className="mt-2.5 flex flex-wrap items-center gap-2">{badges}</div>}
       </header>
       {children}
     </div>

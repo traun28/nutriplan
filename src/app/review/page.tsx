@@ -85,8 +85,8 @@ function ReviewView() {
 
   if (!hydrated) {
     return (
-      <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
-        <header className="mb-8">
+      <div className="page-container page-section">
+        <header className="mb-6">
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             Step 5 of 5 · Review
           </p>
@@ -97,7 +97,7 @@ function ReviewView() {
             Loading your saved information…
           </p>
         </header>
-        <div className="grid gap-5 lg:grid-cols-2">
+        <div className="grid gap-4 lg:grid-cols-2">
           <div className="h-48 animate-pulse rounded-card bg-line/40" />
           <div className="h-48 animate-pulse rounded-card bg-line/40" />
           <div className="h-48 animate-pulse rounded-card bg-line/30" />
@@ -136,8 +136,8 @@ function ReviewView() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
-      <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
+    <div className="page-container page-section">
+      <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             Step 5 of 5 · Review
@@ -178,7 +178,7 @@ function ReviewView() {
         steps={PLANNER_STEPS}
         activeIndexes={[4]}
         completedCount={completedCount}
-        className="mb-10"
+        className="mb-6"
       />
 
       {storageStatus === "unavailable" && (
@@ -200,7 +200,7 @@ function ReviewView() {
 
       <ConflictNotice className="mb-6" />
 
-      <div className="grid gap-5 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
         <ReviewBlock title="personal information" editHref="/planner?step=1">
           {completion.personalComplete ? (
             <PersonalDetailsSummary details={profile.personalDetails} />
@@ -313,7 +313,7 @@ function ReviewView() {
 
       {/* --------------------------- Save panel -------------------------- */}
       <Card className="mt-8 overflow-hidden">
-        <div className="flex flex-col items-start justify-between gap-5 bg-brand-50/60 px-6 py-6 sm:flex-row sm:items-center sm:px-8">
+        <div className="flex flex-col items-start justify-between gap-4 bg-brand-50/60 px-6 py-6 sm:flex-row sm:items-center sm:px-8">
           <div className="flex items-start gap-3">
             {readyToSave ? (
               <CheckCircle2

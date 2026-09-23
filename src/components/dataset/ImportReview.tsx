@@ -181,7 +181,7 @@ export function ImportReview({ datasetId, fileName, initialReport, fileWarnings,
               Missing required: {report.columns.missingRequired.map((f) => FIELD_CATALOGUE.find((s) => s.field === f)?.label ?? f).join(", ")}. Choose the matching column below.
             </p>
           )}
-          <div className="mt-2 overflow-x-auto rounded-[10px] border border-line">
+          <div className="mt-2 table-scroll rounded-[10px] border border-line">
             <table className="w-full min-w-[560px] text-left text-xs">
               <thead className="bg-canvas text-[11px] uppercase tracking-wide text-muted">
                 <tr>
@@ -240,7 +240,7 @@ export function ImportReview({ datasetId, fileName, initialReport, fileWarnings,
 
         {/* ---- Per-field completeness ---- */}
         <Collapsible title={`Missing-data analysis by field (${report.fields.filter((f) => f.mapped && f.missing > 0).length} fields with gaps)`} open={open.fields} onToggle={() => setOpen((o) => ({ ...o, fields: !o.fields }))}>
-          <div className="overflow-x-auto rounded-[10px] border border-line">
+          <div className="table-scroll rounded-[10px] border border-line">
             <table className="w-full min-w-[520px] text-left text-xs">
               <thead className="bg-canvas text-[11px] uppercase tracking-wide text-muted">
                 <tr>
@@ -315,7 +315,7 @@ export function ImportReview({ datasetId, fileName, initialReport, fileWarnings,
         {/* ---- Preview ---- */}
         <section aria-labelledby="preview-heading">
           <h4 id="preview-heading" className="text-xs font-bold uppercase tracking-wide text-muted">Import preview (first {report.preview.length} rows as they will be stored)</h4>
-          <div className="mt-2 overflow-x-auto rounded-[10px] border border-line">
+          <div className="mt-2 table-scroll rounded-[10px] border border-line">
             <table className="w-full min-w-[720px] text-left text-xs">
               <thead className="bg-canvas text-[11px] uppercase tracking-wide text-muted">
                 <tr>

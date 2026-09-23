@@ -83,7 +83,7 @@ export function WeeklyPlanner() {
   if (!hydrated || mealPlan.status === "loading" || mealPlan.status === "idle") {
     return (
       <Shell>
-        <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="h-72 animate-pulse rounded-card bg-line/30" />
           <div className="h-56 animate-pulse rounded-card bg-line/40" />
         </div>
@@ -167,8 +167,8 @@ export function WeeklyPlanner() {
         />
       )}
 
-      <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
-        <div className="min-w-0 space-y-5">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="min-w-0 space-y-4">
           {/* ---------------------------- generator ---------------------------- */}
           {!plan && !generating && (
             <Card>
@@ -263,7 +263,7 @@ export function WeeklyPlanner() {
         </div>
 
         {/* ------------------------------ aside ------------------------------ */}
-        <aside className="space-y-5">
+        <aside className="space-y-4">
           {plan && (
             <Card>
               <div className="border-b border-line bg-brand-50/60 px-5 py-3.5">
@@ -404,7 +404,7 @@ function formatKey(key: string): string {
 
 function Shell({ children, badges }: { children: React.ReactNode; badges?: React.ReactNode }) {
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
+    <div className="page-container page-section">
       <header className="mb-6">
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">Weekly planner</p>
         <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">Your 7-Day Meal Plan</h1>

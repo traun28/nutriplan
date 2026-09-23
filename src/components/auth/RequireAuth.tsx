@@ -39,7 +39,7 @@ export function RequireAuth({
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-3xl px-5 py-20">
+      <div className="page-container page-section max-w-3xl">
         <div className="flex items-center gap-3 text-sm text-muted">
           <Loader2 className="h-5 w-5 animate-spin text-brand-400" aria-hidden="true" />
           Checking your session…
@@ -51,7 +51,7 @@ export function RequireAuth({
 
   if (error && !user) {
     return (
-      <div className="mx-auto max-w-lg px-5 py-20">
+      <div className="page-container page-section max-w-lg">
         <div className="rounded-card border border-danger-500/30 bg-danger-50/60 p-6">
           <div className="flex items-start gap-3">
             <AlertTriangle
@@ -81,7 +81,7 @@ export function RequireAuth({
   if (!user) {
     // Redirect is handled in the effect; render nothing visible meanwhile.
     return (
-      <div className="mx-auto max-w-3xl px-5 py-20">
+      <div className="page-container page-section max-w-3xl">
         <div className="flex items-center gap-3 text-sm text-muted">
           <Loader2 className="h-5 w-5 animate-spin text-brand-400" aria-hidden="true" />
           Redirecting to login…

@@ -578,7 +578,7 @@ function SubSection({
 }) {
   return (
     <section className="border-t border-line pt-8 first:border-t-0 first:pt-0">
-      <div className="grid gap-4 md:grid-cols-[210px_1fr]">
+      <div className="grid gap-4 md:grid-cols-[minmax(0,210px)_minmax(0,1fr)]">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-400">
             Section {letter}

@@ -52,9 +52,10 @@ export function RecipeDetail({ recipe }: { recipe: Recipe }) {
   const [servings, setServings] = useState("1");
 
   // Per-user verdict (restrictions + favourite) — one request, cached favourites.
+  const { favoriteIds, loadFavorites } = kitchen;
   useEffect(() => {
     if (!user) return;
-    if (kitchen.favoriteIds === null) void kitchen.loadFavorites();
+    if (favoriteIds === null) void loadFavorites();
     const controller = new AbortController();
     fetch(`/api/recipes/${encodeURIComponent(recipe.id)}`, { signal: controller.signal, credentials: "same-origin" })
       .then((r) => (r.ok ? r.json() : null))
@@ -63,7 +64,10 @@ export function RecipeDetail({ recipe }: { recipe: Recipe }) {
       })
       .catch(() => undefined);
     return () => controller.abort();
-  }, [user, recipe.id, kitchen]);
+    // Stable dependencies only: depending on the whole `kitchen` object made
+    // this re-fire (and re-request the recipe) on every unrelated kitchen
+    // status change.
+  }, [user, recipe.id, favoriteIds, loadFavorites]);
 
   const favorite = kitchen.isFavorite(recipe.id);
   const plan = mealPlan.plan;
@@ -142,7 +146,7 @@ export function RecipeDetail({ recipe }: { recipe: Recipe }) {
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-5 py-10 sm:py-14">
+    <div className="page-container page-section max-w-5xl">
       <Link href="/recipes" className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 hover:underline">
         <ArrowLeft className="h-4 w-4" aria-hidden="true" /> All recipes
       </Link>
@@ -229,8 +233,8 @@ export function RecipeDetail({ recipe }: { recipe: Recipe }) {
         </Button>
       </div>
 
-      <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_320px]">
-        <div className="space-y-5">
+      <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="space-y-4">
           <Card>
             <CardBody>
               <SectionHeader title="Ingredients" description={recipe.ingredients ? `Per serving · shown for ${fmtNum(servingsNumber)} serving${servingsNumber === 1 ? "" : "s"}` : "Quantities are not available for this recipe."} />
@@ -276,7 +280,7 @@ export function RecipeDetail({ recipe }: { recipe: Recipe }) {
           </Card>
         </div>
 
-        <aside className="space-y-5">
+        <aside className="space-y-4">
           <Card>
             <CardBody>
               <SectionHeader title="Nutrition" description={`Per serving (${recipe.servingSize.quantity} ${unitLabel(recipe.servingSize.unit)})`} />

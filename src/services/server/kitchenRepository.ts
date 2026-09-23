@@ -4,6 +4,7 @@
  */
 import { and, asc, desc, eq, inArray } from "drizzle-orm";
 import { db, hasDatabase } from "@/db";
+import { databaseFailureMessage, reportDatabaseError } from "@/services/server/databaseErrors";
 import { groceryItems, groceryLists, pantryItems, recipeFavorites } from "@/db/schema";
 import type { GeneratedGroceryItem, GrocerySource } from "@/services/grocery/groceryBuilder";
 import type { GroceryUnit } from "@/services/grocery/units";
@@ -20,12 +21,12 @@ export class KitchenRepositoryError extends Error {
 const DB_UNAVAILABLE = "The database is not available right now. Please try again shortly.";
 
 async function run<T>(work: () => Promise<T>): Promise<T> {
-  if (!hasDatabase) throw new KitchenRepositoryError(DB_UNAVAILABLE, 503);
+  if (!hasDatabase) throw new KitchenRepositoryError(databaseFailureMessage(DB_UNAVAILABLE), 503);
   try {
     return await work();
   } catch (error) {
     if (error instanceof KitchenRepositoryError) throw error;
-    throw new KitchenRepositoryError(DB_UNAVAILABLE, 503);
+    throw new KitchenRepositoryError(reportDatabaseError("kitchen query", error), 503);
   }
 }
 
@@ -204,6 +205,18 @@ export async function addGroceryItems(
   });
 }
 
+/** Owner-scoped single-item read; used to resolve partial PATCH payloads. */
+export async function getGroceryItem(userId: number, id: number): Promise<GroceryItemRecord | null> {
+  return run(async () => {
+    const rows = await db
+      .select()
+      .from(groceryItems)
+      .where(and(eq(groceryItems.id, id), eq(groceryItems.userId, userId)))
+      .limit(1);
+    return rows[0] ? toItem(rows[0]) : null;
+  });
+}
+
 export async function updateGroceryItem(
   userId: number,
   id: number,
@@ -303,6 +316,18 @@ export async function createPantryItem(userId: number, input: PantryWrite): Prom
   return run(async () => {
     const rows = await db.insert(pantryItems).values({ userId, ...input }).returning();
     return toPantry(rows[0]);
+  });
+}
+
+/** Owner-scoped single-item read; used to resolve partial PATCH payloads. */
+export async function getPantryItem(userId: number, id: number): Promise<PantryItemRecord | null> {
+  return run(async () => {
+    const rows = await db
+      .select()
+      .from(pantryItems)
+      .where(and(eq(pantryItems.id, id), eq(pantryItems.userId, userId)))
+      .limit(1);
+    return rows[0] ? toPantry(rows[0]) : null;
   });
 }
 

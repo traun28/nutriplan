@@ -52,8 +52,8 @@ function NutritionDashboardView() {
 
   if (!hydrated) {
     return (
-      <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
-        <header className="mb-8">
+      <div className="page-container page-section">
+        <header className="mb-6">
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             Nutrition profile
           </p>
@@ -64,7 +64,7 @@ function NutritionDashboardView() {
             Loading your nutrition targets…
           </p>
         </header>
-        <div className="grid gap-5 lg:grid-cols-[320px_1fr]">
+        <div className="grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
           <div className="h-56 animate-pulse rounded-card bg-line/40" />
           <div className="h-56 animate-pulse rounded-card bg-line/30" />
         </div>
@@ -75,7 +75,7 @@ function NutritionDashboardView() {
   /* ---------------------- no profile at all ---------------------- */
   if (!hasSavedProfile && !completion.hasAnyData) {
     return (
-      <div className="mx-auto grid max-w-3xl place-items-center px-5 py-24">
+      <div className="page-container page-section grid max-w-3xl place-items-center">
         <EmptyState
           icon={<Calculator className="h-6 w-6" aria-hidden="true" />}
           title="No nutrition profile is available yet"
@@ -93,8 +93,8 @@ function NutritionDashboardView() {
   const showResults = processed !== null && processed.status === "complete";
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
-      <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
+    <div className="page-container page-section">
+      <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             Nutrition profile
@@ -261,7 +261,7 @@ function ResultsGrid({
   );
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {!showResults && (
         <Badge tone="warning">
           <Info className="h-3 w-3" aria-hidden="true" />
@@ -269,7 +269,7 @@ function ResultsGrid({
         </Badge>
       )}
 
-      <div className="grid gap-5 lg:grid-cols-[320px_1fr]">
+      <div className="grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
         {/* ------------------------- BMI card ------------------------- */}
         <Card>
           <div className="border-b border-line bg-brand-50/60 px-5 py-3.5">

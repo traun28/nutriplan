@@ -1,6 +1,6 @@
 /** Phase 4 — PATCH / DELETE /api/pantry/:id (owner only). */
 import { currentUser, errorResponse, notFound, readJson, unauthorized } from "@/services/server/guard";
-import { deletePantryItem, updatePantryItem, type PantryWrite } from "@/services/server/kitchenRepository";
+import { deletePantryItem, getPantryItem, updatePantryItem, type PantryWrite } from "@/services/server/kitchenRepository";
 import { cleanName, parseCategory, parseDate, parseId, parseNotes, parseQuantity } from "@/services/server/kitchenHttp";
 
 export const runtime = "nodejs";
@@ -24,7 +24,15 @@ export async function PATCH(request: Request, context: Context) {
   }
   if (body.category !== undefined) patch.category = parseCategory(body.category);
   if (body.quantity !== undefined || body.unit !== undefined) {
-    const qty = parseQuantity(body.quantity, body.unit);
+    // A PATCH may change only one half of the quantity pair. Resolve the other
+    // half from the stored item so the "both set or both empty" invariant holds
+    // and a partial update is not rejected as malformed.
+    const current = await getPantryItem(user.id, id).catch(() => null);
+    if (!current) return notFound("Pantry item not found.");
+    const qty = parseQuantity(
+      body.quantity !== undefined ? body.quantity : current.quantity,
+      body.unit !== undefined ? body.unit : current.unit,
+    );
     if (typeof qty === "string") return Response.json({ error: qty }, { status: 400 });
     patch.quantity = qty.quantity;
     patch.unit = qty.unit;

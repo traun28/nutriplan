@@ -50,7 +50,7 @@ const CAPABILITIES = [
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-5xl px-5 py-12 sm:py-16">
+    <div className="page-container page-section max-w-5xl">
       <SectionHeader
         eyebrow="About"
         title="Personalised Diet Planner"

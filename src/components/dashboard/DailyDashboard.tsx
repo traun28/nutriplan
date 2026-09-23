@@ -130,7 +130,7 @@ function DailyDashboardView() {
         : `Your nutrition log for ${formatLongDate(day.selectedDate)}.`;
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
+    <div className="page-container page-section">
       {/* ------------------------------ header ----------------------------- */}
       <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
@@ -175,11 +175,11 @@ function DailyDashboardView() {
       )}
 
       {/* ------------------------------ layout ----------------------------- */}
-      <div className="space-y-5">
+      <div className="space-y-4">
         <DailySummary totals={day.totals} targets={targets} loading={loading} hasTargets={hasTargets} targetsStale={isStale && hasTargets} />
 
-        <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
-          <div id="todays-meals" className="scroll-mt-24 space-y-5">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div id="todays-meals" className="scroll-mt-24 space-y-4">
             <PlannedMealsCard date={day.selectedDate} entries={day.entries} onLog={openLogger} />
             <TodaysMeals
               entries={day.entries}
@@ -201,7 +201,7 @@ function DailyDashboardView() {
             />
           </div>
 
-          <aside className="space-y-5">
+          <aside className="space-y-4">
             <QuickActions onLog={() => openLogger()} hasPlan={plan !== null} />
             {nextMeal && <NextMealCard meal={nextMeal} onLog={openLogger} />}
             <WaterTracker loading={loading} onNotice={notice} />

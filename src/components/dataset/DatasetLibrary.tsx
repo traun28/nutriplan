@@ -388,7 +388,7 @@ export function DatasetLibrary({
                             <p className="text-xs font-bold uppercase tracking-wide text-muted">
                               Preview (first {dataset.previewRows.length} rows)
                             </p>
-                            <div className="mt-2 overflow-x-auto rounded-[10px] border border-line">
+                            <div className="mt-2 table-scroll rounded-[10px] border border-line">
                               <table className="w-full min-w-[40rem] border-collapse text-xs">
                                 <thead className="bg-canvas">
                                   <tr>

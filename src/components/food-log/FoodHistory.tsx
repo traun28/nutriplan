@@ -66,7 +66,7 @@ function FoodHistoryView() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
+    <div className="page-container page-section">
       <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">Food history</p>
@@ -144,7 +144,7 @@ function FoodHistoryView() {
         {state.status === "ready" && state.data.entries.length > 0 && (
           <>
             {/* Desktop table */}
-            <div className="hidden overflow-x-auto md:block">
+            <div className="hidden table-scroll md:block">
               <table className="w-full text-left text-sm">
                 <thead className="border-b border-line bg-canvas text-xs uppercase tracking-wide text-muted">
                   <tr>

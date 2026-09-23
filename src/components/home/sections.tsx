@@ -43,7 +43,7 @@ const INTRO_POINTS = [
 export function HomeIntro() {
   return (
     <section className="border-y border-line bg-surface">
-      <div className="mx-auto max-w-6xl px-5 py-16">
+      <div className="page-container py-12 sm:py-16">
         <Reveal>
           <SectionHeader
             eyebrow="What is this?"
@@ -123,7 +123,7 @@ const WORKFLOW_STEPS = [
 export function HowItWorks() {
   return (
     <section id="how-it-works" className="scroll-mt-24">
-      <div className="mx-auto max-w-6xl px-5 py-20">
+      <div className="page-container py-12 sm:py-16">
         <Reveal>
           <SectionHeader
             eyebrow="How it works"
@@ -217,7 +217,7 @@ const FEATURES = [
 export function Features() {
   return (
     <section id="features" className="scroll-mt-24 border-y border-line bg-surface">
-      <div className="mx-auto max-w-6xl px-5 py-20">
+      <div className="page-container py-12 sm:py-16">
         <Reveal>
           <SectionHeader
             eyebrow="Key features"

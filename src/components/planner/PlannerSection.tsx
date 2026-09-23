@@ -41,7 +41,7 @@ export function PlannerSection({
   continueIcon,
 }: PlannerSectionProps) {
   return (
-    <div className="grid items-start gap-6 lg:grid-cols-[1fr_320px]">
+    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <Card>
         <CardBody>
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">

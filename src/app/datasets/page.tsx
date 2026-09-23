@@ -61,7 +61,7 @@ function DatasetsWorkspace() {
     state.data?.filter((d) => d.status === "needs_review").length ?? 0;
 
   return (
-    <div className="mx-auto max-w-4xl px-5 py-10 sm:py-14">
+    <div className="page-container page-section max-w-4xl">
       <header className="mb-8">
         <SectionHeader
           eyebrow="Reference data"

@@ -62,6 +62,42 @@
   --shadow-pop: 0 12px 32px rgba(0, 0, 0, 0.5);
 }
 
+/* ------------------------------------------------------------------ */
+/* Page geometry — ONE source of truth                                 */
+/*                                                                     */
+/* Every screen's outer width, gutter and vertical rhythm come from     */
+/* these variables via `.page-container` / `.page-section`. Pages must   */
+/* not invent their own widths or one-off padding: changing a value      */
+/* here changes the whole application consistently.                    */
+/* ------------------------------------------------------------------ */
+:root {
+  /* 72rem = 1152px. Content never grows past this, so very wide screens
+     get even margins instead of an over-stretched layout. */
+  --page-max-width: 72rem;
+  /* Narrow screens need a smaller gutter to leave usable content width. */
+  --page-gutter: 1rem;
+  /* Deliberately tighter than the old py-10/py-14: more information on
+     screen without making anything cramped. */
+  --page-space-y: 1.5rem;
+  /* Card padding, shared so cards stay visually consistent. */
+  --card-pad: 1rem;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --page-gutter: 1.25rem;
+    --page-space-y: 1.75rem;
+    --card-pad: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --page-gutter: 1.5rem;
+    --page-space-y: 2rem;
+  }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -71,6 +107,19 @@
   body {
     @apply bg-canvas font-sans text-ink antialiased;
     text-rendering: optimizeLegibility;
+  }
+
+  /* Long unbroken tokens (emails, URLs, dataset ids) must break instead of
+     forcing the page wider than the viewport. `break-word` — not `anywhere` —
+     so normal text keeps its natural word spacing and min-content sizing. */
+  body {
+    overflow-wrap: break-word;
+  }
+
+  /* Tables and preformatted blocks are the usual source of a page-wide
+     horizontal scrollbar; their own container scrolls instead. */
+  table {
+    max-width: 100%;
   }
 
   ::selection {
@@ -215,6 +264,58 @@
 
   .skeleton {
     @apply animate-pulse rounded-[10px] bg-line/50;
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* The one reusable page container.                                  */
+  /*                                                                    */
+  /* `width: 100%` + `max-width` + `margin-inline: auto` keeps content   */
+  /* centred and never wider than the viewport at any breakpoint, and    */
+  /* `min-width: 0` lets it shrink inside a flex/grid parent instead of  */
+  /* being forced open by a wide child (the real cause of page-level     */
+  /* horizontal scrolling).                                             */
+  /*                                                                    */
+  /* Need a narrower screen? Add a Tailwind `max-w-*` utility — utilities */
+  /* are layered after components, so it overrides this cleanly without  */
+  /* any per-page custom CSS.                                           */
+  /* ---------------------------------------------------------------- */
+  .page-container {
+    width: 100%;
+    max-width: var(--page-max-width);
+    min-width: 0;
+    margin-inline: auto;
+    padding-inline: var(--page-gutter);
+  }
+
+  /* Vertical rhythm for a top-level page. Tighter than it used to be so
+     more content fits on screen without anything feeling cramped. */
+  .page-section {
+    padding-block: var(--page-space-y);
+    /* On phones the floating Personal AI disc is 3rem tall and pinned to the
+       bottom-right, so the page keeps extra room at the end — the last control
+       on a screen is always reachable and never sits underneath it. */
+    padding-bottom: calc(var(--page-space-y) + 3rem);
+  }
+
+  @media (min-width: 640px) {
+    .page-section {
+      padding-bottom: var(--page-space-y);
+    }
+  }
+
+  /* Standard card body padding, driven by the same token set. */
+  .card-pad {
+    padding: var(--card-pad);
+  }
+
+  /* Scroll a wide table inside its own box so it can never stretch the
+     page. The wrapper — not the page — owns the horizontal overflow. */
+  .table-scroll {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
   }
 }
 

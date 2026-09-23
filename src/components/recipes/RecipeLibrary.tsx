@@ -94,9 +94,10 @@ export function RecipeLibrary() {
   }, [deferredQuery, filters, user, safeOnly, hasRestrictions, view]);
 
   // Favourites are cached in context so toggles reflect everywhere.
+  const { favoriteIds, loadFavorites } = kitchen;
   useEffect(() => {
-    if (user && kitchen.favoriteIds === null) void kitchen.loadFavorites();
-  }, [user, kitchen]);
+    if (user && favoriteIds === null) void loadFavorites();
+  }, [user, favoriteIds, loadFavorites]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -163,7 +164,7 @@ export function RecipeLibrary() {
     >
       {/* Search + view toggle */}
       <div className="rounded-card border border-line bg-surface p-4 shadow-sm">
-        <div className="grid gap-3 md:grid-cols-[1fr_auto_auto] md:items-end">
+        <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-end">
           <TextField
             id="recipe-search"
             label="Search recipes"

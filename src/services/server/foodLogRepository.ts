@@ -9,6 +9,7 @@
  */
 import { and, asc, count, desc, eq, gte, inArray, lte, sql } from "drizzle-orm";
 import { db, hasDatabase } from "@/db";
+import { databaseFailureMessage, reportDatabaseError } from "@/services/server/databaseErrors";
 import { foodFavorites, foodLogs, userSettings, waterLogs } from "@/db/schema";
 import type {
   FoodLogEntry,
@@ -29,7 +30,7 @@ export class RepositoryError extends Error {
 const DB_UNAVAILABLE = "The database is not available right now. Please try again shortly.";
 
 function requireDatabase(): void {
-  if (!hasDatabase) throw new RepositoryError(DB_UNAVAILABLE, 503);
+  if (!hasDatabase) throw new RepositoryError(databaseFailureMessage(DB_UNAVAILABLE), 503);
 }
 
 /** Wraps a query so driver failures become a safe 503 (never a stack trace). */
@@ -39,7 +40,7 @@ async function run<T>(work: () => Promise<T>): Promise<T> {
     return await work();
   } catch (error) {
     if (error instanceof RepositoryError) throw error;
-    throw new RepositoryError(DB_UNAVAILABLE, 503);
+    throw new RepositoryError(reportDatabaseError("food log query", error), 503);
   }
 }
 

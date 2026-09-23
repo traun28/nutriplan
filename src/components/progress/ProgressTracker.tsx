@@ -124,12 +124,14 @@ export function ProgressTracker() {
         </div>
       )}
 
-      <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
-        <div className="space-y-5">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="space-y-4">
           {status === "loading" && entries === null && (
-            <div className="space-y-5" aria-busy="true" aria-label="Loading progress">
-              <div className="skeleton h-56" />
-              <div className="skeleton h-64" />
+            <div className="space-y-3" aria-busy="true" aria-label="Loading progress">
+              <div className="skeleton h-36" />
+              <div className="skeleton h-9" />
+              <div className="skeleton h-9" />
+              <div className="skeleton h-9" />
             </div>
           )}
 
@@ -216,7 +218,7 @@ export function ProgressTracker() {
           )}
         </div>
 
-        <aside className="space-y-5">
+        <aside className="space-y-4">
           <Card>
             <CardBody>
               <h2 className="text-sm font-bold text-ink">Body metrics</h2>

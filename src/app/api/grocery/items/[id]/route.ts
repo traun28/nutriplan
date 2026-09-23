@@ -1,6 +1,6 @@
 /** Phase 4 — PATCH / DELETE /api/grocery/items/:id (owner only). */
 import { currentUser, errorResponse, notFound, readJson, unauthorized } from "@/services/server/guard";
-import { deleteGroceryItem, updateGroceryItem } from "@/services/server/kitchenRepository";
+import { deleteGroceryItem, getGroceryItem, updateGroceryItem } from "@/services/server/kitchenRepository";
 import { cleanName, parseId, parseQuantity } from "@/services/server/kitchenHttp";
 
 export const runtime = "nodejs";
@@ -22,7 +22,14 @@ export async function PATCH(request: Request, context: Context) {
     patch.purchased = body.purchased;
   }
   if (body.quantity !== undefined || body.unit !== undefined) {
-    const qty = parseQuantity(body.quantity, body.unit);
+    // A PATCH may change only one half of the quantity pair; resolve the other
+    // from the stored item rather than rejecting the request as malformed.
+    const current = await getGroceryItem(user.id, id).catch(() => null);
+    if (!current) return notFound("Item not found.");
+    const qty = parseQuantity(
+      body.quantity !== undefined ? body.quantity : current.quantity,
+      body.unit !== undefined ? body.unit : current.unit,
+    );
     if (typeof qty === "string") return Response.json({ error: qty }, { status: 400 });
     patch.quantity = qty.quantity;
     patch.unit = qty.unit;

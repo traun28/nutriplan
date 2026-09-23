@@ -182,7 +182,7 @@ export function StudentDetail({ datasetId, recordId, onClose, onChanged }: Props
                   Status: <strong className="text-ink">{NUTRITION_LABEL[record.nutrition.status] ?? record.nutrition.status}</strong> — potential gap based on recorded data.
                   {" "}Calculated reference: {record.nutrition.calculatedReference.available ? `${record.nutrition.calculatedReference.caloriesKcal} kcal` : "not available"}. {record.nutrition.calculatedReference.note}
                 </p>
-                <div className="mt-2 overflow-x-auto rounded-[10px] border border-line">
+                <div className="mt-2 table-scroll rounded-[10px] border border-line">
                   <table className="w-full text-left text-xs">
                     <thead className="bg-canvas text-[11px] uppercase tracking-wide text-muted">
                       <tr><th scope="col" className="px-3 py-1.5">Nutrient</th><th scope="col" className="px-3 py-1.5 text-right">Recorded</th><th scope="col" className="px-3 py-1.5 text-right">Calculated reference</th><th scope="col" className="px-3 py-1.5">Comparison</th></tr>

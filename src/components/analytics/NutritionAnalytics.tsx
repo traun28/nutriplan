@@ -193,15 +193,15 @@ export function NutritionAnalytics({ initialView = "day" }: { initialView?: View
 
 function Skeleton() {
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_320px]" aria-busy="true" aria-label="Loading analysis">
-      <div className="space-y-5">
-        <div className="skeleton h-40" />
-        <div className="skeleton h-64" />
-        <div className="skeleton h-48" />
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]" aria-busy="true" aria-label="Loading analysis">
+      <div className="space-y-3">
+        <div className="skeleton h-20" />
+        <div className="skeleton h-36" />
+        <div className="skeleton h-24" />
       </div>
-      <div className="space-y-5">
-        <div className="skeleton h-40" />
-        <div className="skeleton h-56" />
+      <div className="space-y-3">
+        <div className="skeleton h-20" />
+        <div className="skeleton h-32" />
       </div>
     </div>
   );
@@ -220,7 +220,7 @@ function DailyView({ data, loading, isToday }: { data: DailyAnalytics; loading: 
 
   if (data.entryCount === 0) {
     return (
-      <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
         <EmptyState
           icon={<NotebookPen className="h-6 w-6" aria-hidden="true" />}
           title="No nutrition analysis is available for this day yet."
@@ -231,7 +231,7 @@ function DailyView({ data, loading, isToday }: { data: DailyAnalytics; loading: 
             </Button>
           }
         />
-        <div className="space-y-5">
+        <div className="space-y-4">
           <PlannedCard data={data} />
           <WaterCard data={data} />
         </div>
@@ -240,8 +240,8 @@ function DailyView({ data, loading, isToday }: { data: DailyAnalytics; loading: 
   }
 
   return (
-    <div className={cn("grid gap-5 lg:grid-cols-[1fr_320px]", loading && "opacity-70 transition-opacity")}>
-      <div className="space-y-5">
+    <div className={cn("grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]", loading && "opacity-70 transition-opacity")}>
+      <div className="space-y-4">
         {/* Target vs estimated */}
         <Card>
           <CardBody>
@@ -394,7 +394,7 @@ function DailyView({ data, loading, isToday }: { data: DailyAnalytics; loading: 
         </Card>
       </div>
 
-      <aside className="space-y-5">
+      <aside className="space-y-4">
         {/* Score */}
         <Card>
           <CardBody>
@@ -509,7 +509,7 @@ function PlannedCard({ data }: { data: DailyAnalytics }) {
             </p>
             <ul className="mt-3 divide-y divide-line text-sm">
               {pva.meals.map((m) => (
-                <li key={m.slot} className="grid gap-1 py-2 sm:grid-cols-[110px_1fr_auto] sm:items-baseline">
+                <li key={m.slot} className="grid gap-1 py-2 sm:grid-cols-[110px_minmax(0,1fr)_auto] sm:items-baseline">
                   <span className="text-xs font-semibold text-muted">{m.label}</span>
                   <span className="min-w-0">
                     <span className="block truncate text-ink">{m.plannedName}</span>
@@ -591,7 +591,7 @@ function InsightList({ insights, showAll, onToggle }: { insights: Insight[]; sho
 
 function ComparisonTable({ rows, currentLabel, previousLabel }: { rows: DailyAnalytics["comparison"]["rows"] & object; currentLabel: string; previousLabel: string }) {
   return (
-    <div className="mt-3 overflow-x-auto">
+    <div className="mt-3 table-scroll">
       <table className="w-full text-sm">
         <thead>
           <tr className="text-left text-xs font-semibold uppercase tracking-wide text-muted">
@@ -660,8 +660,8 @@ function WeeklyView({ data, loading }: { data: WeeklyAnalytics; loading: boolean
   const chart = (key: "calories" | "protein" | "waterMl") => data.points.map((p, i) => ({ label: labels[i], value: p[key] }));
 
   return (
-    <div className={cn("grid gap-5 lg:grid-cols-[1fr_320px]", loading && "opacity-70 transition-opacity")}>
-      <div className="space-y-5">
+    <div className={cn("grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]", loading && "opacity-70 transition-opacity")}>
+      <div className="space-y-4">
         <Card>
           <CardBody>
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -722,7 +722,7 @@ function WeeklyView({ data, loading }: { data: WeeklyAnalytics; loading: boolean
         </Card>
       </div>
 
-      <aside className="space-y-5">
+      <aside className="space-y-4">
         <Card>
           <CardBody>
             <h2 className="flex items-center gap-2 text-sm font-bold text-ink">

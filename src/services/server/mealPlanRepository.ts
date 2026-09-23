@@ -7,6 +7,7 @@
  */
 import { and, desc, eq, ne } from "drizzle-orm";
 import { db, hasDatabase } from "@/db";
+import { databaseFailureMessage, reportDatabaseError } from "@/services/server/databaseErrors";
 import { mealPlans } from "@/db/schema";
 import type {
   WeeklyPlanData,
@@ -26,12 +27,12 @@ export class MealPlanRepositoryError extends Error {
 const DB_UNAVAILABLE = "The database is not available right now. Please try again shortly.";
 
 async function run<T>(work: () => Promise<T>): Promise<T> {
-  if (!hasDatabase) throw new MealPlanRepositoryError(DB_UNAVAILABLE, 503);
+  if (!hasDatabase) throw new MealPlanRepositoryError(databaseFailureMessage(DB_UNAVAILABLE), 503);
   try {
     return await work();
   } catch (error) {
     if (error instanceof MealPlanRepositoryError) throw error;
-    throw new MealPlanRepositoryError(DB_UNAVAILABLE, 503);
+    throw new MealPlanRepositoryError(reportDatabaseError("meal plan query", error), 503);
   }
 }
 

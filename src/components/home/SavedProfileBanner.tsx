@@ -36,7 +36,7 @@ export function SavedProfileBanner() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-5 pt-6">
+    <div className="page-container pt-5">
       <div className="flex flex-col items-start justify-between gap-4 rounded-card border border-brand-400/25 bg-brand-50/70 px-5 py-4 sm:flex-row sm:items-center">
         <div className="flex items-start gap-3">
           {status.needsAttention ? (

@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 export default function HealthScreeningPage() {
   return (
     <RequireAuth>
-      <main className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
-        <header className="mb-8">
+      <main className="page-container page-section">
+        <header className="mb-6">
           <SectionHeader
             eyebrow="Student data tool"
             title="Health Screening Analyzer"

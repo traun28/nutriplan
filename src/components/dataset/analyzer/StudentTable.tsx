@@ -212,7 +212,7 @@ export function StudentTable(props: Props) {
       )}
 
       {/* Table */}
-      <div className="relative overflow-x-auto rounded-[10px] border border-line" aria-busy={loading}>
+      <div className="relative table-scroll rounded-[10px] border border-line" aria-busy={loading}>
         {loading && (
           <div className="absolute inset-x-0 top-0 z-10 flex items-center gap-2 bg-surface/80 px-3 py-1 text-xs text-muted" role="status">
             <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> Loading records…
