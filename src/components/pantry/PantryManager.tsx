@@ -56,6 +56,14 @@ const CATEGORY_OPTIONS = GROCERY_CATEGORY_ORDER.map((c) => ({
   label: c.label,
 }));
 
+/** "All" plus every real category — data-driven, matching the grocery page. */
+const CATEGORY_FILTERS = [{ id: "all", label: "All" }, ...GROCERY_CATEGORY_ORDER];
+
+/** Canonical aisle order, so the flat "All" list is still sensibly sorted. */
+const CATEGORY_RANK: Map<string, number> = new Map(
+  GROCERY_CATEGORY_ORDER.map((c, i) => [c.id as string, i]),
+);
+
 interface Suggestion {
   recipe: RecipeSummary;
   matched: string[];
@@ -83,9 +91,13 @@ export function PantryManager() {
   >("idle");
   const today = useMemo(() => toDateKey(new Date()), []);
 
+  // Depends on the loader only — never on the whole context object, whose
+  // identity changes with every status/data update and used to re-trigger
+  // this effect in a loop (one failing request after another).
+  const loadPantry = kitchen.loadPantry;
   useEffect(() => {
-    void kitchen.loadPantry();
-  }, [kitchen]);
+    void loadPantry();
+  }, [loadPantry]);
 
   const items = useMemo(() => kitchen.pantry ?? [], [kitchen.pantry]);
 
@@ -131,22 +143,25 @@ export function PantryManager() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return items.filter(
-      (i) =>
-        (category === "all" || i.category === category) &&
-        (!q || i.name.includes(q) || (i.notes ?? "").toLowerCase().includes(q)),
-    );
+    return items
+      .filter(
+        (i) =>
+          (category === "all" || i.category === category) &&
+          (!q || i.name.includes(q) || (i.notes ?? "").toLowerCase().includes(q)),
+      )
+      .sort(
+        (a, b) =>
+          (CATEGORY_RANK.get(a.category) ?? 99) -
+            (CATEGORY_RANK.get(b.category) ?? 99) || a.name.localeCompare(b.name),
+      );
   }, [items, query, category]);
 
-  const grouped = useMemo(() => {
-    const map = new Map<string, PantryItemRecord[]>();
-    for (const item of filtered)
-      map.set(item.category, [...(map.get(item.category) ?? []), item]);
-    return GROCERY_CATEGORY_ORDER.filter((c) => map.has(c.id)).map((c) => ({
-      ...c,
-      items: map.get(c.id)!,
-    }));
-  }, [filtered]);
+  /** Per-category counts for the filter chips (search-independent). */
+  const categoryCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const item of items) map.set(item.category, (map.get(item.category) ?? 0) + 1);
+    return map;
+  }, [items]);
 
   const expiring = useMemo(
     () =>
@@ -216,163 +231,204 @@ export function PantryManager() {
         />
       )}
 
-      <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
-        <div>
-          <div className="mb-4 grid gap-3 rounded-card border border-line bg-surface p-4 shadow-sm sm:grid-cols-[1fr_180px_auto] sm:items-end">
-            <TextField
-              label="Search pantry"
-              value={query}
-              onChange={setQuery}
-              placeholder="Search by name or note…"
-              icon={<Search className="h-4 w-4" aria-hidden="true" />}
-              autoComplete="off"
-            />
-            <SelectField
-              label="Category"
-              value={category}
-              onChange={setCategory}
-              options={[
-                { value: "all", label: "All categories" },
-                ...CATEGORY_OPTIONS,
-              ]}
-            />
-            <Button
-              onClick={() => setEditing("new")}
-              icon={<Plus className="h-4 w-4" />}
-            >
-              Add item
-            </Button>
-          </div>
-
-          {kitchen.pantryStatus === "loading" && kitchen.pantry === null && (
-            <div className="h-64 animate-pulse rounded-card bg-line/30" />
-          )}
-
-          {kitchen.pantry !== null && items.length === 0 && (
-            <EmptyState
-              icon={<Package className="h-6 w-6" aria-hidden="true" />}
-              title="Your pantry is empty"
-              description="Add staples like rice, oats, lentils or eggs. NutriPlan will use them to trim your grocery list and suggest recipes."
-              action={
-                <Button
-                  onClick={() => setEditing("new")}
-                  icon={<Plus className="h-4 w-4" />}
-                >
-                  Add your first item
-                </Button>
-              }
-            />
-          )}
-          {items.length > 0 && filtered.length === 0 && (
-            <p className="rounded-card border border-dashed border-line p-6 text-center text-sm text-muted">
-              No pantry items match your search.
-            </p>
-          )}
-
-          <div className="space-y-4">
-            {grouped.map((group) => (
-              <Card key={group.id}>
-                <CardBody>
-                  <h2 className="text-sm font-bold uppercase tracking-wide text-brand-500">
-                    {group.label}
-                  </h2>
-                  <ul className="mt-2 divide-y divide-line">
-                    {group.items.map((item) => (
-                      <PantryRow
-                        key={item.id}
-                        item={item}
-                        today={today}
-                        onEdit={() => setEditing(item)}
-                        onMessage={show}
-                      />
-                    ))}
-                  </ul>
-                </CardBody>
-              </Card>
-            ))}
-          </div>
+      {/* ONE main content area: filters → results → recipe ideas. There is no
+          second column and no fixed-height panel to fill. */}
+      <div className="space-y-4">
+        <div className="grid gap-3 rounded-card border border-line bg-surface p-4 shadow-sm sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+          <TextField
+            label="Search pantry"
+            value={query}
+            onChange={setQuery}
+            placeholder="Search by name or note…"
+            icon={<Search className="h-4 w-4" aria-hidden="true" />}
+            autoComplete="off"
+          />
+          <Button
+            onClick={() => setEditing("new")}
+            icon={<Plus className="h-4 w-4" />}
+          >
+            Add item
+          </Button>
         </div>
 
-        <aside className="space-y-4">
-          <Card>
-            <CardBody>
-              <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
-                <ChefHat
-                  className="h-4 w-4 text-brand-500"
-                  aria-hidden="true"
-                />{" "}
-                Cook with what you have
-              </h2>
-              {items.length === 0 && (
-                <p className="mt-1 text-xs text-muted">
-                  Add a few pantry items to see recipe ideas.
-                </p>
-              )}
-              {suggestStatus === "loading" && (
-                <p className="mt-2 flex items-center gap-2 text-xs text-muted">
-                  <Loader2
-                    className="h-3.5 w-3.5 animate-spin"
-                    aria-hidden="true"
-                  />{" "}
-                  Finding recipes…
-                </p>
-              )}
-              {suggestStatus === "error" && (
-                <p className="mt-2 text-xs text-danger-700">
-                  Suggestions could not be loaded.
-                </p>
-              )}
-              {suggestions &&
-                items.length > 0 &&
-                suggestions.length === 0 &&
-                suggestStatus === "idle" && (
-                  <p className="mt-1 text-xs text-muted">
-                    No recipes use these ingredients yet. Try adding staples
-                    like rice, oats, lentils, paneer or eggs.
-                  </p>
+        {/* Category filter — picking one replaces the list below. */}
+        <div
+          role="group"
+          aria-label="Filter pantry by category"
+          className="flex flex-wrap items-center gap-1.5"
+        >
+          {CATEGORY_FILTERS.map((filter) => {
+            const count =
+              filter.id === "all" ? items.length : (categoryCounts.get(filter.id) ?? 0);
+            const active = category === filter.id;
+            return (
+              <button
+                key={filter.id}
+                type="button"
+                aria-pressed={active}
+                onClick={() => setCategory(filter.id)}
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-pill border px-3 py-1.5 text-sm font-semibold whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
+                  active
+                    ? "border-brand-700 bg-brand-700 text-white shadow-[0_4px_12px_rgba(5,150,105,0.28)]"
+                    : "border-line bg-surface text-muted hover:border-brand-400/50 hover:text-ink",
                 )}
-              {suggestions && suggestions.length > 0 && (
-                <>
-                  <p className="mt-1 text-xs text-muted">
-                    You have {suggestions[0].matched.slice(0, 3).join(", ")}…
-                    here&apos;s what fits your profile:
-                  </p>
-                  <ul className="mt-3 space-y-3">
-                    {suggestions.map((s) => (
-                      <li
-                        key={s.recipe.id}
-                        className="rounded-lg border border-line bg-canvas p-3"
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <Link
-                            href={`/recipes/${s.recipe.id}`}
-                            className="text-sm font-semibold text-ink hover:text-brand-600"
-                          >
-                            {s.recipe.name}
-                          </Link>
-                          <Badge tone={s.coverage >= 75 ? "brand" : undefined}>
-                            {s.coverage}% on hand
-                          </Badge>
-                        </div>
-                        <p className="mt-1 text-xs text-muted">
-                          {s.recipe.calories} kcal · {s.recipe.proteinGrams} g
-                          protein
-                          {s.missing.length > 0 && (
-                            <>
-                              {" "}
-                              · missing: {s.missing.slice(0, 3).join(", ")}
-                              {s.missing.length > 3 ? "…" : ""}
-                            </>
-                          )}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
+              >
+                {filter.label}
+                <span
+                  className={cn(
+                    "rounded-pill px-1.5 text-[11px] font-bold tabular-nums",
+                    active ? "bg-white/20 text-white" : "bg-canvas text-muted",
+                  )}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Compact skeleton — rows, not a tall blank rectangle. */}
+        {kitchen.pantryStatus === "loading" && kitchen.pantry === null && (
+          <div
+            role="status"
+            aria-busy="true"
+            aria-label="Loading pantry"
+            className="space-y-2 rounded-card border border-line bg-surface p-4 sm:p-5"
+          >
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="skeleton h-9" />
+            ))}
+          </div>
+        )}
+
+        {kitchen.pantry !== null && items.length === 0 && (
+          <EmptyState
+            icon={<Package className="h-6 w-6" aria-hidden="true" />}
+            title="Your pantry is empty"
+            description="Add staples like rice, oats, lentils or eggs. NutriPlan will use them to trim your grocery list and suggest recipes."
+            action={
+              <Button
+                onClick={() => setEditing("new")}
+                icon={<Plus className="h-4 w-4" />}
+              >
+                Add your first item
+              </Button>
+            }
+          />
+        )}
+
+        {items.length > 0 && filtered.length === 0 && (
+          <p className="rounded-card border border-dashed border-line bg-surface/60 px-5 py-6 text-center text-sm text-muted">
+            {query.trim()
+              ? `No pantry items match “${query.trim()}”.`
+              : `No ${groceryCategoryLabel(category)} pantry items yet.`}
+          </p>
+        )}
+
+        {/* Main results: one list, never one card per category. */}
+        {filtered.length > 0 && (
+          <Card>
+            <CardBody className="p-0">
+              <h2 className="flex items-center justify-between gap-2 border-b border-line px-4 py-3 text-sm font-bold tracking-wide text-brand-500 uppercase sm:px-5">
+                <span className="truncate">
+                  {category === "all" ? "All items" : groceryCategoryLabel(category)}
+                </span>
+                <span className="shrink-0 text-xs font-semibold tracking-normal text-muted normal-case">
+                  {filtered.length} item{filtered.length === 1 ? "" : "s"}
+                </span>
+              </h2>
+              <ul className="divide-y divide-line px-4 sm:px-5">
+                {filtered.map((item) => (
+                  <PantryRow
+                    key={item.id}
+                    item={item}
+                    today={today}
+                    showCategory={category === "all"}
+                    onEdit={() => setEditing(item)}
+                    onMessage={show}
+                  />
+                ))}
+              </ul>
             </CardBody>
           </Card>
-        </aside>
+        )}
+
+        {/* Recipe ideas live in the main flow now, not in a side column. */}
+        <Card>
+          <CardBody>
+            <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
+              <ChefHat className="h-4 w-4 shrink-0 text-brand-500" aria-hidden="true" />
+              Cook with what you have
+            </h2>
+            {items.length === 0 && (
+              <p className="mt-1 text-xs text-muted">
+                Add a few pantry items to see recipe ideas.
+              </p>
+            )}
+            {suggestStatus === "loading" && (
+              <p className="mt-2 flex items-center gap-2 text-xs text-muted">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                Finding recipes…
+              </p>
+            )}
+            {suggestStatus === "error" && (
+              <p className="mt-2 text-xs text-danger-700">
+                Suggestions could not be loaded.
+              </p>
+            )}
+            {suggestions &&
+              items.length > 0 &&
+              suggestions.length === 0 &&
+              suggestStatus === "idle" && (
+                <p className="mt-1 text-xs text-muted">
+                  No recipes use these ingredients yet. Try adding staples like
+                  rice, oats, lentils, paneer or eggs.
+                </p>
+              )}
+            {suggestions && suggestions.length > 0 && (
+              <>
+                <p className="mt-1 text-xs text-muted">
+                  You have {suggestions[0].matched.slice(0, 3).join(", ")}…
+                  here&apos;s what fits your profile:
+                </p>
+                <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                  {suggestions.map((s) => (
+                    <li
+                      key={s.recipe.id}
+                      className="min-w-0 rounded-[10px] border border-line bg-canvas p-3"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <Link
+                          href={`/recipes/${s.recipe.id}`}
+                          className="min-w-0 text-sm font-semibold text-ink hover:text-brand-600"
+                        >
+                          {s.recipe.name}
+                        </Link>
+                        <Badge
+                          className="shrink-0"
+                          tone={s.coverage >= 75 ? "brand" : undefined}
+                        >
+                          {s.coverage}% on hand
+                        </Badge>
+                      </div>
+                      <p className="mt-1 text-xs text-muted">
+                        {s.recipe.calories} kcal · {s.recipe.proteinGrams} g protein
+                        {s.missing.length > 0 && (
+                          <>
+                            {" "}
+                            · missing: {s.missing.slice(0, 3).join(", ")}
+                            {s.missing.length > 3 ? "…" : ""}
+                          </>
+                        )}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </CardBody>
+        </Card>
       </div>
 
       <PantryDialog
@@ -392,11 +448,14 @@ export function PantryManager() {
 function PantryRow({
   item,
   today,
+  showCategory,
   onEdit,
   onMessage,
 }: {
   item: PantryItemRecord;
   today: string;
+  /** Only in the "All" view — a selected category makes the badge redundant. */
+  showCategory: boolean;
   onEdit: () => void;
   onMessage: (m: string, tone?: "success" | "error") => void;
 }) {
@@ -437,6 +496,7 @@ function PantryRow({
               <em>no quantity</em>
             )}
           </span>
+          {showCategory && <Badge>{groceryCategoryLabel(item.category)}</Badge>}
           {item.quantity === 0 && <Badge tone="warning">Out</Badge>}
           {days !== null && (
             <Badge tone={days <= 3 ? "warning" : undefined}>
@@ -456,7 +516,7 @@ function PantryRow({
       </div>
       <div className="flex shrink-0 items-center gap-1">
         {item.quantity !== null && item.unit && (
-          <div className="mr-1 hidden items-center rounded-lg border border-line sm:inline-flex">
+          <div className="mr-1 hidden items-center rounded-[10px] border border-line sm:inline-flex">
             <button
               type="button"
               onClick={() => void adjust(-step)}
@@ -481,7 +541,7 @@ function PantryRow({
           type="button"
           onClick={() => setConfirm("used")}
           disabled={busy}
-          className="rounded-md px-2 py-1 text-xs font-semibold text-muted hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+          className="rounded-[10px] px-2 py-1 text-xs font-semibold text-muted hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           aria-label={`Mark ${item.name} as used up`}
         >
           Used up
@@ -489,7 +549,7 @@ function PantryRow({
         <button
           type="button"
           onClick={onEdit}
-          className="rounded-md p-1.5 text-muted hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+          className="rounded-[10px] p-1.5 text-muted hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           aria-label={`Edit ${item.name}`}
         >
           <Pencil className="h-4 w-4" aria-hidden="true" />
@@ -497,7 +557,7 @@ function PantryRow({
         <button
           type="button"
           onClick={() => setConfirm("delete")}
-          className="rounded-md p-1.5 text-muted hover:bg-danger-50 hover:text-danger-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+          className="rounded-[10px] p-1.5 text-muted hover:bg-danger-50 hover:text-danger-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           aria-label={`Remove ${item.name}`}
         >
           {busy ? (
@@ -679,7 +739,7 @@ function PantryDialog({
         <p
           role="alert"
           className={cn(
-            "mt-3 rounded-lg border border-danger-500/30 bg-danger-50/60 px-3 py-2 text-sm text-danger-700",
+            "mt-3 rounded-[10px] border border-danger-500/30 bg-danger-50/60 px-3 py-2 text-sm text-danger-700",
           )}
         >
           {error}

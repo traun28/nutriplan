@@ -66,7 +66,7 @@ function FoodHistoryView() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
+    <div className="page-container page-section">
       <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">Food history</p>
@@ -118,7 +118,7 @@ function FoodHistoryView() {
               title="Could not load your history"
               description={state.error.message}
               action={
-                <Button variant="outline" onClick={() => void reload()} icon={<RefreshCw className="h-4 w-4" />}>
+                <Button variant="outline" onClick={() => void reload()} icon={<RefreshCw className="h-6 w-6" />}>
                   Try again
                 </Button>
               }
@@ -144,8 +144,8 @@ function FoodHistoryView() {
         {state.status === "ready" && state.data.entries.length > 0 && (
           <>
             {/* Desktop table */}
-            <div className="hidden overflow-x-auto md:block">
-              <table className="w-full text-left text-sm">
+            <div className="hidden table-scroll md:block">
+              <table aria-label="Logged food history" className="w-full text-left text-sm">
                 <thead className="border-b border-line bg-canvas text-xs uppercase tracking-wide text-muted">
                   <tr>
                     <th scope="col" className="px-5 py-3 font-semibold">Date</th>
@@ -194,7 +194,7 @@ function FoodHistoryView() {
             <ul className="divide-y divide-line md:hidden">
               {groups.map((group) => (
                 <li key={group.date} className="px-5 py-4">
-                  <h3 className="text-xs font-bold uppercase tracking-wide text-brand-300">{formatDate(group.date)}</h3>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">{formatDate(group.date)}</h3>
                   <ul className="mt-2.5 space-y-2">
                     {group.entries.map((entry) => (
                       <li key={entry.id} className={cn("rounded-[10px] border border-line bg-canvas p-3", deletingId === entry.id && "opacity-50")}>

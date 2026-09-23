@@ -61,8 +61,8 @@ function DatasetsWorkspace() {
     state.data?.filter((d) => d.status === "needs_review").length ?? 0;
 
   return (
-    <div className="mx-auto max-w-4xl px-5 py-10 sm:py-14">
-      <header className="mb-8">
+    <div className="page-container page-section max-w-4xl">
+      <header className="mb-6">
         <SectionHeader
           eyebrow="Reference data"
           title="Dataset Management"
@@ -72,7 +72,7 @@ function DatasetsWorkspace() {
 
       <Card className="mb-6 overflow-hidden">
         <CardBody>
-          <p className="text-xs font-bold uppercase tracking-wide text-brand-400">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             From data to diet chart
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-4">
@@ -148,12 +148,12 @@ function DatasetsWorkspace() {
 
       {state.status === "loading" && (
         <Card>
-          <CardBody className="py-10">
+          <CardBody>
             <div className="flex items-center gap-3 text-sm text-muted">
               <Loader2 className="h-5 w-5 animate-spin text-brand-400" aria-hidden="true" />
               Loading your datasets…
             </div>
-            <div className="mt-5 space-y-2">
+            <div className="mt-3 space-y-2">
               <div className="h-16 animate-pulse rounded-[10px] bg-line/40" />
               <div className="h-16 animate-pulse rounded-[10px] bg-line/30" />
             </div>

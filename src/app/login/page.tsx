@@ -90,7 +90,7 @@ function LoginForm() {
   };
 
   return (
-    <div className="mx-auto grid min-h-[calc(100vh-8rem)] max-w-5xl items-center gap-10 px-5 py-12 lg:grid-cols-2">
+    <div className="page-container grid min-h-[calc(100dvh-7.5rem)] max-w-5xl items-center gap-8 py-10 lg:grid-cols-2">
       {/* Brand panel */}
       <div className="hidden lg:block">
         <span className="inline-flex items-center gap-2.5">
@@ -102,7 +102,7 @@ function LoginForm() {
           </span>
         </span>
 
-        <h1 className="mt-8 text-3xl font-extrabold leading-tight tracking-tight text-ink">
+        <h1 className="mt-6 text-3xl font-extrabold leading-tight tracking-tight text-ink">
           Your nutrition journey,
           <br />
           personalised.
@@ -113,7 +113,7 @@ function LoginForm() {
           AI assistant.
         </p>
 
-        <ul className="mt-8 space-y-3">
+        <ul className="mt-6 space-y-3">
           {[
             { icon: Sparkles, text: "Personalised plans from your own profile" },
             { icon: ShieldCheck, text: "Allergies and restrictions always respected" },
@@ -310,7 +310,7 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="grid min-h-[calc(100vh-8rem)] place-items-center">
+        <div className="grid min-h-[calc(100dvh-7.5rem)] place-items-center">
           <Loader2 className="h-6 w-6 animate-spin text-brand-400" aria-hidden="true" />
         </div>
       }

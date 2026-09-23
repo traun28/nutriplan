@@ -72,8 +72,8 @@ function DietPlanView() {
   /* ----------------------------- loading ------------------------------ */
   if (!hydrated) {
     return (
-      <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
-        <header className="mb-8">
+      <div className="page-container page-section">
+        <header className="mb-6">
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             Your results
           </p>
@@ -84,7 +84,7 @@ function DietPlanView() {
             Loading your plan…
           </p>
         </header>
-        <div className="grid gap-5 lg:grid-cols-[340px_1fr]">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
           <div className="h-56 animate-pulse rounded-card bg-line/40" />
           <div className="h-72 animate-pulse rounded-card bg-line/30" />
         </div>
@@ -132,9 +132,9 @@ function DietPlanView() {
   if (status === "generating") {
     return (
       <Shell>
-        <div className="flex flex-col items-center rounded-card border border-line bg-surface px-6 py-16 text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-brand-400" aria-hidden="true" />
-          <p className="mt-4 text-base font-bold text-ink" role="status">
+        <div className="rounded-card border border-line bg-surface px-5 py-6 text-center">
+          <Loader2 className="mx-auto h-5 w-5 animate-spin text-brand-400" aria-hidden="true" />
+          <p className="mt-2.5 text-sm font-bold text-ink" role="status">
             Creating your personalised plan…
           </p>
           <p className="mt-1 text-sm text-muted">
@@ -212,7 +212,7 @@ function DietPlanView() {
   const needsNewPlan = planStale || targetsStale;
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14 print:max-w-none print:px-0 print:py-0">
+    <div className="page-container page-section print:max-w-none print:px-0 print:py-0">
       {/* Print-only document header */}
       <div className="hidden print:mb-6 print:block">
         <h1 className="text-xl font-bold">PERSONALISED DIET PLAN</h1>
@@ -241,7 +241,7 @@ function DietPlanView() {
         className={cn(
           "mb-6 flex flex-col gap-4 rounded-card border p-5 sm:flex-row sm:items-center sm:justify-between print:hidden",
           needsNewPlan
-            ? "border-accent-300/40/30 bg-accent-200/30"
+            ? "border-accent-300/40 bg-accent-200/30"
             : "border-brand-400/25 bg-brand-50/70",
         )}
       >
@@ -335,7 +335,7 @@ function DietPlanView() {
       </section>
 
       {/* --------------------------- main grid --------------------------- */}
-      <div className="mt-6 grid items-start gap-6 lg:grid-cols-[1fr_340px]">
+      <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         {/* Meal plan */}
         <section aria-labelledby="meals-heading">
           <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
@@ -353,7 +353,7 @@ function DietPlanView() {
           </div>
 
           {plan.validation.warnings.length > 0 && (
-            <div className="mt-4 rounded-card border border-accent-300/40/30 bg-accent-200/30 p-4">
+            <div className="mt-4 rounded-card border border-accent-300/40 bg-accent-200/30 p-4">
               <p className="text-xs font-bold text-ink">Notes about this plan</p>
               <ul className="mt-2 space-y-1">
                 {plan.validation.warnings.map((warning) => (
@@ -367,7 +367,7 @@ function DietPlanView() {
         </section>
 
         {/* Supporting column */}
-        <div className="space-y-5">
+        <div className="space-y-4">
           <NutritionComparison plan={plan} />
           <SafetySummary plan={plan} />
           <DietaryConsiderationsCard profile={profile} />
@@ -378,7 +378,7 @@ function DietPlanView() {
       <ConflictNotice className="mt-6" />
 
       {/* ------------------ personalisation + guidance ------------------- */}
-      <div className="mt-6 grid gap-5 lg:grid-cols-2">
+      <div className="mt-6 grid gap-4 lg:grid-cols-2">
         <PersonalisationCard plan={plan} />
         <RecommendationsCard plan={plan} />
       </div>
@@ -431,8 +431,8 @@ function DietPlanView() {
 
 function Shell({ children }: { children: ReactNode }) {
   return (
-    <div className="mx-auto max-w-3xl px-5 py-16 sm:py-24">
-      <header className="mb-8 text-center">
+    <div className="page-container page-section max-w-3xl">
+      <header className="mb-6 text-center">
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
           Your results
         </p>

@@ -31,7 +31,7 @@ export function Hero() {
         className="absolute inset-0 bg-gradient-to-t from-canvas via-transparent to-canvas/40"
       />
 
-      <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[1.15fr_0.85fr] lg:pb-28 lg:pt-24">
+      <div className="page-container relative grid items-center gap-6 pb-10 pt-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-10 lg:pb-12 lg:pt-12">
         <div>
           <motion.div
             initial={reduce ? false : { opacity: 0, y: 16 }}
@@ -62,7 +62,7 @@ export function Hero() {
             nutritional goals, food preferences and dietary requirements.
           </motion.p>
           <motion.div
-            className="mt-8 flex flex-wrap items-center gap-3"
+            className="mt-6 flex flex-wrap items-center gap-3"
             initial={reduce ? false : { opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.24, ease: [0.22, 1, 0.36, 1] }}
@@ -75,7 +75,7 @@ export function Hero() {
             </Button>
           </motion.div>
           <motion.ul
-            className="mt-8 flex flex-wrap gap-x-6 gap-y-2"
+            className="mt-6 flex flex-wrap gap-x-6 gap-y-2"
             initial={reduce ? false : { opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}

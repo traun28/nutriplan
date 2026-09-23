@@ -41,7 +41,7 @@ export function PlannerSection({
   continueIcon,
 }: PlannerSectionProps) {
   return (
-    <div className="grid items-start gap-6 lg:grid-cols-[1fr_320px]">
+    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <Card>
         <CardBody>
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
@@ -54,9 +54,9 @@ export function PlannerSection({
             {description}
           </p>
 
-          <div className="mt-8 space-y-8">{children}</div>
+          <div className="mt-6 space-y-6">{children}</div>
 
-          <div className="mt-10 flex flex-col-reverse gap-3 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-8 flex flex-col-reverse gap-3 border-t border-line pt-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               {onBack && (
                 <Button

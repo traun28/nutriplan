@@ -82,7 +82,7 @@ export function SavedPlans({ onNotice }: { onNotice: (result: ActionResult) => v
                     maxLength={80}
                     value={renaming.value}
                     onChange={(e) => setRenaming({ id: item.id, value: e.target.value })}
-                    className="min-w-0 flex-1 rounded-[8px] border border-line bg-surface px-2.5 py-1.5 text-sm text-ink focus:border-brand-500 focus:outline-none"
+                    className="min-w-0 flex-1 rounded-[10px] border border-line bg-surface px-2.5 py-1.5 text-sm text-ink focus:border-brand-500 focus:outline-none"
                   />
                   <IconButton label="Save name" onClick={() => void submitRename()} disabled={busy !== null}><Check className="h-3.5 w-3.5" /></IconButton>
                   <IconButton label="Cancel rename" onClick={() => setRenaming(null)}><X className="h-3.5 w-3.5" /></IconButton>
@@ -119,7 +119,7 @@ export function SavedPlans({ onNotice }: { onNotice: (result: ActionResult) => v
                     type="date"
                     value={dating.value}
                     onChange={(e) => setDating({ id: item.id, value: e.target.value })}
-                    className="rounded-[8px] border border-line bg-surface px-2.5 py-1 text-xs text-ink focus:border-brand-500 focus:outline-none"
+                    className="rounded-[10px] border border-line bg-surface px-2.5 py-1 text-xs text-ink focus:border-brand-500 focus:outline-none"
                   />
                   <IconButton label="Save date" onClick={() => void submitDate()} disabled={busy !== null}><Check className="h-3.5 w-3.5" /></IconButton>
                   {item.startDate && (
@@ -195,7 +195,7 @@ function SmallButton({ children, onClick, disabled, icon, danger }: { children: 
 
 function IconButton({ children, label, onClick, disabled }: { children: React.ReactNode; label: string; onClick: () => void; disabled?: boolean }) {
   return (
-    <button type="button" aria-label={label} onClick={onClick} disabled={disabled} className="grid h-8 w-8 place-items-center rounded-[8px] border border-line bg-surface text-ink hover:border-brand-400/50 hover:text-brand-400 disabled:opacity-60">
+    <button type="button" aria-label={label} onClick={onClick} disabled={disabled} className="grid h-8 w-8 place-items-center rounded-[10px] border border-line bg-surface text-ink hover:border-brand-400/50 hover:text-brand-400 disabled:opacity-60">
       {children}
     </button>
   );

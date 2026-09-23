@@ -118,7 +118,7 @@ function ChipGroup({
     tone === "danger"
       ? "border-danger-500/30 bg-danger-50 text-danger-700"
       : tone === "warning"
-        ? "border-accent-300/40/30 bg-accent-200/40 text-accent-300"
+        ? "border-accent-300/40 bg-accent-200/40 text-accent-300"
         : "border-line bg-surface text-ink";
 
   return (

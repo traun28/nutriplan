@@ -14,24 +14,33 @@ import { cn } from "@/lib/cn";
 /* ------------------------------------------------------------------ */
 
 type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "danger";
-type ButtonSize = "sm" | "md" | "lg";
+type ButtonSize = "xs" | "sm" | "md" | "lg" | "icon";
 
 const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
   primary:
-    "bg-brand-700 text-white shadow-[0_6px_16px_rgba(5,150,105,0.28)] hover:bg-brand-800 hover:shadow-[0_8px_20px_rgba(5,150,105,0.35)] active:translate-y-px",
+    "bg-brand-700 text-white shadow-[0_6px_16px_rgba(5,150,105,0.28)] hover:bg-brand-800 hover:shadow-[0_8px_20px_rgba(5,150,105,0.35)]",
   secondary:
-    "border border-brand-400/25 bg-brand-50 text-brand-300 hover:bg-brand-100",
+    "border border-brand-400/25 bg-brand-50 text-brand-400 hover:bg-brand-100",
   outline:
     "border border-line bg-surface text-ink hover:border-brand-400/50 hover:bg-brand-50 hover:text-brand-400",
   ghost: "text-muted hover:bg-brand-50 hover:text-brand-400",
   danger:
-    "bg-danger-800 text-white shadow-[0_6px_16px_rgba(239,68,68,0.28)] hover:bg-danger-600 active:translate-y-px",
+    "bg-danger-600 text-white shadow-[0_6px_16px_rgba(239,68,68,0.28)] hover:bg-danger-500",
 };
 
+/**
+ * One height per size, so a button always lines up with the form control next
+ * to it (inputs are h-10/h-11). `min-h` rather than `h` so a long label that
+ * has to wrap grows the button instead of being clipped. `icon` is the single
+ * sanctioned square icon-button size — 44px, matching the assistant's send
+ * button and comfortably above the 24px WCAG minimum target.
+ */
 const BUTTON_SIZES: Record<ButtonSize, string> = {
-  sm: "px-4 py-2 text-sm",
-  md: "px-5 py-2.5 text-sm",
-  lg: "px-7 py-3.5 text-base",
+  xs: "min-h-7 px-2.5 text-xs",
+  sm: "min-h-9 px-4 text-sm",
+  md: "min-h-10 px-5 text-sm",
+  lg: "min-h-12 px-7 text-base",
+  icon: "h-11 w-11 shrink-0 p-0",
 };
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -60,7 +69,11 @@ export function Button({
   const classes = cn(
     "inline-flex select-none items-center justify-center gap-2 rounded-pill font-semibold transition-all duration-200",
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500",
-    "disabled:pointer-events-none disabled:opacity-50",
+    // `cursor-not-allowed` instead of `pointer-events-none`: the latter also
+    // swallows the cursor, so a disabled button gave no visual explanation.
+    "disabled:cursor-not-allowed disabled:opacity-50",
+    // Press feedback belongs to every variant, not just the two filled ones.
+    "active:translate-y-px disabled:active:translate-y-0",
     BUTTON_VARIANTS[variant],
     BUTTON_SIZES[size],
     className,
@@ -85,6 +98,7 @@ export function Button({
       type="button"
       className={classes}
       disabled={disabled || loading}
+      aria-busy={loading || undefined}
       {...rest}
     >
       {loading ? (
@@ -127,7 +141,10 @@ export function CardBody({
   className?: string;
   children: ReactNode;
 }) {
-  return <div className={cn("p-5 sm:p-7", className)}>{children}</div>;
+  // `card-pad` is the shared padding token (16px, 20px from sm) — tighter
+  // than the old p-5 sm:p-7 so more content fits on screen. Still overridable
+  // per call site because utilities layer after components.
+  return <div className={cn("card-pad", className)}>{children}</div>;
 }
 
 /* ------------------------------------------------------------------ */
@@ -139,7 +156,7 @@ type BadgeTone = "neutral" | "brand" | "warning" | "danger" | "solid";
 const BADGE_TONES: Record<BadgeTone, string> = {
   neutral: "border border-line bg-surface text-muted",
   brand: "border border-brand-400/25 bg-brand-50 text-brand-400",
-  warning: "border border-accent-300/40/30 bg-accent-200/40 text-accent-300",
+  warning: "border border-accent-300/40 bg-accent-200/40 text-accent-300",
   danger: "border border-danger-500/30 bg-danger-50 text-danger-700",
   solid: "border border-brand-600 bg-brand-700 text-white",
 };
@@ -228,22 +245,22 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center rounded-card border border-dashed border-line bg-surface/60 px-6 py-10 text-center",
+        "flex flex-col items-center rounded-card border border-dashed border-line bg-surface/60 px-5 py-6 text-center sm:py-7",
         className,
       )}
     >
       {icon && (
-        <div className="grid h-12 w-12 place-items-center rounded-full bg-brand-50 text-brand-400">
+        <div className="grid h-10 w-10 place-items-center rounded-full bg-brand-50 text-brand-400">
           {icon}
         </div>
       )}
-      <h3 className="mt-4 text-base font-bold text-ink">{title}</h3>
+      <h3 className="mt-3 text-base font-bold text-ink">{title}</h3>
       {description && (
         <p className="mt-1.5 max-w-md text-sm leading-relaxed text-muted">
           {description}
         </p>
       )}
-      {action && <div className="mt-5">{action}</div>}
+      {action && <div className="mt-4">{action}</div>}
     </div>
   );
 }

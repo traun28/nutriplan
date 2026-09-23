@@ -341,7 +341,7 @@ export function FoodIntakeStep({
                     className={cn(
                       "rounded-pill border px-3.5 py-1.5 text-sm font-medium transition-all duration-150",
                       active
-                        ? "border-brand-500 bg-brand-50 text-brand-300 ring-1 ring-brand-500/30"
+                        ? "border-brand-500 bg-brand-50 text-brand-400 ring-1 ring-brand-500/30"
                         : "border-line bg-surface text-muted hover:border-brand-400/50 hover:text-ink",
                     )}
                   >

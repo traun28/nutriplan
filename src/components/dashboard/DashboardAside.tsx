@@ -97,7 +97,7 @@ export function NextMealCard({ meal, onLog }: { meal: PlannedMeal; onLog: (mealT
         </span>
       </div>
       <div className="p-5">
-        <p className="text-xs font-bold uppercase tracking-wide text-brand-300">{meal.label}</p>
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">{meal.label}</p>
         <h3 className="mt-1 text-base font-bold leading-snug text-ink">{meal.name}</h3>
         <p className="mt-1.5 text-xs text-muted">
           About <strong className="text-ink">{meal.calories} kcal</strong> · P {Math.round(meal.proteinGrams)} g · C{" "}

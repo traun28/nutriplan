@@ -124,12 +124,56 @@ export function ProgressTracker() {
         </div>
       )}
 
-      <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
-        <div className="space-y-5">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+
+      <aside className="space-y-4 lg:col-start-2 lg:row-start-1">
+        <Card>
+          <CardBody>
+            <h2 className="text-sm font-bold text-ink">Body metrics</h2>
+            {!metrics ? (
+              <div className="skeleton mt-3 h-24" />
+            ) : (
+              <dl className="mt-3 space-y-2 text-sm">
+                <Row label="Current weight" value={metrics.currentWeightKg !== null ? `${metrics.currentWeightKg} kg` : "—"} tag={metrics.currentWeightSource ?? undefined} />
+                <Row label="Height" value={metrics.heightCm !== null ? `${metrics.heightCm} cm` : "—"} tag="Profile" />
+                <Row label="BMI" value={metrics.bmi ? `${metrics.bmi.value} · ${metrics.bmi.categoryLabel}` : "—"} tag="Calculated" />
+              </dl>
+            )}
+            <p className="mt-3 text-[11px] leading-relaxed text-muted">BMI uses the same formula as your nutrition profile and is a screening figure, not a diagnosis.</p>
+          </CardBody>
+        </Card>
+
+        <Card>
+          <CardBody>
+            <h2 className="text-sm font-bold text-ink">Goal context</h2>
+            {!metrics ? (
+              <div className="skeleton mt-3 h-20" />
+            ) : !metrics.goal ? (
+              <p className="mt-2 text-sm text-muted">
+                No goal set in your profile.{" "}
+                <Link href="/planner" className="font-semibold text-brand-600 hover:underline">
+                  Update profile
+                </Link>
+              </p>
+            ) : (
+              <dl className="mt-3 space-y-2 text-sm">
+                <Row label="Goal" value={labelFor(GOALS, metrics.goal)} tag="Profile" />
+                <Row label="Profile weight" value={metrics.profileWeightKg !== null ? `${metrics.profileWeightKg} kg` : "—"} tag="Profile" />
+                <Row label="Latest recorded" value={latest ? `${latest.weightKg} kg` : "—"} tag="Logged" />
+                {latest && metrics.profileWeightKg !== null && <Row label="Difference" value={`${latest.weightKg - metrics.profileWeightKg > 0 ? "+" : ""}${Math.round((latest.weightKg - metrics.profileWeightKg) * 10) / 10} kg`} tag="Calculated" />}
+              </dl>
+            )}
+            <p className="mt-3 text-[11px] leading-relaxed text-muted">Your profile stores a goal type but no target weight, so no target-weight countdown is shown. No completion date is estimated.</p>
+          </CardBody>
+        </Card>
+      </aside>
+        <div className="space-y-4 lg:col-start-1 lg:row-start-1">
           {status === "loading" && entries === null && (
-            <div className="space-y-5" aria-busy="true" aria-label="Loading progress">
-              <div className="skeleton h-56" />
-              <div className="skeleton h-64" />
+            <div className="space-y-3" aria-busy="true" aria-label="Loading progress">
+              <div className="skeleton h-36" />
+              <div className="skeleton h-9" />
+              <div className="skeleton h-9" />
+              <div className="skeleton h-9" />
             </div>
           )}
 
@@ -147,7 +191,7 @@ export function ProgressTracker() {
                     </h2>
                     <div role="tablist" aria-label="Range" className="inline-flex rounded-pill border border-line bg-canvas p-1">
                       {([30, 90, 365, 0] as Range[]).map((r) => (
-                        <button key={r} role="tab" type="button" aria-selected={range === r} onClick={() => setRange(r)} className={cn("rounded-pill px-3 py-1 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300", range === r ? "bg-brand-500 text-white" : "text-muted hover:text-ink")}>
+                        <button key={r} role="tab" type="button" aria-selected={range === r} onClick={() => setRange(r)} className={cn("rounded-pill px-3 py-1 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500", range === r ? "bg-brand-700 text-white" : "text-muted hover:text-ink")}>
                           {r === 0 ? "All" : r === 365 ? "1y" : `${r}d`}
                         </button>
                       ))}
@@ -200,10 +244,10 @@ export function ProgressTracker() {
                             </p>
                             {e.note && <p className="truncate text-xs text-muted">{e.note}</p>}
                           </div>
-                          <button type="button" onClick={() => setEditing(e)} className="rounded-md p-1.5 text-muted hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300" aria-label={`Edit entry for ${formatDay(e.entryDate)}`}>
+                          <button type="button" onClick={() => setEditing(e)} className="rounded-[10px] p-1.5 text-muted hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" aria-label={`Edit entry for ${formatDay(e.entryDate)}`}>
                             <Pencil className="h-4 w-4" aria-hidden="true" />
                           </button>
-                          <button type="button" onClick={() => setDeleting(e)} className="rounded-md p-1.5 text-muted hover:bg-danger-50 hover:text-danger-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300" aria-label={`Delete entry for ${formatDay(e.entryDate)}`}>
+                          <button type="button" onClick={() => setDeleting(e)} className="rounded-[10px] p-1.5 text-muted hover:bg-danger-50 hover:text-danger-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" aria-label={`Delete entry for ${formatDay(e.entryDate)}`}>
                             <Trash2 className="h-4 w-4" aria-hidden="true" />
                           </button>
                         </li>
@@ -216,47 +260,6 @@ export function ProgressTracker() {
           )}
         </div>
 
-        <aside className="space-y-5">
-          <Card>
-            <CardBody>
-              <h2 className="text-sm font-bold text-ink">Body metrics</h2>
-              {!metrics ? (
-                <div className="skeleton mt-3 h-24" />
-              ) : (
-                <dl className="mt-3 space-y-2 text-sm">
-                  <Row label="Current weight" value={metrics.currentWeightKg !== null ? `${metrics.currentWeightKg} kg` : "—"} tag={metrics.currentWeightSource ?? undefined} />
-                  <Row label="Height" value={metrics.heightCm !== null ? `${metrics.heightCm} cm` : "—"} tag="Profile" />
-                  <Row label="BMI" value={metrics.bmi ? `${metrics.bmi.value} · ${metrics.bmi.categoryLabel}` : "—"} tag="Calculated" />
-                </dl>
-              )}
-              <p className="mt-3 text-[11px] leading-relaxed text-muted">BMI uses the same formula as your nutrition profile and is a screening figure, not a diagnosis.</p>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody>
-              <h2 className="text-sm font-bold text-ink">Goal context</h2>
-              {!metrics ? (
-                <div className="skeleton mt-3 h-20" />
-              ) : !metrics.goal ? (
-                <p className="mt-2 text-sm text-muted">
-                  No goal set in your profile.{" "}
-                  <Link href="/planner" className="font-semibold text-brand-600 hover:underline">
-                    Update profile
-                  </Link>
-                </p>
-              ) : (
-                <dl className="mt-3 space-y-2 text-sm">
-                  <Row label="Goal" value={labelFor(GOALS, metrics.goal)} tag="Profile" />
-                  <Row label="Profile weight" value={metrics.profileWeightKg !== null ? `${metrics.profileWeightKg} kg` : "—"} tag="Profile" />
-                  <Row label="Latest recorded" value={latest ? `${latest.weightKg} kg` : "—"} tag="Logged" />
-                  {latest && metrics.profileWeightKg !== null && <Row label="Difference" value={`${latest.weightKg - metrics.profileWeightKg > 0 ? "+" : ""}${Math.round((latest.weightKg - metrics.profileWeightKg) * 10) / 10} kg`} tag="Calculated" />}
-                </dl>
-              )}
-              <p className="mt-3 text-[11px] leading-relaxed text-muted">Your profile stores a goal type but no target weight, so no target-weight countdown is shown. No completion date is estimated.</p>
-            </CardBody>
-          </Card>
-        </aside>
       </div>
 
       <EntryDialog key={editing === "new" ? "new" : (editing?.id ?? "closed")} entry={editing === "new" ? null : editing} open={editing !== null} onClose={() => setEditing(null)} onSaved={(entry, mode) => {
@@ -286,7 +289,7 @@ function Row({ label, value, tag }: { label: string; value: string; tag?: string
       <dt className="text-muted">{label}</dt>
       <dd className="flex items-center gap-1.5 text-right font-semibold tabular-nums text-ink">
         {value}
-        {tag && <span className="rounded-md border border-line bg-canvas px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted">{tag}</span>}
+        {tag && <span className="rounded-[10px] border border-line bg-canvas px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted">{tag}</span>}
       </dd>
     </div>
   );
@@ -344,7 +347,7 @@ function EntryDialog({ entry, open, onClose, onSaved }: { entry: ProgressEntry |
         </div>
       </div>
       {error && (
-        <p role="alert" className="mt-3 rounded-lg border border-danger-500/30 bg-danger-50/60 px-3 py-2 text-sm text-danger-700">
+        <p role="alert" className="mt-3 rounded-[10px] border border-danger-500/30 bg-danger-50/60 px-3 py-2 text-sm text-danger-700">
           {error}
         </p>
       )}

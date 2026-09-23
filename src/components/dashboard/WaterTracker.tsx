@@ -225,7 +225,7 @@ export function WaterTracker({ loading, onNotice }: Props) {
                 {showEntries && (
                   <ul className="mt-2 space-y-1.5">
                     {water.map((entry) => (
-                      <li key={entry.id} className="entry-enter flex items-center justify-between gap-2 rounded-[8px] border border-line bg-canvas px-3 py-2 text-xs">
+                      <li key={entry.id} className="entry-enter flex items-center justify-between gap-2 rounded-[10px] border border-line bg-canvas px-3 py-2 text-xs">
                         {editingId === entry.id ? (
                           <>
                             <label htmlFor={`water-edit-${entry.id}`} className="sr-only">
@@ -236,7 +236,7 @@ export function WaterTracker({ loading, onNotice }: Props) {
                               type="number"
                               value={editText}
                               onChange={(event) => setEditText(event.target.value)}
-                              className="min-h-[30px] w-24 rounded-[8px] border border-line bg-surface px-2 text-xs text-ink focus:border-brand-500 focus:outline-none"
+                              className="min-h-[30px] w-24 rounded-[10px] border border-line bg-surface px-2 text-xs text-ink focus:border-brand-500 focus:outline-none"
                             />
                             <div className="flex gap-1">
                               <IconButton label="Save amount" onClick={() => void saveEdit(entry.id)} disabled={busy !== null}>

@@ -352,7 +352,7 @@ export function FoodLogDialog({
 
       {/* ---------------------------- quantity ---------------------------- */}
       {food && (
-        <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_1fr]">
+        <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <div>
             <FieldLabel htmlFor="food-log-servings" required hint={`1 serving = ${food.servingSize.quantity} ${unitLabel(food.servingSize.unit)}`}>
               Quantity (servings)
@@ -435,7 +435,7 @@ export function FoodLogDialog({
           </div>
 
           <div className="rounded-[10px] border border-brand-400/25 bg-brand-50 p-4" aria-live="polite">
-            <p className="text-xs font-bold uppercase tracking-wide text-brand-400">Nutrition preview</p>
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">Nutrition preview</p>
             {preview ? (
               <>
                 <p className="mt-1 text-sm font-semibold text-ink">{preview.portionLabel}</p>
@@ -531,7 +531,7 @@ function FoodResults({
             ? { title: "No foods match your search", body: "Try a shorter word or a different spelling." }
             : { title: "Search for a food to start logging", body: "Type a name above or pick a category." };
     return (
-      <div className="mt-3 rounded-[10px] border border-dashed border-line bg-surface/60 px-4 py-8 text-center">
+      <div className="mt-3 rounded-[10px] border border-dashed border-line bg-surface/60 px-4 py-5 text-center">
         <UtensilsCrossed className="mx-auto h-5 w-5 text-brand-400" aria-hidden="true" />
         <p className="mt-2 text-sm font-bold text-ink">{copy.title}</p>
         <p className="mt-1 text-xs text-muted">{copy.body}</p>
@@ -551,7 +551,7 @@ function FoodResults({
             <button
               type="button"
               onClick={() => onSelect(food.id)}
-              className="flex min-w-0 flex-1 items-center justify-between gap-3 rounded-[8px] px-2 py-2 text-left transition-colors hover:bg-brand-50 focus-visible:bg-brand-50"
+              className="flex min-w-0 flex-1 items-center justify-between gap-3 rounded-[10px] px-2 py-2 text-left transition-colors hover:bg-brand-50 focus-visible:bg-brand-50"
             >
               <span className="min-w-0">
                 <span className="block truncate text-sm font-semibold text-ink">{food.name}</span>
@@ -570,7 +570,7 @@ function FoodResults({
               aria-pressed={favorite}
               aria-label={favorite ? `Remove ${food.name} from favourites` : `Add ${food.name} to favourites`}
               className={cn(
-                "grid h-9 w-9 shrink-0 place-items-center rounded-[8px] transition-colors",
+                "grid h-9 w-9 shrink-0 place-items-center rounded-[10px] transition-colors",
                 favorite ? "text-accent-300 hover:bg-accent-200/40" : "text-muted hover:bg-line/60 hover:text-accent-300",
               )}
             >
@@ -614,7 +614,7 @@ function SelectedFoodPanel({
             <UtensilsCrossed className="h-5 w-5" aria-hidden="true" />
           </span>
           <div className="min-w-0">
-            <p className="text-xs font-bold uppercase tracking-wide text-brand-400">Selected food</p>
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">Selected food</p>
             <h3 className="text-base font-bold leading-snug text-ink">{food.name}</h3>
             <p className="mt-0.5 text-xs text-muted">
               Reference serving: {food.servingSize.quantity} {unitLabel(food.servingSize.unit)} · {food.calories} kcal · P{" "}
@@ -676,7 +676,7 @@ function SelectedFoodPanel({
 
 function PreviewStat({ label, value, unit, emphasis }: { label: string; value: string; unit: string; emphasis?: boolean }) {
   return (
-    <div className={cn("rounded-[8px] border p-2.5", emphasis ? "border-brand-400/25 bg-surface" : "border-line bg-surface")}>
+    <div className={cn("rounded-[10px] border p-2.5", emphasis ? "border-brand-400/25 bg-surface" : "border-line bg-surface")}>
       <dt className="text-[11px] font-medium text-muted">{label}</dt>
       <dd className="mt-0.5 text-base font-extrabold tracking-tight text-ink">
         {value} <span className="text-[11px] font-medium text-muted">{unit}</span>

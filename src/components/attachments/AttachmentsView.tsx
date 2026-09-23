@@ -42,8 +42,8 @@ export function AttachmentsView() {
   );
 
   return (
-    <div className="mx-auto max-w-4xl px-5 py-10 sm:py-14">
-      <header className="mb-8">
+    <div className="page-container page-section max-w-4xl">
+      <header className="mb-6">
         <SectionHeader
           eyebrow="Supporting documents"
           title="Documents & Attachments"

@@ -83,7 +83,7 @@ export function WeeklyPlanner() {
   if (!hydrated || mealPlan.status === "loading" || mealPlan.status === "idle") {
     return (
       <Shell>
-        <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="h-72 animate-pulse rounded-card bg-line/30" />
           <div className="h-56 animate-pulse rounded-card bg-line/40" />
         </div>
@@ -167,8 +167,8 @@ export function WeeklyPlanner() {
         />
       )}
 
-      <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
-        <div className="min-w-0 space-y-5">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="min-w-0 space-y-4">
           {/* ---------------------------- generator ---------------------------- */}
           {!plan && !generating && (
             <Card>
@@ -263,7 +263,7 @@ export function WeeklyPlanner() {
         </div>
 
         {/* ------------------------------ aside ------------------------------ */}
-        <aside className="space-y-5">
+        <aside className="space-y-4">
           {plan && (
             <Card>
               <div className="border-b border-line bg-brand-50/60 px-5 py-3.5">
@@ -359,7 +359,7 @@ function GeneratorForm({
       </div>
       <div className={compact ? "" : "sm:col-span-3"}>
         <label className="inline-flex items-start gap-2 text-sm text-ink">
-          <input type="checkbox" checked={preferPantry} onChange={(e) => setPreferPantry(e.target.checked)} className="mt-0.5 h-4 w-4 rounded border-line text-brand-500 focus:ring-brand-300" />
+          <input type="checkbox" checked={preferPantry} onChange={(e) => setPreferPantry(e.target.checked)} className="mt-0.5 h-4 w-4 rounded border-line text-brand-500 focus:ring-brand-500" />
           <span>
             Prefer pantry ingredients
             <span className="block text-[11px] text-muted">Nudges the planner toward recipes using what&apos;s in your <a href="/pantry" className="font-semibold text-brand-600 hover:underline">pantry</a>. Allergies, dietary type and nutrition targets are never relaxed.</span>
@@ -404,7 +404,7 @@ function formatKey(key: string): string {
 
 function Shell({ children, badges }: { children: React.ReactNode; badges?: React.ReactNode }) {
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
+    <div className="page-container page-section">
       <header className="mb-6">
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">Weekly planner</p>
         <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">Your 7-Day Meal Plan</h1>

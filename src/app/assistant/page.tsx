@@ -14,12 +14,18 @@ export default async function AssistantPage({ searchParams }: { searchParams: Pr
   const initialPrompt = typeof q === "string" && q.trim().length > 0 && q.length <= 200 ? q.trim() : undefined;
   return (
     <RequireAuth>
-      <div className="mx-auto flex h-[calc(100dvh-8rem)] min-h-[480px] max-w-3xl flex-col px-3 py-4 sm:px-5 sm:py-6">
-        <AssistantProvider>
-          <div className="flex h-full flex-col overflow-hidden rounded-card border border-line bg-surface shadow-sm">
-            <AssistantChat initialPrompt={initialPrompt} />
-          </div>
-        </AssistantProvider>
+      {/* Bounded by the viewport so the chat never needs a second scrollbar,
+          but wider than it used to be (max-w-3xl left it looking squeezed
+          inside the 72rem page container). Every track is minmax(0,…) and the
+          shell is min-w-0 so nothing can push the page past the viewport. */}
+      <div className="page-container flex min-w-0 max-w-4xl flex-col py-4 sm:py-5">
+        <div className="flex h-[calc(100dvh-9rem)] min-h-[420px] flex-col">
+          <AssistantProvider>
+            <div className="flex h-full min-w-0 flex-col overflow-hidden rounded-card border border-line bg-surface shadow-sm">
+              <AssistantChat initialPrompt={initialPrompt} />
+            </div>
+          </AssistantProvider>
+        </div>
       </div>
     </RequireAuth>
   );

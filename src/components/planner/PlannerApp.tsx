@@ -70,8 +70,8 @@ export default function PlannerApp() {
     : 0;
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
-      <header className="mb-8">
+    <div className="page-container page-section">
+      <header className="mb-6">
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
           Diet Planner
         </p>
@@ -89,7 +89,7 @@ export default function PlannerApp() {
         steps={PLANNER_STEPS}
         activeIndexes={ACTIVE_STEPS[section] ?? [0]}
         completedCount={completedCount}
-        className="mb-10"
+        className="mb-6"
       />
 
       {section === 0 && <PersonalDetailsStep onContinue={() => goTo(1)} />}

@@ -34,7 +34,7 @@ import { formatDateTime } from "@/lib/numbers";
 
 const CONFIDENCE_CLASS: Record<string, string> = {
   high: "border-brand-400/25 bg-brand-50 text-brand-400",
-  medium: "border-accent-300/40/30 bg-accent-200/30 text-accent-300",
+  medium: "border-accent-300/40 bg-accent-200/30 text-accent-300",
   low: "border-danger-500/30 bg-danger-50 text-danger-700",
   unknown: "border-line bg-canvas text-muted",
 };
@@ -100,7 +100,7 @@ export function ExtractionReview({ record, onBack }: Props) {
                 ))}
               </ul>
               {patch.touchesSafety && (
-                <p className="mt-3 flex items-start gap-2 rounded-[10px] bg-brand-50 p-3 text-xs text-brand-300">
+                <p className="mt-3 flex items-start gap-2 rounded-[10px] bg-brand-50 p-3 text-xs text-brand-400">
                   <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
                   Your existing allergies, intolerances and foods to avoid were
                   kept. New restrictions were added alongside them, not in
@@ -155,9 +155,9 @@ export function ExtractionReview({ record, onBack }: Props) {
 
       {items.length === 0 ? (
         <Card>
-          <CardBody className="py-10 text-center">
-            <Info className="mx-auto h-8 w-8 text-muted" aria-hidden="true" />
-            <p className="mt-3 text-sm font-semibold text-ink">
+          <CardBody className="py-6 text-center">
+            <Info className="mx-auto h-6 w-6 text-muted" aria-hidden="true" />
+            <p className="mt-2 text-sm font-semibold text-ink">
               No structured information was recognised
             </p>
             <p className="mt-1 text-xs text-muted">
@@ -165,7 +165,7 @@ export function ExtractionReview({ record, onBack }: Props) {
               foods matched a known pattern. It has been kept as a reference.
             </p>
             {record.extraction?.text && (
-              <details className="mt-5 text-left">
+              <details className="mt-3 text-left">
                 <summary className="cursor-pointer text-xs font-semibold text-brand-400">
                   View extracted text ({record.extraction.text.length} chars)
                 </summary>
@@ -216,7 +216,7 @@ export function ExtractionReview({ record, onBack }: Props) {
                     {selectedItems.length} item(s) ready to import
                   </p>
                   {safetyItems.length > 0 && (
-                    <p className="mt-0.5 flex items-center gap-1.5 text-xs text-brand-300">
+                    <p className="mt-0.5 flex items-center gap-1.5 text-xs text-brand-400">
                       <ShieldAlert className="h-3.5 w-3.5" aria-hidden="true" />
                       Includes {safetyItems.length} safety-related addition(s) — you will be asked to confirm.
                     </p>
@@ -270,7 +270,7 @@ function ReviewRow({
 }) {
   const conflictBadge =
     item.conflictType === "different_value"
-      ? { label: "Different from profile", cls: "border-accent-300/40/30 bg-accent-200/30 text-accent-300" }
+      ? { label: "Different from profile", cls: "border-accent-300/40 bg-accent-200/30 text-accent-300" }
       : item.conflictType === "safety_relevant"
         ? { label: "Safety addition", cls: "border-danger-500/30 bg-danger-50 text-danger-700" }
         : { label: "New information", cls: "border-brand-400/25 bg-brand-50 text-brand-400" };

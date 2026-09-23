@@ -7,6 +7,7 @@
     "start": "next start",
     "db:local": "node start-pg.mjs",
     "db:push": "drizzle-kit push --config drizzle.config.ts",
+    "db:generate": "drizzle-kit generate --config drizzle.config.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "engine:check": "npx tsx --tsconfig tsconfig.json scripts/engineCheck.ts"

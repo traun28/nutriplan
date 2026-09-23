@@ -43,7 +43,7 @@ const STATUS_UI: Record<
 const toneClass: Record<string, string> = {
   neutral: "border-line bg-surface text-muted",
   brand: "border-brand-400/25 bg-brand-50 text-brand-400",
-  warning: "border-accent-300/40/30 bg-accent-200/30 text-accent-300",
+  warning: "border-accent-300/40 bg-accent-200/30 text-accent-300",
   danger: "border-danger-500/30 bg-danger-50 text-danger-700",
 };
 
@@ -121,7 +121,7 @@ export function AttachmentCard({ record, onReview, onRemove }: Props) {
             record.status === "failed" || record.status === "unsupported"
               ? "border-danger-500/30 bg-danger-50 text-danger-700"
               : record.status === "needs_review"
-                ? "border-accent-300/40/30 bg-accent-200/30 text-ink/80"
+                ? "border-accent-300/40 bg-accent-200/30 text-ink/80"
                 : "border-line bg-canvas text-muted",
           )}
         >

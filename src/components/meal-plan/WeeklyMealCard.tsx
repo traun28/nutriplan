@@ -100,7 +100,7 @@ export function WeeklyMealCard({
           <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-brand-700 text-xs font-bold text-white">
             {String(index + 1).padStart(2, "0")}
           </span>
-          <h3 className="truncate text-sm font-bold uppercase tracking-wide text-brand-300">{meal.label}</h3>
+          <h3 className="truncate text-sm font-bold uppercase tracking-wide text-brand-400">{meal.label}</h3>
           {logged === true && <Badge tone="brand">✓ Logged</Badge>}
           {logged === false && <Badge>Not logged</Badge>}
         </div>
@@ -119,7 +119,7 @@ export function WeeklyMealCard({
         <ul className="mt-4 space-y-2">
           {meal.items.map((item) => (
             <li key={item.foodId} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line/60 pb-2 last:border-b-0 last:pb-0">
-              <Link href={`/recipes/${item.foodId}`} className="rounded-sm text-sm font-semibold text-ink hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300" title="View recipe">
+              <Link href={`/recipes/${item.foodId}`} className="rounded-sm text-sm font-semibold text-ink hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" title="View recipe">
                 {item.name}
               </Link>
               <span className="text-xs font-medium text-muted">
@@ -261,7 +261,7 @@ export function WeeklyMealCard({
                         placeholder={`${item.servings}`}
                         value={draft}
                         onChange={(e) => setServingsDraft((d) => ({ ...d, [item.foodId]: e.target.value }))}
-                        className="w-20 rounded-[8px] border border-line bg-surface px-2 py-1 text-xs text-ink focus:border-brand-500 focus:outline-none"
+                        className="w-20 rounded-[10px] border border-line bg-surface px-2 py-1 text-xs text-ink focus:border-brand-500 focus:outline-none"
                       />
                       <button
                         type="button"

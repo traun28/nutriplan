@@ -8,6 +8,7 @@
  */
 import { and, asc, desc, eq } from "drizzle-orm";
 import { db, hasDatabase } from "@/db";
+import { logDatabaseFailure } from "@/services/server/databaseErrors";
 import {
   attachments,
   datasetRecords,
@@ -43,7 +44,8 @@ export async function getProfile(userId: number): Promise<UserProfile | null> {
       .where(eq(profiles.userId, userId))
       .limit(1);
     return (rows[0]?.data as UserProfile) ?? null;
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("getProfile", error);
     return null;
   }
 }
@@ -71,7 +73,8 @@ export async function saveProfile(
       });
     }
     return true;
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("saveProfile", error);
     return false;
   }
 }
@@ -82,7 +85,8 @@ export async function deleteProfile(userId: number): Promise<boolean> {
     await db.delete(processedProfiles).where(eq(processedProfiles.userId, userId));
     await db.delete(dietPlans).where(eq(dietPlans.userId, userId));
     return true;
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("deleteProfile", error);
     return false;
   }
 }
@@ -99,7 +103,8 @@ export async function getProcessed(userId: number): Promise<ProcessedProfile | n
       .where(eq(processedProfiles.userId, userId))
       .limit(1);
     return (rows[0]?.data as ProcessedProfile) ?? null;
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("getProcessed", error);
     return null;
   }
 }
@@ -129,7 +134,8 @@ export async function saveProcessed(
       });
     }
     return true;
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("saveProcessed", error);
     return false;
   }
 }
@@ -142,7 +148,8 @@ export async function getPlan(userId: number): Promise<DietPlan | null> {
       .where(eq(dietPlans.userId, userId))
       .limit(1);
     return (rows[0]?.data as DietPlan) ?? null;
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("getPlan", error);
     return null;
   }
 }
@@ -166,7 +173,8 @@ export async function savePlan(userId: number, data: DietPlan): Promise<boolean>
       });
     }
     return true;
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("savePlan", error);
     return false;
   }
 }
@@ -182,7 +190,8 @@ export async function listAttachments(userId: number) {
       .from(attachments)
       .where(eq(attachments.userId, userId))
       .orderBy(desc(attachments.createdAt));
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("listAttachments", error);
     return [];
   }
 }
@@ -194,7 +203,8 @@ export async function insertAttachment(
   try {
     const rows = await db.insert(attachments).values({ ...values, userId }).returning();
     return rows[0] ?? null;
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("insertAttachment", error);
     return null;
   }
 }
@@ -203,7 +213,8 @@ export async function deleteAttachment(userId: number, id: number): Promise<bool
   try {
     await db.delete(attachments).where(and(eq(attachments.id, id), eq(attachments.userId, userId)));
     return true;
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("deleteAttachment", error);
     return false;
   }
 }
@@ -220,7 +231,8 @@ export async function listDatasets(userId: number) {
       .from(datasets)
       .where(eq(datasets.userId, userId))
       .orderBy(desc(datasets.createdAt));
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("listDatasets", error);
     return [];
   }
 }
@@ -236,7 +248,8 @@ export async function createDataset(
       .values({ ...values, userId } as typeof datasets.$inferInsert)
       .returning();
     return rows[0] ?? null;
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("createDataset", error);
     return null;
   }
 }
@@ -254,7 +267,8 @@ export async function updateDataset(
       .where(and(eq(datasets.id, id), eq(datasets.userId, userId)))
       .returning();
     return rows[0] ?? null;
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("updateDataset", error);
     return null;
   }
 }
@@ -268,7 +282,8 @@ export async function getDataset(userId: number, id: number) {
       .where(and(eq(datasets.id, id), eq(datasets.userId, userId)))
       .limit(1);
     return rows[0] ?? null;
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("getDataset", error);
     return null;
   }
 }
@@ -287,7 +302,8 @@ export async function deleteDataset(userId: number, id: number): Promise<boolean
     // Nothing matched (not found, or not owned by this user) — the route
     // must report that honestly instead of claiming a delete it never made.
     return false;
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("deleteDataset", error);
     return false;
   }
 }
@@ -310,7 +326,8 @@ export async function insertDatasetRecords(
       await db.insert(datasetRecords).values(records.slice(i, i + 200));
     }
     return true;
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("insertDatasetRecords", error);
     return false;
   }
 }
@@ -328,7 +345,8 @@ export async function getDatasetRecords(userId: number, datasetId: number, limit
       .limit(limit)
       .offset(offset);
     return { rows, total: owned.recordCount };
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("getDatasetRecords", error);
     return { rows: [], total: 0 };
   }
 }

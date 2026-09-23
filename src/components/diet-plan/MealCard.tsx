@@ -69,7 +69,7 @@ export function MealCard({
             {String(index + 1).padStart(2, "0")}
           </span>
           <div className="min-w-0">
-            <h3 className="truncate text-sm font-bold uppercase tracking-wide text-brand-300">
+            <h3 className="truncate text-sm font-bold uppercase tracking-wide text-brand-400">
               {meal.label}
             </h3>
           </div>
@@ -216,7 +216,7 @@ export function MealCard({
             </p>
             {meal.items.map((item) => (
               <div key={`${item.foodId}-ing`}>
-                <p className="text-xs font-bold uppercase tracking-wide text-brand-400">
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
                   {item.name} — ingredients
                 </p>
                 <p className="mt-1 text-xs leading-relaxed text-muted">

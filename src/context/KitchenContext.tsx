@@ -80,7 +80,27 @@ export function KitchenProvider({ children }: { children: ReactNode }) {
   const busyRef = useRef<string | null>(null);
   const loadedUser = useRef<number | null>(null);
 
-  // Reset caches when the signed-in user changes (derived, not an effect).
+  /*
+   * Load bookkeeping.
+   *
+   * The loaders below must keep a *stable* identity, because pages call them
+   * from `useEffect`. Reading `groceryStatus` from render state instead made
+   * the loader — and therefore the whole context value — change identity on
+   * every status change, so the page effect re-ran, re-fetched, changed the
+   * status again, and looped. Against a failing API that produced an endless
+   * stream of 503 requests.
+   *
+   * These refs are read and written only inside callbacks (never during
+   * render), and they record *which user* the cache belongs to, so a user
+   * change reloads without anyone having to reset them mid-render.
+   */
+  const groceryLoadedFor = useRef<number | null>(null);
+  const pantryLoadedFor = useRef<number | null>(null);
+  const groceryInFlight = useRef(false);
+  const pantryInFlight = useRef(false);
+
+  // Reset caches when the signed-in user changes (derived, not an effect), so
+  // one account's grocery list or pantry can never flash for the next one.
   if (user?.id !== loadedUser.current) {
     loadedUser.current = user?.id ?? null;
     if (favoriteIds !== null) setFavoriteIds(null);
@@ -130,19 +150,27 @@ export function KitchenProvider({ children }: { children: ReactNode }) {
   const loadGrocery = useCallback(
     async (force = false) => {
       if (!user) return;
-      if (!force && (groceryStatus === "ready" || groceryStatus === "loading")) return;
+      // An automatic load runs once per user. Anything later must be explicit
+      // (`force` — the Retry button), so a failure can never become a loop.
+      if (!force && (groceryLoadedFor.current === user.id || groceryInFlight.current)) return;
+      groceryInFlight.current = true;
       setGroceryStatus("loading");
       setGroceryError(null);
-      const r = await call<{ list: GroceryListRecord }>("/api/grocery");
-      if (r.ok) {
-        setGrocery(r.data.list);
-        setGroceryStatus("ready");
-      } else {
-        setGroceryError(r.message);
-        setGroceryStatus("error");
+      try {
+        const r = await call<{ list: GroceryListRecord }>("/api/grocery");
+        if (r.ok) {
+          setGrocery(r.data.list);
+          groceryLoadedFor.current = user.id;
+          setGroceryStatus("ready");
+        } else {
+          setGroceryError(r.message);
+          setGroceryStatus("error");
+        }
+      } finally {
+        groceryInFlight.current = false;
       }
     },
-    [user, groceryStatus],
+    [user],
   );
 
   const generateGrocery = useCallback<KitchenContextValue["generateGrocery"]>(
@@ -151,10 +179,11 @@ export function KitchenProvider({ children }: { children: ReactNode }) {
         const r = await call<{ list: GroceryListRecord; coveredByPantry: string[]; planName: string }>("/api/grocery/generate", { method: "POST", body: JSON.stringify(input) });
         if (!r.ok) return { success: false, message: r.message };
         setGrocery(r.data.list);
+        groceryLoadedFor.current = user?.id ?? null;
         setGroceryStatus("ready");
         return { success: true, message: `Grocery list generated from “${r.data.planName}”.`, data: { coveredByPantry: r.data.coveredByPantry, planName: r.data.planName } };
       }),
-    [guard],
+    [guard, user],
   );
 
   const addGroceryItems = useCallback<KitchenContextValue["addGroceryItems"]>(
@@ -163,10 +192,11 @@ export function KitchenProvider({ children }: { children: ReactNode }) {
         const r = await call<{ list: GroceryListRecord }>("/api/grocery", { method: "POST", body: JSON.stringify({ items }) });
         if (!r.ok) return { success: false, message: r.message };
         setGrocery(r.data.list);
+        groceryLoadedFor.current = user?.id ?? null;
         setGroceryStatus("ready");
         return { success: true, message: items.length === 1 ? `Added ${items[0].name}.` : `Added ${items.length} items.` };
       }),
-    [guard],
+    [guard, user],
   );
 
   const addRecipeToGrocery = useCallback<KitchenContextValue["addRecipeToGrocery"]>(
@@ -175,10 +205,11 @@ export function KitchenProvider({ children }: { children: ReactNode }) {
         const r = await call<{ list: GroceryListRecord; added: number }>("/api/grocery", { method: "POST", body: JSON.stringify({ recipeId, servings }) });
         if (!r.ok) return { success: false, message: r.message };
         setGrocery(r.data.list);
+        groceryLoadedFor.current = user?.id ?? null;
         setGroceryStatus("ready");
         return { success: true, message: `Added ${r.data.added} ingredients to your grocery list.`, data: { added: r.data.added } };
       }),
-    [guard],
+    [guard, user],
   );
 
   const updateGroceryItem = useCallback<KitchenContextValue["updateGroceryItem"]>(
@@ -225,19 +256,25 @@ export function KitchenProvider({ children }: { children: ReactNode }) {
   const loadPantry = useCallback(
     async (force = false) => {
       if (!user) return;
-      if (!force && (pantryStatus === "ready" || pantryStatus === "loading")) return;
+      if (!force && (pantryLoadedFor.current === user.id || pantryInFlight.current)) return;
+      pantryInFlight.current = true;
       setPantryStatus("loading");
       setPantryError(null);
-      const r = await call<{ items: PantryItemRecord[] }>("/api/pantry");
-      if (r.ok) {
-        setPantry(r.data.items);
-        setPantryStatus("ready");
-      } else {
-        setPantryError(r.message);
-        setPantryStatus("error");
+      try {
+        const r = await call<{ items: PantryItemRecord[] }>("/api/pantry");
+        if (r.ok) {
+          setPantry(r.data.items);
+          pantryLoadedFor.current = user.id;
+          setPantryStatus("ready");
+        } else {
+          setPantryError(r.message);
+          setPantryStatus("error");
+        }
+      } finally {
+        pantryInFlight.current = false;
       }
     },
-    [user, pantryStatus],
+    [user],
   );
 
   const addPantryItem = useCallback<KitchenContextValue["addPantryItem"]>(
@@ -246,10 +283,11 @@ export function KitchenProvider({ children }: { children: ReactNode }) {
         const r = await call<{ item: PantryItemRecord }>("/api/pantry", { method: "POST", body: JSON.stringify(input) });
         if (!r.ok) return { success: false, message: r.message };
         setPantry((p) => [...(p ?? []), r.data.item].sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name)));
+        pantryLoadedFor.current = user?.id ?? null;
         setPantryStatus("ready");
         return { success: true, message: `Added ${r.data.item.name} to your pantry.`, data: r.data.item };
       }),
-    [guard],
+    [guard, user],
   );
 
   const updatePantryItem = useCallback<KitchenContextValue["updatePantryItem"]>(

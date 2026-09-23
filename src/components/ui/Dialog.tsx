@@ -92,7 +92,7 @@ export function Dialog({ open, title, description, onClose, children, footer, si
         aria-labelledby={titleId}
         aria-describedby={description ? descriptionId : undefined}
         className={cn(
-          "dialog-panel flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-card border border-line bg-surface shadow-pop sm:max-h-[88vh] sm:rounded-card",
+          "dialog-panel flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-card border border-line bg-surface shadow-pop sm:max-h-[88dvh] sm:rounded-card",
           size === "lg" ? "sm:max-w-3xl" : "sm:max-w-xl",
         )}
       >

@@ -208,7 +208,7 @@ export function AssistantChat({ initialPrompt }: { initialPrompt?: string } = {}
             aria-label={voice.listening ? "Stop listening" : "Start voice input"}
             className={cn(
               "grid h-11 w-11 shrink-0 place-items-center rounded-[10px] transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500",
-              voice.listening ? "animate-pulse bg-danger-800 text-white" : voice.supported ? "bg-brand-50 text-brand-400 hover:bg-brand-100" : "cursor-not-allowed bg-canvas text-muted",
+              voice.listening ? "animate-pulse bg-danger-600 text-white" : voice.supported ? "bg-brand-50 text-brand-400 hover:bg-brand-100" : "cursor-not-allowed bg-canvas text-muted",
             )}
           >
             {voice.listening ? <span className="relative inline-flex h-3 w-3 rounded-full bg-surface" /> : <Mic className="h-5 w-5" aria-hidden="true" />}
@@ -228,7 +228,7 @@ export function AssistantChat({ initialPrompt }: { initialPrompt?: string } = {}
             className="h-11 min-w-0 flex-1 rounded-[10px] border border-line bg-surface px-4 text-sm text-ink placeholder:text-muted/70 transition-[border-color,box-shadow] focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15 disabled:opacity-60"
           />
 
-          <Button type="submit" disabled={!input.trim() || processing} loading={processing} className="h-11 w-11 shrink-0 !px-0" aria-label="Send message">
+          <Button type="submit" disabled={!input.trim() || processing} loading={processing} size="icon" aria-label="Send message">
             {!processing && <Send className="h-4 w-4" aria-hidden="true" />}
           </Button>
         </form>

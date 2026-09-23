@@ -60,8 +60,8 @@ function ProfileView() {
   // so the screen is never a large blank area while loading.
   if (!hydrated) {
     return (
-      <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
-        <header className="mb-8">
+      <div className="page-container page-section">
+        <header className="mb-6">
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             My Profile
           </p>
@@ -72,7 +72,7 @@ function ProfileView() {
             Loading your saved information…
           </p>
         </header>
-        <div className="grid gap-5 lg:grid-cols-[300px_1fr]">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)]">
           <div className="h-64 animate-pulse rounded-card bg-line/40" />
           <div className="space-y-4">
             <div className="h-40 animate-pulse rounded-card bg-line/40" />
@@ -86,7 +86,7 @@ function ProfileView() {
   /* --------------------- corrupted storage state -------------------- */
   if (storageStatus === "corrupt") {
     return (
-      <div className="mx-auto grid max-w-2xl place-items-center px-5 py-24">
+      <div className="page-container page-section grid max-w-2xl place-items-center">
         <Card>
           <CardBody>
             <div className="flex items-start gap-3">
@@ -123,7 +123,7 @@ function ProfileView() {
   /* ------------------------- empty profile -------------------------- */
   if (!hasSavedProfile && !completion.hasAnyData) {
     return (
-      <div className="mx-auto grid max-w-3xl place-items-center px-5 py-24">
+      <div className="page-container page-section grid max-w-3xl place-items-center">
         <EmptyState
           icon={<UserRound className="h-6 w-6" aria-hidden="true" />}
           title="No saved profile yet"
@@ -141,8 +141,8 @@ function ProfileView() {
   const firstName = profile.personalDetails.fullName.trim().split(" ")[0];
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
-      <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
+    <div className="page-container page-section">
+      <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             My Profile
@@ -204,7 +204,7 @@ function ProfileView() {
       {hasUnsavedChanges && (
         <div
           role="status"
-          className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-card border border-accent-300/40/30 bg-accent-200/30 p-4"
+          className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-card border border-accent-300/40 bg-accent-200/30 p-4"
         >
           <p className="text-xs leading-relaxed text-ink/80">
             You have changes that have not been saved to this device yet.
@@ -215,7 +215,7 @@ function ProfileView() {
         </div>
       )}
 
-      <div className="grid items-start gap-5 lg:grid-cols-[300px_1fr]">
+      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)]">
         {/* --------------------- completion sidebar -------------------- */}
         <Card>
           <div className="border-b border-line bg-brand-50/60 px-5 py-3.5">
@@ -256,8 +256,8 @@ function ProfileView() {
                     <Button
                       href={`/planner?step=${item.step}`}
                       variant="ghost"
-                      size="sm"
-                      className="ml-auto !px-2 !py-1 text-xs"
+                      size="xs"
+                      className="ml-auto"
                     >
                       Add
                     </Button>
@@ -295,7 +295,7 @@ function ProfileView() {
         </Card>
 
         {/* ------------------------ profile detail --------------------- */}
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2">
           <PersonalDetailsSummary details={profile.personalDetails} />
           <NutritionSummaryCard nutrition={profile.nutritionalInformation} />
           <div className="sm:col-span-2">
@@ -308,7 +308,7 @@ function ProfileView() {
             />
           </div>
           <FoodIntakeSummary intake={profile.foodIntake} />
-          <div className="space-y-5">
+          <div className="space-y-4">
             <MealTimingsSummary timings={profile.mealTimings} />
             <MealHabitsSummary
               habits={profile.mealHabits}

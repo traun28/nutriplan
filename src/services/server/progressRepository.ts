@@ -5,6 +5,7 @@
  */
 import { and, asc, desc, eq, gte, lte } from "drizzle-orm";
 import { db, hasDatabase } from "@/db";
+import { databaseFailureMessage, reportDatabaseError } from "@/services/server/databaseErrors";
 import { progressEntries } from "@/db/schema";
 
 export class ProgressRepositoryError extends Error {
@@ -25,7 +26,7 @@ function isUniqueViolation(error: unknown, depth = 0): boolean {
 }
 
 async function run<T>(work: () => Promise<T>): Promise<T> {
-  if (!hasDatabase) throw new ProgressRepositoryError(DB_UNAVAILABLE, 503);
+  if (!hasDatabase) throw new ProgressRepositoryError(databaseFailureMessage(DB_UNAVAILABLE), 503);
   try {
     return await work();
   } catch (error) {
@@ -33,7 +34,7 @@ async function run<T>(work: () => Promise<T>): Promise<T> {
     if (isUniqueViolation(error)) {
       throw new ProgressRepositoryError("You already have an entry for that date. Edit it instead.", 409);
     }
-    throw new ProgressRepositoryError(DB_UNAVAILABLE, 503);
+    throw new ProgressRepositoryError(reportDatabaseError("progress query", error), 503);
   }
 }
 

@@ -118,7 +118,7 @@ export function DatasetDashboard({ datasetId, filterQuery, refreshKey, onStats }
   const charts: Array<[string, string, keyof Distributions]> = [["Age distribution", "records", "age"], ["Weight distribution", "records", "weightKg"], ["Height distribution", "records", "heightCm"], ["BMI distribution", "records", "bmi"], ["Calorie distribution", "records", "calories"], ["Protein distribution", "records", "protein"]];
 
   return (
-    <div className="space-y-5" aria-busy={loading}>
+    <div className="space-y-4" aria-busy={loading}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
           <Badge tone={data.scope === "selected" ? "warning" : "brand"}>{scopeLabel}</Badge>
@@ -210,7 +210,7 @@ export function DatasetDashboard({ datasetId, filterQuery, refreshKey, onStats }
       <Card>
         <CardBody>
           <h3 className="text-sm font-bold text-ink">Distributions — {scopeLabel}</h3>
-          <div className="mt-3 grid gap-5 md:grid-cols-2">
+          <div className="mt-3 grid gap-4 md:grid-cols-2">
             {charts.map(([title, unit, key]) => {
               const buckets = data.distributions[key];
               const total = buckets.reduce((s, b) => s + b.count, 0);
@@ -245,7 +245,7 @@ export function DatasetDashboard({ datasetId, filterQuery, refreshKey, onStats }
           {data.groups.length === 0 ? (
             <p className="mt-1 text-xs text-muted">No groups to compare.</p>
           ) : (
-            <div className="mt-2 overflow-x-auto rounded-[10px] border border-line">
+            <div className="mt-2 table-scroll rounded-[10px] border border-line">
               <table className="w-full min-w-[520px] text-left text-xs">
                 <caption className="sr-only">Descriptive averages per group; groups are listed by size, not ranked.</caption>
                 <thead className="bg-canvas text-[11px] uppercase tracking-wide text-muted">

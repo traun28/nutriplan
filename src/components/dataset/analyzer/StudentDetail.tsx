@@ -133,13 +133,13 @@ export function StudentDetail({ datasetId, recordId, onClose, onChanged }: Props
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-ink/30" role="presentation" onClick={onClose}>
+    <div className="fixed inset-0 z-[100] flex justify-end bg-canvas/70 backdrop-blur-sm" role="presentation" onClick={onClose}>
       <aside
         role="dialog"
         aria-modal="true"
         aria-labelledby="student-detail-title"
         onClick={(e) => e.stopPropagation()}
-        className="flex h-full w-full max-w-2xl flex-col overflow-hidden bg-surface shadow-2xl animate-in slide-in-from-right"
+        className="np-drawer flex h-full w-full max-w-2xl flex-col overflow-hidden border-l border-line bg-surface shadow-pop"
       >
         <header className="flex items-start justify-between gap-3 border-b border-line px-5 py-4">
           <div className="min-w-0">
@@ -182,8 +182,8 @@ export function StudentDetail({ datasetId, recordId, onClose, onChanged }: Props
                   Status: <strong className="text-ink">{NUTRITION_LABEL[record.nutrition.status] ?? record.nutrition.status}</strong> — potential gap based on recorded data.
                   {" "}Calculated reference: {record.nutrition.calculatedReference.available ? `${record.nutrition.calculatedReference.caloriesKcal} kcal` : "not available"}. {record.nutrition.calculatedReference.note}
                 </p>
-                <div className="mt-2 overflow-x-auto rounded-[10px] border border-line">
-                  <table className="w-full text-left text-xs">
+                <div className="mt-2 table-scroll rounded-[10px] border border-line">
+                  <table aria-label="Recorded values versus calculated reference" className="w-full text-left text-xs">
                     <thead className="bg-canvas text-[11px] uppercase tracking-wide text-muted">
                       <tr><th scope="col" className="px-3 py-1.5">Nutrient</th><th scope="col" className="px-3 py-1.5 text-right">Recorded</th><th scope="col" className="px-3 py-1.5 text-right">Calculated reference</th><th scope="col" className="px-3 py-1.5">Comparison</th></tr>
                     </thead>
@@ -216,7 +216,7 @@ export function StudentDetail({ datasetId, recordId, onClose, onChanged }: Props
                 <Dl items={[["Record status", record.quality.recordStatus.replace("_", " ")], ["Quality flag", record.quality.qualityStatus.replace("_", " ")]]} />
                 {record.quality.issues.length > 0 && (
                   <ul className="mt-2 space-y-1 text-xs">
-                    {record.quality.issues.map((i) => <li key={i} className="flex items-start gap-2 rounded-[8px] bg-canvas px-2.5 py-1.5"><AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-accent-300" aria-hidden="true" />{i}</li>)}
+                    {record.quality.issues.map((i) => <li key={i} className="flex items-start gap-2 rounded-[10px] bg-canvas px-2.5 py-1.5"><AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-accent-300" aria-hidden="true" />{i}</li>)}
                   </ul>
                 )}
                 {record.quality.outliers.length > 0 && (
@@ -302,7 +302,7 @@ function draftBaseline(record: Detail): Record<string, string> {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h3 className="text-xs font-bold uppercase tracking-wide text-muted">{title}</h3>
+      <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-muted">{title}</h3>
       <div className="mt-1.5">{children}</div>
     </section>
   );
