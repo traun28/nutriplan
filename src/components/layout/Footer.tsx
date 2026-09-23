@@ -26,7 +26,7 @@ const PROJECT_LINKS = [
 export function Footer() {
   return (
     <footer className="border-t border-line bg-surface">
-      <div className="page-container grid gap-8 py-10 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)]">
+      <div className="page-container grid gap-6 py-8 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)]">
         <div>
           <div className="flex items-center gap-2.5">
             <span className="grid h-9 w-9 place-items-center rounded-[10px] bg-brand-700 text-white">
@@ -36,11 +36,11 @@ export function Footer() {
               Personalised Diet Planner
             </span>
           </div>
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted">
+          <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted">
             Personalised nutrition planning through structured user information
             and data-driven recommendations.
           </p>
-          <p className="mt-4 text-xs text-muted">
+          <p className="mt-3 text-xs text-muted">
             Personalised meal planning with a rule-based engine, document
             import and a voice-enabled nutrition assistant.
           </p>
@@ -50,7 +50,7 @@ export function Footer() {
           <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-muted">
             Explore
           </h3>
-          <ul className="mt-4 space-y-2.5">
+          <ul className="mt-3 space-y-2">
             {EXPLORE_LINKS.map((link) => (
               <li key={link.href}>
                 <Link
@@ -68,7 +68,7 @@ export function Footer() {
           <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-muted">
             Project
           </h3>
-          <ul className="mt-4 space-y-2.5">
+          <ul className="mt-3 space-y-2">
             {PROJECT_LINKS.map((link) => (
               <li key={link.href}>
                 <Link
@@ -86,7 +86,7 @@ export function Footer() {
       {/* Extra bottom room on phones so the floating Personal AI disc cannot
           cover the copyright line. */}
       <div className="border-t border-line pb-20 pt-5 sm:pb-5">
-        <p className="px-5 text-center text-xs leading-relaxed text-muted">
+        <p className="page-container text-center text-xs leading-relaxed text-muted">
           © {new Date().getFullYear()} Personalised Diet Planner · Built as a
           college project · For educational use only, not medical advice.
         </p>

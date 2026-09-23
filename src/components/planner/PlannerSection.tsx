@@ -54,9 +54,9 @@ export function PlannerSection({
             {description}
           </p>
 
-          <div className="mt-8 space-y-8">{children}</div>
+          <div className="mt-6 space-y-6">{children}</div>
 
-          <div className="mt-10 flex flex-col-reverse gap-3 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-8 flex flex-col-reverse gap-3 border-t border-line pt-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               {onBack && (
                 <Button

@@ -190,8 +190,8 @@ export function RecipeLibrary() {
                     setView(v);
                   }}
                   className={cn(
-                    "inline-flex items-center gap-1.5 rounded-pill px-3 py-1.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300",
-                    view === v ? "bg-brand-500 text-white shadow-sm" : "text-muted hover:text-ink",
+                    "inline-flex items-center gap-1.5 rounded-pill px-3 py-1.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
+                    view === v ? "bg-brand-700 text-white shadow-sm" : "text-muted hover:text-ink",
                   )}
                 >
                   {v === "favorites" && <Heart className="h-3.5 w-3.5" aria-hidden="true" />}
@@ -217,7 +217,7 @@ export function RecipeLibrary() {
             <div className="flex flex-col justify-end gap-2">
               {user && hasRestrictions && (
                 <label className="inline-flex items-center gap-2 text-sm text-ink">
-                  <input type="checkbox" checked={safeOnly} onChange={(e) => setSafeOnly(e.target.checked)} className="h-4 w-4 rounded border-line text-brand-500 focus:ring-brand-300" />
+                  <input type="checkbox" checked={safeOnly} onChange={(e) => setSafeOnly(e.target.checked)} className="h-4 w-4 rounded border-line text-brand-500 focus:ring-brand-500" />
                   Hide recipes that conflict with my profile
                 </label>
               )}

@@ -204,7 +204,7 @@ function ProfileView() {
       {hasUnsavedChanges && (
         <div
           role="status"
-          className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-card border border-accent-300/40/30 bg-accent-200/30 p-4"
+          className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-card border border-accent-300/40 bg-accent-200/30 p-4"
         >
           <p className="text-xs leading-relaxed text-ink/80">
             You have changes that have not been saved to this device yet.
@@ -256,8 +256,8 @@ function ProfileView() {
                     <Button
                       href={`/planner?step=${item.step}`}
                       variant="ghost"
-                      size="sm"
-                      className="ml-auto !px-2 !py-1 text-xs"
+                      size="xs"
+                      className="ml-auto"
                     >
                       Add
                     </Button>

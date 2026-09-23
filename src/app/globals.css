@@ -236,6 +236,12 @@
   to { opacity: 1; transform: none; }
 }
 
+/* Mobile navigation drawer: slides in from the inline-end edge. */
+@keyframes np-slide-in {
+  from { transform: translateX(100%); }
+  to { transform: none; }
+}
+
 @layer components {
   .dialog-overlay {
     animation: np-fade-in 0.18s ease-out;
@@ -247,6 +253,10 @@
 
   .entry-enter {
     animation: np-rise-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .np-drawer {
+    animation: np-slide-in 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   .card-hover {
@@ -322,7 +332,8 @@
 @media (prefers-reduced-motion: reduce) {
   .dialog-overlay,
   .dialog-panel,
-  .entry-enter {
+  .entry-enter,
+  .np-drawer {
     animation: none;
   }
 
@@ -376,4 +387,31 @@
 
 @media (prefers-reduced-motion: reduce) {
   .typing-dot { animation: none; opacity: 0.7; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Phase 9 — one global reduced-motion rule                            */
+/*                                                                     */
+/* The per-component blocks above handle the named animations; this is  */
+/* the catch-all for the hundreds of Tailwind `transition-*` utilities   */
+/* sprinkled through the UI, so a user who asks for less motion gets it  */
+/* everywhere rather than only where someone remembered to opt in.       */
+/*                                                                     */
+/* The loading spinner is exempted on purpose: freezing it reads as       */
+/* "stuck" rather than "busy", which is worse than the motion itself.     */
+/* ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-spin {
+    animation-duration: 1s !important;
+    animation-iteration-count: infinite !important;
+  }
 }

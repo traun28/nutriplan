@@ -184,7 +184,7 @@ function ReviewView() {
       {storageStatus === "unavailable" && (
         <div
           role="alert"
-          className="mb-6 flex items-start gap-3 rounded-card border border-accent-300/40/30 bg-accent-200/30 p-4"
+          className="mb-6 flex items-start gap-3 rounded-card border border-accent-300/40 bg-accent-200/30 p-4"
         >
           <AlertTriangle
             className="mt-0.5 h-4 w-4 shrink-0 text-accent-300"
@@ -208,7 +208,7 @@ function ReviewView() {
             <Card className="h-full">
               <CardBody>
                 <EmptyState
-                  icon={<Circle className="h-5 w-5" aria-hidden="true" />}
+                  icon={<Circle className="h-6 w-6" aria-hidden="true" />}
                   title="Personal details not completed"
                   description="Your name, age, body measurements and activity level will appear here."
                   action={
@@ -229,7 +229,7 @@ function ReviewView() {
             <Card className="h-full">
               <CardBody>
                 <EmptyState
-                  icon={<Circle className="h-5 w-5" aria-hidden="true" />}
+                  icon={<Circle className="h-6 w-6" aria-hidden="true" />}
                   title="Nutrition goals not completed"
                   description="Your main goal and optional targets will appear here."
                   action={
@@ -280,7 +280,7 @@ function ReviewView() {
 
       {/* ----------------------- Outstanding issues ---------------------- */}
       {issues.length > 0 && (
-        <Card className="mt-8 border-accent-300/40/30">
+        <Card className="mt-6 border-accent-300/40">
           <CardBody>
             <div className="flex items-center gap-2">
               <TriangleAlert
@@ -312,7 +312,7 @@ function ReviewView() {
       )}
 
       {/* --------------------------- Save panel -------------------------- */}
-      <Card className="mt-8 overflow-hidden">
+      <Card className="mt-6 overflow-hidden">
         <div className="flex flex-col items-start justify-between gap-4 bg-brand-50/60 px-6 py-6 sm:flex-row sm:items-center sm:px-8">
           <div className="flex items-start gap-3">
             {readyToSave ? (

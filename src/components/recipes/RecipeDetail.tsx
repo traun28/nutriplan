@@ -203,7 +203,7 @@ export function RecipeDetail({ recipe }: { recipe: Recipe }) {
             step={0.25}
             value={servings}
             onChange={(e) => setServings(e.target.value)}
-            className="ml-2 w-20 rounded-lg border border-line bg-canvas px-2 py-1.5 text-sm text-ink focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-200"
+            className="ml-2 w-20 rounded-[10px] border border-line bg-canvas px-2 py-1.5 text-sm text-ink focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </label>
         <Button
@@ -292,7 +292,7 @@ export function RecipeDetail({ recipe }: { recipe: Recipe }) {
                 <Row label="Fibre" value={<NotAvailable>Not available</NotAvailable>} />
               </dl>
               {servingsNumber !== 1 && (
-                <p className="mt-3 rounded-lg bg-canvas px-3 py-2 text-xs text-muted">
+                <p className="mt-3 rounded-[10px] bg-canvas px-3 py-2 text-xs text-muted">
                   {fmtNum(servingsNumber)} servings ≈ {Math.round(recipe.nutrition.calories * servingsNumber)} kcal · {Math.round(recipe.nutrition.proteinGrams * servingsNumber)} g protein
                 </p>
               )}
@@ -366,7 +366,7 @@ export function RecipeDetail({ recipe }: { recipe: Recipe }) {
           <SelectField label="Meal" value={effectiveSlot ?? ""} onChange={(v) => setSlot(v as PlannerSlot)} options={slotsForDay} hint={slotsForDay.length === 0 ? "This day has no meal slots." : undefined} />
         </div>
         {planError && (
-          <p role="alert" className="mt-3 rounded-lg border border-danger-500/30 bg-danger-50/60 px-3 py-2 text-sm text-danger-700">
+          <p role="alert" className="mt-3 rounded-[10px] border border-danger-500/30 bg-danger-50/60 px-3 py-2 text-sm text-danger-700">
             {planError}
           </p>
         )}
@@ -396,7 +396,7 @@ export function RecipeDetail({ recipe }: { recipe: Recipe }) {
           </p>
         )}
         {cookError && (
-          <p role="alert" className="rounded-lg border border-danger-500/30 bg-danger-50/60 px-3 py-2 text-sm text-danger-700">
+          <p role="alert" className="rounded-[10px] border border-danger-500/30 bg-danger-50/60 px-3 py-2 text-sm text-danger-700">
             {cookError}
           </p>
         )}

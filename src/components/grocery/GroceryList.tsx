@@ -156,7 +156,7 @@ export function GroceryList() {
                 </div>
               </div>
               <label className="inline-flex shrink-0 items-center gap-2 text-sm whitespace-nowrap text-muted">
-                <input type="checkbox" checked={hidePurchased} onChange={(e) => setHidePurchased(e.target.checked)} className="h-4 w-4 rounded border-line text-brand-500 focus:ring-brand-300" />
+                <input type="checkbox" checked={hidePurchased} onChange={(e) => setHidePurchased(e.target.checked)} className="h-4 w-4 rounded border-line text-brand-500 focus:ring-brand-500" />
                 Hide purchased
               </label>
             </div>
@@ -207,7 +207,7 @@ export function GroceryList() {
       {/* ------------------------ empty list (no items) ---------------------- */}
       {list && items.length === 0 && (
         <EmptyState
-          icon={<ShoppingCart className="h-5 w-5" aria-hidden="true" />}
+          icon={<ShoppingCart className="h-6 w-6" aria-hidden="true" />}
           title="Your grocery list is empty"
           description={plan ? `Generate it from “${plan.name}” — ingredients from every meal are combined into one list.` : "Generate a 7-day meal plan first; the grocery list is built from its recipes."}
           action={
@@ -247,9 +247,9 @@ export function GroceryList() {
                   aria-pressed={active}
                   onClick={() => setSelectedCategory(filter.id)}
                   className={cn(
-                    "inline-flex items-center gap-1.5 rounded-pill border px-3 py-1.5 text-sm font-semibold whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300",
+                    "inline-flex items-center gap-1.5 rounded-pill border px-3 py-1.5 text-sm font-semibold whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
                     active
-                      ? "border-brand-500 bg-brand-500 text-white shadow-[0_4px_12px_rgba(5,150,105,0.28)]"
+                      ? "border-brand-700 bg-brand-700 text-white shadow-[0_4px_12px_rgba(5,150,105,0.28)]"
                       : "border-line bg-surface text-muted hover:border-brand-400/50 hover:text-ink",
                   )}
                 >
@@ -394,8 +394,8 @@ function GeneratePanel({ plan, selectedDays, usePantryValue, onUsePantryChange, 
               aria-pressed={on}
               onClick={() => toggleDay(d.dayIndex)}
               className={cn(
-                "rounded-pill border px-3 py-1 text-xs font-semibold whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300",
-                on ? "border-brand-500 bg-brand-500 text-white" : "border-line bg-surface text-muted hover:text-ink",
+                "rounded-pill border px-3 py-1 text-xs font-semibold whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
+                on ? "border-brand-700 bg-brand-700 text-white" : "border-line bg-surface text-muted hover:text-ink",
               )}
             >
               {d.weekday ?? d.label}
@@ -406,7 +406,7 @@ function GeneratePanel({ plan, selectedDays, usePantryValue, onUsePantryChange, 
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <label className="inline-flex items-center gap-2 text-sm text-ink">
-          <input type="checkbox" checked={usePantryValue} onChange={(e) => onUsePantryChange(e.target.checked)} className="h-4 w-4 rounded border-line text-brand-500 focus:ring-brand-300" />
+          <input type="checkbox" checked={usePantryValue} onChange={(e) => onUsePantryChange(e.target.checked)} className="h-4 w-4 rounded border-line text-brand-500 focus:ring-brand-500" />
           Subtract what&apos;s in my pantry
         </label>
         <div className="flex flex-wrap gap-2">
@@ -463,7 +463,7 @@ function GroceryRow({ item, showCategory, onMessage }: { item: GroceryItemRecord
         type="checkbox"
         checked={item.purchased}
         onChange={(e) => void kitchen.updateGroceryItem(item.id, { purchased: e.target.checked })}
-        className="mt-1 h-4 w-4 shrink-0 rounded border-line text-brand-500 focus:ring-brand-300"
+        className="mt-1 h-4 w-4 shrink-0 rounded border-line text-brand-500 focus:ring-brand-500"
         aria-label={`Mark ${item.name} as ${item.purchased ? "not purchased" : "purchased"}`}
       />
       <div className="min-w-0 flex-1">
@@ -486,11 +486,11 @@ function GroceryRow({ item, showCategory, onMessage }: { item: GroceryItemRecord
           <div className="mt-2 flex flex-wrap items-end gap-2">
             <label className="text-xs font-semibold text-muted">
               Quantity
-              <input type="number" min={0} step="any" value={qty} onChange={(e) => setQty(e.target.value)} className="mt-1 block w-24 rounded-lg border border-line bg-canvas px-2 py-1.5 text-sm text-ink" />
+              <input type="number" min={0} step="any" value={qty} onChange={(e) => setQty(e.target.value)} className="mt-1 block w-24 rounded-[10px] border border-line bg-canvas px-2 py-1.5 text-sm text-ink" />
             </label>
             <label className="text-xs font-semibold text-muted">
               Unit
-              <select value={unit} onChange={(e) => setUnit(e.target.value)} className="mt-1 block rounded-lg border border-line bg-canvas px-2 py-1.5 text-sm text-ink">
+              <select value={unit} onChange={(e) => setUnit(e.target.value)} className="mt-1 block rounded-[10px] border border-line bg-canvas px-2 py-1.5 text-sm text-ink">
                 {UNIT_OPTIONS.map((u) => (
                   <option key={u.value} value={u.value}>
                     {u.label}
@@ -522,10 +522,10 @@ function GroceryRow({ item, showCategory, onMessage }: { item: GroceryItemRecord
         )}
       </div>
       <div className="flex shrink-0 gap-1 print:hidden">
-        <button type="button" onClick={() => setEditing((e) => !e)} className="rounded-md p-1.5 text-muted hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300" aria-label={`Edit quantity for ${item.name}`}>
+        <button type="button" onClick={() => setEditing((e) => !e)} className="rounded-[10px] p-1.5 text-muted hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" aria-label={`Edit quantity for ${item.name}`}>
           <Pencil className="h-4 w-4" aria-hidden="true" />
         </button>
-        <button type="button" onClick={() => setConfirmDelete(true)} className="rounded-md p-1.5 text-muted hover:bg-danger-50 hover:text-danger-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300" aria-label={`Remove ${item.name}`}>
+        <button type="button" onClick={() => setConfirmDelete(true)} className="rounded-[10px] p-1.5 text-muted hover:bg-danger-50 hover:text-danger-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" aria-label={`Remove ${item.name}`}>
           <Trash2 className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>

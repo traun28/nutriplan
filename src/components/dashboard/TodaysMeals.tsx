@@ -94,7 +94,7 @@ export function TodaysMeals({ entries, loading, isToday, onLog, onEdit, onRepeat
             {groups.map((group) => (
               <li key={group.id} className="px-5 py-4 sm:px-7">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="text-xs font-bold uppercase tracking-wide text-brand-300">{group.label}</h3>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">{group.label}</h3>
                   <div className="flex items-center gap-3">
                     {group.items.length > 0 && (
                       <span className="text-xs text-muted">
@@ -105,7 +105,7 @@ export function TodaysMeals({ entries, loading, isToday, onLog, onEdit, onRepeat
                       type="button"
                       onClick={() => onLog(group.id)}
                       aria-label={`Add food to ${group.label}`}
-                      className="grid h-7 w-7 place-items-center rounded-[8px] border border-line text-muted transition-colors hover:border-brand-400/50 hover:text-brand-400"
+                      className="grid h-7 w-7 place-items-center rounded-[10px] border border-line text-muted transition-colors hover:border-brand-400/50 hover:text-brand-400"
                     >
                       <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                     </button>
@@ -221,7 +221,7 @@ export function IconButton({
       title={label}
       disabled={disabled}
       className={cn(
-        "grid h-8 w-8 place-items-center rounded-[8px] border border-line bg-surface text-muted transition-colors disabled:opacity-50",
+        "grid h-8 w-8 place-items-center rounded-[10px] border border-line bg-surface text-muted transition-colors disabled:opacity-50",
         danger ? "hover:border-danger-500/40 hover:bg-danger-50 hover:text-danger-600" : "hover:border-brand-400/50 hover:bg-brand-50 hover:text-brand-400",
       )}
     >

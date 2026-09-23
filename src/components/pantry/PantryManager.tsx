@@ -268,9 +268,9 @@ export function PantryManager() {
                 aria-pressed={active}
                 onClick={() => setCategory(filter.id)}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-pill border px-3 py-1.5 text-sm font-semibold whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300",
+                  "inline-flex items-center gap-1.5 rounded-pill border px-3 py-1.5 text-sm font-semibold whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
                   active
-                    ? "border-brand-500 bg-brand-500 text-white shadow-[0_4px_12px_rgba(5,150,105,0.28)]"
+                    ? "border-brand-700 bg-brand-700 text-white shadow-[0_4px_12px_rgba(5,150,105,0.28)]"
                     : "border-line bg-surface text-muted hover:border-brand-400/50 hover:text-ink",
                 )}
               >
@@ -304,7 +304,7 @@ export function PantryManager() {
 
         {kitchen.pantry !== null && items.length === 0 && (
           <EmptyState
-            icon={<Package className="h-5 w-5" aria-hidden="true" />}
+            icon={<Package className="h-6 w-6" aria-hidden="true" />}
             title="Your pantry is empty"
             description="Add staples like rice, oats, lentils or eggs. NutriPlan will use them to trim your grocery list and suggest recipes."
             action={
@@ -396,7 +396,7 @@ export function PantryManager() {
                   {suggestions.map((s) => (
                     <li
                       key={s.recipe.id}
-                      className="min-w-0 rounded-lg border border-line bg-canvas p-3"
+                      className="min-w-0 rounded-[10px] border border-line bg-canvas p-3"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <Link
@@ -516,7 +516,7 @@ function PantryRow({
       </div>
       <div className="flex shrink-0 items-center gap-1">
         {item.quantity !== null && item.unit && (
-          <div className="mr-1 hidden items-center rounded-lg border border-line sm:inline-flex">
+          <div className="mr-1 hidden items-center rounded-[10px] border border-line sm:inline-flex">
             <button
               type="button"
               onClick={() => void adjust(-step)}
@@ -541,7 +541,7 @@ function PantryRow({
           type="button"
           onClick={() => setConfirm("used")}
           disabled={busy}
-          className="rounded-md px-2 py-1 text-xs font-semibold text-muted hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+          className="rounded-[10px] px-2 py-1 text-xs font-semibold text-muted hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           aria-label={`Mark ${item.name} as used up`}
         >
           Used up
@@ -549,7 +549,7 @@ function PantryRow({
         <button
           type="button"
           onClick={onEdit}
-          className="rounded-md p-1.5 text-muted hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+          className="rounded-[10px] p-1.5 text-muted hover:bg-canvas hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           aria-label={`Edit ${item.name}`}
         >
           <Pencil className="h-4 w-4" aria-hidden="true" />
@@ -557,7 +557,7 @@ function PantryRow({
         <button
           type="button"
           onClick={() => setConfirm("delete")}
-          className="rounded-md p-1.5 text-muted hover:bg-danger-50 hover:text-danger-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+          className="rounded-[10px] p-1.5 text-muted hover:bg-danger-50 hover:text-danger-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           aria-label={`Remove ${item.name}`}
         >
           {busy ? (
@@ -739,7 +739,7 @@ function PantryDialog({
         <p
           role="alert"
           className={cn(
-            "mt-3 rounded-lg border border-danger-500/30 bg-danger-50/60 px-3 py-2 text-sm text-danger-700",
+            "mt-3 rounded-[10px] border border-danger-500/30 bg-danger-50/60 px-3 py-2 text-sm text-danger-700",
           )}
         >
           {error}

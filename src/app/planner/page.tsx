@@ -12,7 +12,7 @@ export default function PlannerPage() {
     <Suspense
       fallback={
         <div className="page-container page-section">
-          <div className="h-8 w-40 animate-pulse rounded-lg bg-line" />
+          <div className="h-8 w-40 animate-pulse rounded-[10px] bg-line" />
           <div className="mt-6 h-64 animate-pulse rounded-card bg-line/60" />
         </div>
       }

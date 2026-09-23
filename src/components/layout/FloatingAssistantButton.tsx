@@ -14,7 +14,8 @@ import { cn } from "@/lib/cn";
  * pill, so nothing is lost on larger screens.
  *
  * It is pinned *inside* the viewport: `right-4` plus a
- * `max-w-[calc(100vw-2rem)]` cap mean it can never run off a 320px screen, and
+ * `max-w-[calc(100%-2rem)]` cap mean it can never run off a 320px screen
+ * (`100%` rather than `100vw`, which would include the scrollbar), and
  * `env(safe-area-inset-bottom)` keeps it clear of a device home indicator.
  * `.page-section` and the footer reserve matching bottom space so the disc
  * cannot sit on top of the last control on a page, and it is not rendered at
@@ -34,7 +35,7 @@ export function FloatingAssistantButton() {
       title="Open Personal AI"
       className={cn(
         "fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-[60]",
-        "flex max-w-[calc(100vw-2rem)] items-center justify-center gap-2 rounded-pill",
+        "flex max-w-[calc(100%-2rem)] items-center justify-center gap-2 rounded-pill",
         "bg-brand-700 text-sm font-bold text-white",
         "shadow-[0_10px_28px_rgba(5,150,105,0.35)] transition-transform",
         "hover:-translate-y-0.5 hover:bg-brand-800",
@@ -42,7 +43,7 @@ export function FloatingAssistantButton() {
         // Phones: compact 48px disc, icon only.
         "h-12 w-12 shrink-0 p-0",
         // sm+: labelled pill, slightly further from the edges.
-        "sm:bottom-6 sm:right-6 sm:h-auto sm:w-auto sm:px-4 sm:py-3",
+        "sm:bottom-6 sm:right-6 sm:h-auto sm:w-auto sm:px-3.5 sm:py-2.5",
       )}
     >
       <Sparkles className="h-5 w-5 shrink-0 sm:h-4 sm:w-4" aria-hidden="true" />

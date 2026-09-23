@@ -3,7 +3,7 @@ import { ArrowLeft } from "lucide-react";
 
 export default function NotFoundPage() {
   return (
-    <div className="grid min-h-[60vh] place-items-center px-5 py-16">
+    <div className="grid min-h-[60dvh] place-items-center px-5 py-16">
       <div className="w-full max-w-md text-center">
         <p className="text-5xl font-extrabold tracking-tight text-brand-200">
           404

@@ -19,7 +19,7 @@ export default async function AssistantPage({ searchParams }: { searchParams: Pr
           inside the 72rem page container). Every track is minmax(0,…) and the
           shell is min-w-0 so nothing can push the page past the viewport. */}
       <div className="page-container flex min-w-0 max-w-4xl flex-col py-4 sm:py-5">
-        <div className="flex h-[calc(100dvh-9.5rem)] min-h-[420px] flex-col">
+        <div className="flex h-[calc(100dvh-9rem)] min-h-[420px] flex-col">
           <AssistantProvider>
             <div className="flex h-full min-w-0 flex-col overflow-hidden rounded-card border border-line bg-surface shadow-sm">
               <AssistantChat initialPrompt={initialPrompt} />

@@ -73,7 +73,7 @@ function DietPlanView() {
   if (!hydrated) {
     return (
       <div className="page-container page-section">
-        <header className="mb-8">
+        <header className="mb-6">
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
             Your results
           </p>
@@ -132,9 +132,9 @@ function DietPlanView() {
   if (status === "generating") {
     return (
       <Shell>
-        <div className="flex flex-col items-center rounded-card border border-line bg-surface px-6 py-16 text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-brand-400" aria-hidden="true" />
-          <p className="mt-4 text-base font-bold text-ink" role="status">
+        <div className="rounded-card border border-line bg-surface px-5 py-6 text-center">
+          <Loader2 className="mx-auto h-5 w-5 animate-spin text-brand-400" aria-hidden="true" />
+          <p className="mt-2.5 text-sm font-bold text-ink" role="status">
             Creating your personalised plan…
           </p>
           <p className="mt-1 text-sm text-muted">
@@ -241,7 +241,7 @@ function DietPlanView() {
         className={cn(
           "mb-6 flex flex-col gap-4 rounded-card border p-5 sm:flex-row sm:items-center sm:justify-between print:hidden",
           needsNewPlan
-            ? "border-accent-300/40/30 bg-accent-200/30"
+            ? "border-accent-300/40 bg-accent-200/30"
             : "border-brand-400/25 bg-brand-50/70",
         )}
       >
@@ -353,7 +353,7 @@ function DietPlanView() {
           </div>
 
           {plan.validation.warnings.length > 0 && (
-            <div className="mt-4 rounded-card border border-accent-300/40/30 bg-accent-200/30 p-4">
+            <div className="mt-4 rounded-card border border-accent-300/40 bg-accent-200/30 p-4">
               <p className="text-xs font-bold text-ink">Notes about this plan</p>
               <ul className="mt-2 space-y-1">
                 {plan.validation.warnings.map((warning) => (
@@ -432,7 +432,7 @@ function DietPlanView() {
 function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="page-container page-section max-w-3xl">
-      <header className="mb-8 text-center">
+      <header className="mb-6 text-center">
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
           Your results
         </p>

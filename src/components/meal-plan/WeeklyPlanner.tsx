@@ -359,7 +359,7 @@ function GeneratorForm({
       </div>
       <div className={compact ? "" : "sm:col-span-3"}>
         <label className="inline-flex items-start gap-2 text-sm text-ink">
-          <input type="checkbox" checked={preferPantry} onChange={(e) => setPreferPantry(e.target.checked)} className="mt-0.5 h-4 w-4 rounded border-line text-brand-500 focus:ring-brand-300" />
+          <input type="checkbox" checked={preferPantry} onChange={(e) => setPreferPantry(e.target.checked)} className="mt-0.5 h-4 w-4 rounded border-line text-brand-500 focus:ring-brand-500" />
           <span>
             Prefer pantry ingredients
             <span className="block text-[11px] text-muted">Nudges the planner toward recipes using what&apos;s in your <a href="/pantry" className="font-semibold text-brand-600 hover:underline">pantry</a>. Allergies, dietary type and nutrition targets are never relaxed.</span>

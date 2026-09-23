@@ -82,7 +82,7 @@ function ChipRow({
     tone === "danger"
       ? "border-danger-500/30 bg-danger-50 text-danger-700"
       : tone === "warning"
-        ? "border-accent-300/40/30 bg-accent-200/40 text-accent-300"
+        ? "border-accent-300/40 bg-accent-200/40 text-accent-300"
         : "border-line bg-surface text-ink";
 
   return (
@@ -277,7 +277,7 @@ export function FoodIntakeSummary({ intake }: { intake: FoodIntake }) {
           return (
             <li key={definition.id} className="py-3 first:pt-0 last:pb-0">
               <div className="flex items-baseline justify-between gap-3">
-                <h4 className="text-xs font-bold uppercase tracking-wide text-brand-400">
+                <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
                   {definition.label}
                 </h4>
                 {!meal.hasMeal && (
@@ -461,7 +461,7 @@ export function PracticalConstraintsSummary({
       )}
       {additionalInformation.trim() && (
         <div className="mt-3 rounded-[10px] bg-canvas p-3">
-          <p className="text-xs font-bold uppercase tracking-wide text-muted">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted">
             Additional information
           </p>
           <p className="mt-1 whitespace-pre-wrap text-xs leading-relaxed text-ink">

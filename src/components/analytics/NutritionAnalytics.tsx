@@ -49,7 +49,7 @@ function num(v: number | null, unit = "", fallback = "—"): string {
 }
 
 function SourceTag({ children }: { children: string }) {
-  return <span className="rounded-md border border-line bg-canvas px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted">{children}</span>;
+  return <span className="rounded-[10px] border border-line bg-canvas px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted">{children}</span>;
 }
 
 export function NutritionAnalytics({ initialView = "day" }: { initialView?: View }) {
@@ -131,8 +131,8 @@ export function NutritionAnalytics({ initialView = "day" }: { initialView?: View
                 if (e.key === "ArrowLeft" || e.key === "ArrowRight") setView(v === "day" ? "week" : "day");
               }}
               className={cn(
-                "rounded-pill px-4 py-1.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300",
-                view === v ? "bg-brand-500 text-white shadow-sm" : "text-muted hover:text-ink",
+                "rounded-pill px-4 py-1.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
+                view === v ? "bg-brand-700 text-white shadow-sm" : "text-muted hover:text-ink",
               )}
             >
               {v === "day" ? "Daily" : "Weekly"}
@@ -253,7 +253,7 @@ function DailyView({ data, loading, isToday }: { data: DailyAnalytics; loading: 
               </div>
             </div>
             {!data.hasTargets && (
-              <p className="mt-2 rounded-lg border border-accent-300/40 bg-accent-200/30 px-3 py-2 text-xs text-ink">
+              <p className="mt-2 rounded-[10px] border border-accent-300/40 bg-accent-200/30 px-3 py-2 text-xs text-ink">
                 No calculated targets yet — differences and the score need them.{" "}
                 <Link href="/nutrition" className="font-semibold text-brand-600 hover:underline">
                   Calculate your nutrition
@@ -292,7 +292,7 @@ function DailyView({ data, loading, isToday }: { data: DailyAnalytics; loading: 
           <CardBody>
             <h2 className="text-sm font-bold text-ink">Nutrition gap analysis</h2>
             <p className="mt-0.5 text-xs text-muted">Based on foods logged so far compared with your configured targets (±10% counts as within target). This does not diagnose a deficiency.</p>
-            <div className="mt-3 grid gap-3 md:grid-cols-3">
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               <GapColumn title="Potential gaps" items={gaps} tone="warning" empty="No nutrient is more than 10% below target." />
               <GapColumn title="Strengths" items={strengths} tone="brand" empty="No nutrient is within ±10% of target yet." />
               <GapColumn title="Above target" items={excesses} tone="neutral" empty="No nutrient is more than 10% above target." />
@@ -304,7 +304,7 @@ function DailyView({ data, loading, isToday }: { data: DailyAnalytics; loading: 
                   const detail = data.nutrients.find((n) => n.key === g.key);
                   return (
                     <details key={g.key} className="group rounded-[10px] border border-line bg-canvas p-3 open:bg-surface">
-                      <summary className="cursor-pointer list-none text-sm font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300">
+                      <summary className="cursor-pointer list-none text-sm font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
                         <span className="flex flex-wrap items-center justify-between gap-2">
                           <span>
                             {g.label}: estimated {num(g.estimated, g.unit)} · target {num(g.target, g.unit)} · difference {num(g.difference, g.unit)}
@@ -355,7 +355,7 @@ function DailyView({ data, loading, isToday }: { data: DailyAnalytics; loading: 
                 {data.nutrients.map((n) => {
                   const a = data.assessments.find((x) => x.key === n.key)!;
                   return (
-                    <button key={n.key} role="tab" type="button" aria-selected={nutrient === n.key} onClick={() => setNutrient(n.key)} className={cn("rounded-pill px-3 py-1 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300", nutrient === n.key ? "bg-brand-500 text-white" : "text-muted hover:text-ink")}>
+                    <button key={n.key} role="tab" type="button" aria-selected={nutrient === n.key} onClick={() => setNutrient(n.key)} className={cn("rounded-pill px-3 py-1 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500", nutrient === n.key ? "bg-brand-700 text-white" : "text-muted hover:text-ink")}>
                       {a.label}
                     </button>
                   );
@@ -406,7 +406,7 @@ function DailyView({ data, loading, isToday }: { data: DailyAnalytics; loading: 
                   <p className="text-xs leading-relaxed text-muted">A target-adherence and logging-completeness figure, not a health rating.</p>
                 </div>
                 <details className="mt-3 text-xs">
-                  <summary className="cursor-pointer font-semibold text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300">Your score is calculated from…</summary>
+                  <summary className="cursor-pointer font-semibold text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Your score is calculated from…</summary>
                   <ul className="mt-2 space-y-1.5">
                     {data.score.components.map((c) => (
                       <li key={c.key} className="flex items-baseline justify-between gap-2">
@@ -581,7 +581,7 @@ function InsightList({ insights, showAll, onToggle }: { insights: Insight[]; sho
         ))}
       </ul>
       {insights.length > 4 && (
-        <button type="button" onClick={onToggle} className="mt-2 text-xs font-semibold text-brand-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300">
+        <button type="button" onClick={onToggle} className="mt-2 text-xs font-semibold text-brand-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
           {showAll ? "Show fewer" : `Show ${insights.length - 4} more`}
         </button>
       )}
@@ -592,7 +592,7 @@ function InsightList({ insights, showAll, onToggle }: { insights: Insight[]; sho
 function ComparisonTable({ rows, currentLabel, previousLabel }: { rows: DailyAnalytics["comparison"]["rows"] & object; currentLabel: string; previousLabel: string }) {
   return (
     <div className="mt-3 table-scroll">
-      <table className="w-full text-sm">
+      <table aria-label="Metric comparison between the two selected periods" className="w-full text-sm">
         <thead>
           <tr className="text-left text-xs font-semibold uppercase tracking-wide text-muted">
             <th scope="col" className="py-1.5 pr-2">

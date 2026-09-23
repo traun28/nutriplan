@@ -42,7 +42,12 @@ export function ConfirmDialog({
       if (event.key === "Escape") onCancel();
     };
     document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
   }, [open, onCancel]);
 
   if (!open) return null;
@@ -60,7 +65,7 @@ export function ConfirmDialog({
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
         aria-describedby="confirm-dialog-description"
-        className="w-full max-w-md rounded-card border border-line bg-surface p-6 shadow-pop"
+        className="max-h-[85dvh] w-full max-w-md overflow-y-auto rounded-card border border-line bg-surface p-5 shadow-pop"
       >
         <div className="flex items-start gap-3">
           <span

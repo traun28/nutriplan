@@ -58,7 +58,7 @@ export default function AboutPage() {
       />
 
       {/* Purpose */}
-      <Card className="mt-10">
+      <Card className="mt-6">
         <CardBody>
           <div className="flex items-center gap-2">
             <Info className="h-4 w-4 text-brand-400" aria-hidden="true" />
@@ -85,7 +85,7 @@ export default function AboutPage() {
           <ol className="mt-5 flex flex-wrap items-center gap-y-3">
             {WORKFLOW.map((step, index) => (
               <li key={step} className="flex items-center">
-                <span className="rounded-pill border border-brand-400/25 bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-300">
+                <span className="rounded-pill border border-brand-400/25 bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-400">
                   {step}
                 </span>
                 {index < WORKFLOW.length - 1 && (
@@ -195,7 +195,7 @@ export default function AboutPage() {
       </Card>
 
       {/* Disclaimer */}
-      <div className="mt-5 flex gap-3 rounded-card border border-accent-300/40/30 bg-accent-200/30 p-5">
+      <div className="mt-5 flex gap-3 rounded-card border border-accent-300/40 bg-accent-200/30 p-5">
         <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-accent-300" aria-hidden="true" />
         <p className="text-xs leading-relaxed text-ink/80">
           <strong>Disclaimer:</strong> this is an educational college project.

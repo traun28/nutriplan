@@ -445,7 +445,7 @@ export function NutritionPreferencesStep({
                 className={cn(
                   "rounded-pill border px-3.5 py-1.5 text-sm font-medium transition-all duration-150",
                   active
-                    ? "border-brand-500 bg-brand-50 text-brand-300 ring-1 ring-brand-500/30"
+                    ? "border-brand-500 bg-brand-50 text-brand-400 ring-1 ring-brand-500/30"
                     : "border-line bg-surface text-muted hover:border-brand-400/50 hover:text-ink",
                 )}
               >
@@ -548,7 +548,7 @@ export function NutritionPreferencesStep({
                       removeFoodToAvoid(conflict.resolution.value);
                     }
                   }}
-                  className="shrink-0 rounded-pill border border-danger-200 bg-surface px-3.5 py-1.5 text-xs font-semibold text-danger-700 transition-colors hover:bg-danger-50"
+                  className="shrink-0 rounded-pill border border-danger-500/30 bg-surface px-3.5 py-1.5 text-xs font-semibold text-danger-700 transition-colors hover:bg-danger-50"
                 >
                   {conflict.resolution.label}
                 </button>
@@ -646,7 +646,7 @@ function NutritionAside() {
         </ul>
 
         {completion.nutritionComplete && (
-          <div className="mt-4 rounded-[10px] bg-brand-50 p-3 text-xs leading-relaxed text-brand-300">
+          <div className="mt-4 rounded-[10px] bg-brand-50 p-3 text-xs leading-relaxed text-brand-400">
             Goal: <strong>{GOALS.find((g) => g.id === profile.nutritionalInformation.primaryGoal)?.label}</strong>
             {" · "}Diet: <strong>{DIETARY_TYPES.find((d) => d.id === profile.dietaryPreferences.dietaryType)?.label}</strong>
           </div>

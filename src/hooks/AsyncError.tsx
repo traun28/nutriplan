@@ -23,7 +23,7 @@ export function AsyncError({
         <button
           type="button"
           onClick={onRetry}
-          className="mt-3 inline-flex items-center gap-1.5 rounded-pill border border-danger-200 bg-surface px-3.5 py-1.5 text-xs font-semibold text-danger-700 transition-colors hover:bg-danger-50"
+          className="mt-3 inline-flex items-center gap-1.5 rounded-pill border border-danger-500/30 bg-surface px-3.5 py-1.5 text-xs font-semibold text-danger-700 transition-colors hover:bg-danger-50"
         >
           Retry
         </button>

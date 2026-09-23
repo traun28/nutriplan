@@ -66,7 +66,7 @@ export function PlannedMealsCard({
             return (
               <li key={meal.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
                 <div className="min-w-0">
-                  <p className="text-[11px] font-bold uppercase tracking-wide text-brand-300">
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-brand-400">
                     {meal.label} · {formatTime(meal.time)}
                   </p>
                   <p className="truncate text-sm font-semibold text-ink">{meal.name}</p>

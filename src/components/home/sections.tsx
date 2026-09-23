@@ -43,7 +43,7 @@ const INTRO_POINTS = [
 export function HomeIntro() {
   return (
     <section className="border-y border-line bg-surface">
-      <div className="page-container py-12 sm:py-16">
+      <div className="page-container py-10 sm:py-14">
         <Reveal>
           <SectionHeader
             eyebrow="What is this?"
@@ -51,7 +51,7 @@ export function HomeIntro() {
             description="The Personalised Diet Planner takes the guesswork out of healthy eating. Instead of a generic chart, it builds a plan around you — your body, your routine, your taste, and your restrictions."
           />
         </Reveal>
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
           {INTRO_POINTS.map((point, index) => (
             <Reveal key={point.title} delay={index * 90}>
               <div className="h-full rounded-card border border-line bg-canvas p-6">
@@ -123,7 +123,7 @@ const WORKFLOW_STEPS = [
 export function HowItWorks() {
   return (
     <section id="how-it-works" className="scroll-mt-24">
-      <div className="page-container py-12 sm:py-16">
+      <div className="page-container py-10 sm:py-14">
         <Reveal>
           <SectionHeader
             eyebrow="How it works"
@@ -132,7 +132,7 @@ export function HowItWorks() {
           />
         </Reveal>
 
-        <ol className="mt-12 grid gap-5 md:grid-cols-5">
+        <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {WORKFLOW_STEPS.map((step, index) => (
             <Reveal key={step.number} delay={index * 80} className="h-full">
               <li className="relative flex h-full flex-col rounded-card border border-line bg-surface p-5 shadow-card">
@@ -217,7 +217,7 @@ const FEATURES = [
 export function Features() {
   return (
     <section id="features" className="scroll-mt-24 border-y border-line bg-surface">
-      <div className="page-container py-12 sm:py-16">
+      <div className="page-container py-10 sm:py-14">
         <Reveal>
           <SectionHeader
             eyebrow="Key features"
@@ -226,7 +226,7 @@ export function Features() {
           />
         </Reveal>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((feature, index) => (
             <Reveal key={feature.title} delay={(index % 3) * 80}>
               <article className="group h-full rounded-card border border-line bg-canvas p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-400/50 hover:shadow-lift">
@@ -267,7 +267,7 @@ const WHY_POINTS = [
 export function WhyPersonalisation() {
   return (
     <section>
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 lg:grid-cols-2">
+      <div className="page-container grid items-center gap-8 py-14 lg:grid-cols-2">
         <Reveal>
           <div>
             <SectionHeader
@@ -314,9 +314,9 @@ export function WhyPersonalisation() {
 
 export function CTASection() {
   return (
-    <section className="px-5 pb-24">
+    <section className="page-container pb-16">
       <Reveal>
-        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-card bg-brand-800 px-8 py-16 text-center shadow-lift sm:px-12">
+        <div className="relative overflow-hidden rounded-card bg-brand-800 px-6 py-12 text-center shadow-lift sm:px-10">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-brand-600/60 blur-3xl"
@@ -334,7 +334,7 @@ export function CTASection() {
               saved as you go — you can review everything before any plan is
               generated.
             </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Link
                 href="/planner"
                 className="inline-flex items-center gap-2 rounded-pill bg-white px-7 py-3.5 text-base font-semibold text-[#06231a] shadow-[0_8px_20px_rgba(0,0,0,0.2)] transition-all duration-200 hover:bg-brand-50 hover:shadow-[0_10px_24px_rgba(0,0,0,0.25)] active:translate-y-px"

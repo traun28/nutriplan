@@ -40,9 +40,9 @@ import { NextStepCard } from "@/components/common/NextStepCard";
 import { cn } from "@/lib/cn";
 
 const BMI_TONE: Record<string, string> = {
-  underweight: "bg-accent-200/50 text-accent-300 border-accent-300",
+  underweight: "bg-accent-200/50 text-accent-300 border-accent-300/40",
   normal: "bg-brand-50 text-brand-400 border-brand-400/25",
-  overweight: "bg-accent-200/50 text-accent-300 border-accent-300",
+  overweight: "bg-accent-200/50 text-accent-300 border-accent-300/40",
   obesity: "bg-danger-50 text-danger-700 border-danger-500/30",
 };
 
@@ -132,7 +132,7 @@ function NutritionDashboardView() {
       {isStale && (
         <div
           role="status"
-          className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-card border border-accent-300/40/30 bg-accent-200/30 p-4"
+          className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-card border border-accent-300/40 bg-accent-200/30 p-4"
         >
           <div className="flex items-start gap-3">
             <TriangleAlert
@@ -152,7 +152,7 @@ function NutritionDashboardView() {
 
       {/* -------------------- missing information --------------------- */}
       {errors.length > 0 && (
-        <Card className="mb-6 border-accent-300/40/30">
+        <Card className="mb-6 border-accent-300/40">
           <CardBody>
             <div className="flex items-center gap-2">
               <CircleAlert
@@ -675,7 +675,7 @@ function DetailRow({
 }) {
   return (
     <div className="rounded-[10px] border border-line bg-canvas p-3.5">
-      <dt className="text-xs font-bold uppercase tracking-wide text-brand-400">
+      <dt className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">
         {term}
       </dt>
       <dd>

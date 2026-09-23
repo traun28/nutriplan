@@ -77,7 +77,7 @@ export function NextStepCard({
     <Card
       className={cn(
         status.needsAttention
-          ? "border-accent-300/40/30 bg-accent-200/20"
+          ? "border-accent-300/40 bg-accent-200/20"
           : "border-brand-400/25 bg-brand-50/60",
         className,
       )}

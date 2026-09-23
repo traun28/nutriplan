@@ -62,7 +62,7 @@ export function DatasetAnalyzer({ dataset, onClose, onChanged }: Props) {
       <CardBody className="space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-xs font-bold uppercase tracking-wide text-brand-400">Student Dataset Analyzer</p>
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">Student Dataset Analyzer</p>
             <h2 className="mt-1 truncate text-xl font-bold text-ink">{dataset.displayName}</h2>
             <p className="mt-1 text-xs text-muted">
               {dataset.fileName} · {dataset.recordCount.toLocaleString()} record{dataset.recordCount === 1 ? "" : "s"} · uploaded {new Date(dataset.createdAt).toLocaleDateString()}
@@ -98,7 +98,7 @@ export function DatasetAnalyzer({ dataset, onClose, onChanged }: Props) {
                 const next = TABS[(i + (e.key === "ArrowRight" ? 1 : TABS.length - 1)) % TABS.length][0];
                 setTab(next);
               }}
-              className={cn("rounded-pill px-4 py-1.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300", tab === id ? "bg-brand-500 text-white" : "text-muted hover:text-ink")}
+              className={cn("rounded-pill px-4 py-1.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500", tab === id ? "bg-brand-700 text-white" : "text-muted hover:text-ink")}
             >
               {label}
             </button>

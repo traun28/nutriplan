@@ -16,7 +16,7 @@ const dietaryTypeLabel = (id: string) => labelFor(DIETARY_TYPES, id);
 export function PageShell({ eyebrow, title, intro, badges, children }: { eyebrow: string; title: string; intro: string; badges?: ReactNode; children: ReactNode }) {
   return (
     <div className="page-container page-section">
-      <header className="mb-5">
+      <header className="mb-6">
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">{eyebrow}</p>
         <h1 className="mt-1.5 text-2xl font-bold tracking-tight text-ink sm:text-[1.7rem]">{title}</h1>
         <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted">{intro}</p>
@@ -32,7 +32,7 @@ export function Notice({ tone, message, action }: { tone: "error" | "warning" | 
     <div
       role={tone === "error" ? "alert" : "status"}
       className={cn(
-        "mb-5 flex flex-wrap items-center justify-between gap-3 rounded-card border p-4 text-sm",
+        "mb-6 flex flex-wrap items-center justify-between gap-3 rounded-card border p-4 text-sm",
         tone === "error" && "border-danger-500/30 bg-danger-50/60 text-danger-700",
         tone === "warning" && "border-accent-300/40 bg-accent-200/30 text-ink",
         tone === "info" && "border-brand-100 bg-brand-50/60 text-ink",
@@ -58,7 +58,7 @@ export function FavoriteButton({ active, onToggle, busy = false, size = "md", na
       title={active ? "Saved" : "Save recipe"}
       disabled={busy}
       className={cn(
-        "grid shrink-0 place-items-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 disabled:opacity-60",
+        "grid shrink-0 place-items-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-60",
         size === "sm" ? "h-8 w-8" : "h-10 w-10",
         active ? "border-danger-500/30 bg-danger-50 text-danger-600" : "border-line bg-surface text-muted hover:text-danger-600",
       )}
@@ -75,7 +75,7 @@ export function RecipeCard({ recipe, favorite, onToggleFavorite, footer }: { rec
         <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase tracking-wide text-brand-400">{categoryLabel(recipe.category)}</p>
           <h3 className="mt-0.5 text-base font-bold leading-snug text-ink">
-            <Link href={`/recipes/${recipe.id}`} className="rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 hover:text-brand-600">
+            <Link href={`/recipes/${recipe.id}`} className="rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 hover:text-brand-600">
               {recipe.name}
             </Link>
           </h3>
@@ -85,7 +85,7 @@ export function RecipeCard({ recipe, favorite, onToggleFavorite, footer }: { rec
       <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">
         {recipe.description ?? `Ingredients: ${recipe.ingredientNames.slice(0, 5).join(", ")}${recipe.ingredientNames.length > 5 ? "…" : ""}`}
       </p>
-      <dl className="mt-3 grid grid-cols-4 gap-2 rounded-lg bg-canvas px-3 py-2 text-center">
+      <dl className="mt-3 grid grid-cols-2 gap-2 rounded-[10px] bg-canvas px-3 py-2 text-center sm:grid-cols-4">
         <Macro label="kcal" value={recipe.calories} />
         <Macro label="protein" value={`${recipe.proteinGrams}g`} />
         <Macro label="carbs" value={`${recipe.carbohydrateGrams}g`} />

@@ -69,7 +69,7 @@ const STATUS_UI: Record<string, { label: string; cls: string }> = {
   staged: { label: "Awaiting import", cls: "border-accent-300/40 bg-accent-200/30 text-accent-300" },
   needs_review: {
     label: "Needs review",
-    cls: "border-accent-300/40/30 bg-accent-200/30 text-accent-300",
+    cls: "border-accent-300/40 bg-accent-200/30 text-accent-300",
   },
   failed: { label: "Failed", cls: "border-danger-500/30 bg-danger-50 text-danger-700" },
   unsupported: {
@@ -210,9 +210,9 @@ export function DatasetLibrary({
 
       {filtered.length === 0 ? (
         <Card>
-          <CardBody className="py-10 text-center">
-            <FileText className="mx-auto h-8 w-8 text-muted" aria-hidden="true" />
-            <p className="mt-3 text-sm font-semibold text-ink">
+          <CardBody className="py-6 text-center">
+            <FileText className="mx-auto h-6 w-6 text-muted" aria-hidden="true" />
+            <p className="mt-2 text-sm font-semibold text-ink">
               {datasets.length === 0 ? "No datasets yet" : "No datasets match your search"}
             </p>
             <p className="mt-1 text-xs text-muted">
@@ -323,7 +323,7 @@ export function DatasetLibrary({
                       <div className="mt-4 space-y-4 border-t border-line pt-4">
                         {dataset.quality && (
                           <div>
-                            <p className="text-xs font-bold uppercase tracking-wide text-muted">
+                            <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted">
                               Data quality
                             </p>
                             <dl className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -343,7 +343,7 @@ export function DatasetLibrary({
 
                         {dataset.statistics && (
                           <div>
-                            <p className="text-xs font-bold uppercase tracking-wide text-muted">
+                            <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted">
                               Analytics
                             </p>
                             <dl className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -367,7 +367,7 @@ export function DatasetLibrary({
 
                         {dataset.columns.length > 0 && (
                           <div>
-                            <p className="text-xs font-bold uppercase tracking-wide text-muted">
+                            <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted">
                               Columns ({dataset.columns.length})
                             </p>
                             <div className="mt-2 flex flex-wrap gap-1.5">
@@ -385,11 +385,11 @@ export function DatasetLibrary({
 
                         {dataset.previewRows.length > 0 && (
                           <div>
-                            <p className="text-xs font-bold uppercase tracking-wide text-muted">
+                            <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted">
                               Preview (first {dataset.previewRows.length} rows)
                             </p>
                             <div className="mt-2 table-scroll rounded-[10px] border border-line">
-                              <table className="w-full min-w-[40rem] border-collapse text-xs">
+                              <table aria-label="Dataset preview rows" className="w-full min-w-[40rem] border-collapse text-xs">
                                 <thead className="bg-canvas">
                                   <tr>
                                     {dataset.columns.slice(0, 8).map((column) => (

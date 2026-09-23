@@ -107,7 +107,7 @@ export function ImportReview({ datasetId, fileName, initialReport, fileWarnings,
       <CardBody className="space-y-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wide text-brand-400">Step 2 of 3 · Validate &amp; review</p>
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-400">Step 2 of 3 · Validate &amp; review</p>
             <h3 className="mt-1 text-base font-bold text-ink">{fileName}</h3>
             <p className="mt-1 text-xs text-muted">
               Nothing has been imported yet. Check the column mapping and the quality report, then choose <strong>Import valid rows</strong> or <strong>Cancel upload</strong>.
@@ -138,7 +138,7 @@ export function ImportReview({ datasetId, fileName, initialReport, fileWarnings,
 
         {/* ---- Quality summary ---- */}
         <section aria-labelledby="quality-heading">
-          <h4 id="quality-heading" className="text-xs font-bold uppercase tracking-wide text-muted">Data quality report</h4>
+          <h4 id="quality-heading" className="text-xs font-bold uppercase tracking-[0.14em] text-muted">Data quality report</h4>
           <dl className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
             {[
               ["Total rows", q.totalRows],
@@ -169,7 +169,7 @@ export function ImportReview({ datasetId, fileName, initialReport, fileWarnings,
         {/* ---- Column mapping ---- */}
         <section aria-labelledby="columns-heading">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h4 id="columns-heading" className="text-xs font-bold uppercase tracking-wide text-muted">Column validation &amp; mapping</h4>
+            <h4 id="columns-heading" className="text-xs font-bold uppercase tracking-[0.14em] text-muted">Column validation &amp; mapping</h4>
             <div className="flex flex-wrap gap-1.5 text-[11px]">
               <Badge tone="brand">Required {report.columns.required.filter((r) => r.present).length}/{report.columns.required.length}</Badge>
               <Badge tone="neutral">Optional {report.columns.optional.filter((r) => r.present).length}/{report.columns.optional.length}</Badge>
@@ -182,7 +182,7 @@ export function ImportReview({ datasetId, fileName, initialReport, fileWarnings,
             </p>
           )}
           <div className="mt-2 table-scroll rounded-[10px] border border-line">
-            <table className="w-full min-w-[560px] text-left text-xs">
+            <table aria-label="Column validation and mapping" className="w-full min-w-[560px] text-left text-xs">
               <thead className="bg-canvas text-[11px] uppercase tracking-wide text-muted">
                 <tr>
                   <th scope="col" className="px-3 py-2">Column in file</th>
@@ -204,7 +204,7 @@ export function ImportReview({ datasetId, fileName, initialReport, fileWarnings,
                           id={`map-${header}`}
                           value={current}
                           onChange={(e) => changeMapping(header, e.target.value)}
-                          className="w-full max-w-[220px] rounded-[8px] border border-line bg-surface px-2 py-1.5 text-xs text-ink focus:border-brand-500 focus:outline-none"
+                          className="w-full max-w-[220px] rounded-[10px] border border-line bg-surface px-2 py-1.5 text-xs text-ink focus:border-brand-500 focus:outline-none"
                         >
                           <option value="">— Not imported —</option>
                           {FIELD_CATALOGUE.map((spec) => (
@@ -241,7 +241,7 @@ export function ImportReview({ datasetId, fileName, initialReport, fileWarnings,
         {/* ---- Per-field completeness ---- */}
         <Collapsible title={`Missing-data analysis by field (${report.fields.filter((f) => f.mapped && f.missing > 0).length} fields with gaps)`} open={open.fields} onToggle={() => setOpen((o) => ({ ...o, fields: !o.fields }))}>
           <div className="table-scroll rounded-[10px] border border-line">
-            <table className="w-full min-w-[520px] text-left text-xs">
+            <table aria-label="Missing data analysis by field" className="w-full min-w-[520px] text-left text-xs">
               <thead className="bg-canvas text-[11px] uppercase tracking-wide text-muted">
                 <tr>
                   <th scope="col" className="px-3 py-2">Field</th>
@@ -287,7 +287,7 @@ export function ImportReview({ datasetId, fileName, initialReport, fileWarnings,
         {report.errors.length > 0 && (
           <Collapsible title={`Row error report (${report.errors.length}${report.errorsTruncated ? "+" : ""})`} open={open.errors} onToggle={() => setOpen((o) => ({ ...o, errors: !o.errors }))}>
             <div className="max-h-72 overflow-auto rounded-[10px] border border-line">
-              <table className="w-full min-w-[560px] text-left text-xs">
+              <table aria-label="Row error report" className="w-full min-w-[560px] text-left text-xs">
                 <thead className="sticky top-0 bg-canvas text-[11px] uppercase tracking-wide text-muted">
                   <tr>
                     <th scope="col" className="px-3 py-2">Row</th>
@@ -314,9 +314,9 @@ export function ImportReview({ datasetId, fileName, initialReport, fileWarnings,
 
         {/* ---- Preview ---- */}
         <section aria-labelledby="preview-heading">
-          <h4 id="preview-heading" className="text-xs font-bold uppercase tracking-wide text-muted">Import preview (first {report.preview.length} rows as they will be stored)</h4>
+          <h4 id="preview-heading" className="text-xs font-bold uppercase tracking-[0.14em] text-muted">Import preview (first {report.preview.length} rows as they will be stored)</h4>
           <div className="mt-2 table-scroll rounded-[10px] border border-line">
-            <table className="w-full min-w-[720px] text-left text-xs">
+            <table aria-label="Import preview of the rows as they will be stored" className="w-full min-w-[720px] text-left text-xs">
               <thead className="bg-canvas text-[11px] uppercase tracking-wide text-muted">
                 <tr>
                   <th scope="col" className="px-3 py-2">Row</th>
@@ -407,7 +407,7 @@ export function ImportReview({ datasetId, fileName, initialReport, fileWarnings,
 function Collapsible({ title, open, onToggle, children }: { title: string; open: boolean; onToggle: () => void; children: React.ReactNode }) {
   return (
     <section className="rounded-[10px] border border-line">
-      <button type="button" onClick={onToggle} aria-expanded={open} className="flex w-full items-center justify-between px-3 py-2 text-left text-xs font-bold uppercase tracking-wide text-muted hover:text-ink">
+      <button type="button" onClick={onToggle} aria-expanded={open} className="flex w-full items-center justify-between px-3 py-2 text-left text-xs font-bold uppercase tracking-[0.14em] text-muted hover:text-ink">
         {title}
         <ChevronDown className={cn("h-4 w-4 transition-transform", open && "rotate-180")} aria-hidden="true" />
       </button>
