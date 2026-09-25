@@ -13,6 +13,7 @@
  *    a queue of hung requests and eventually an exhausted pool. Bounded
  *    timeouts make an outage fail fast and report itself instead.
  */
+import { logDatabaseError } from "@/db/errors";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool, type PoolConfig } from "pg";
 
@@ -67,7 +68,7 @@ function createPool(): Pool {
   // `pg` emits that on the pool; with no listener it becomes an unhandled
   // 'error' event and takes the whole Node process down.
   created.on("error", (error) => {
-    console.error("[db] idle client error:", error.message);
+    logDatabaseError("idle client error", error);
   });
   return created;
 }
