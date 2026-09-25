@@ -41,6 +41,9 @@ const poolConfig: PoolConfig = databaseUrl
       max: 10,
       // Allow Neon to wake up without waiting indefinitely for a connection.
       connectionTimeoutMillis: 30_000,
+      // Connecting is not the same as completing a query: bound a stalled
+      // authenticated request even if PostgreSQL is reachable but blocked.
+      query_timeout: 30_000,
       // Release sockets that sit idle, so a restarted database is reconnected.
       idleTimeoutMillis: 30_000,
       application_name: "nutriplan",
