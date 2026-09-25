@@ -144,7 +144,7 @@ interface ProfileContextValue {
 const ProfileContext = createContext<ProfileContextValue | null>(null);
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [profile, setProfile] = useState<UserProfile>(() => createEmptyProfile());
   const [savedProfile, setSavedProfile] = useState<UserProfile | null>(null);
   const [hydrated, setHydrated] = useState(false);
@@ -163,10 +163,19 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
    *
    *   1. Read localStorage synchronously and mark hydrated immediately.
    *      This paints real content on the very first frame.
-   *   2. Reconcile with the server (source of truth when signed in).
+   *   2. Reconcile with the server (source of truth when signed in) — see
+   *      the `user` effect below.
    *
    * A watchdog also guarantees `hydrated` becomes true even if the local
    * read were to fail unexpectedly, so no screen can spin forever.
+   *
+   * The server read is deliberately NOT issued here: `/api/profile` requires
+   * a session, so calling it on mount meant every signed-out page view sent
+   * an authenticated request that was (correctly) answered with 401 — noise
+   * in the production logs and a misleading "working from this browser's
+   * copy" state. The reconcile runs from the effect that reacts to the
+   * resolved session instead, so the request always carries a real session
+   * and signed-out visitors simply use their local copy.
    */
   useEffect(() => {
     let cancelled = false;
@@ -200,34 +209,6 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    // Reconcile with the server so the same data is available on any
-    // device and on the external deployment.
-    (async () => {
-      try {
-        const data = await apiClient.get<{
-          profile: UserProfile | null;
-          processed: unknown;
-          plan: unknown;
-        }>("/api/profile");
-        if (cancelled) return;
-        if (data.profile) {
-          setProfile(rehydrateProfile(data.profile));
-          setSavedProfile(rehydrateProfile(data.profile));
-        }
-        setSyncError(null);
-      } catch {
-        // Offline / not signed in: the local copy remains fully usable.
-        if (!cancelled) {
-          setSyncError("Working from this browser's saved copy.");
-        }
-      } finally {
-        if (!cancelled) {
-          clearTimeout(watchdog);
-          setSynced(true);
-        }
-      }
-    })();
-
     return () => {
       cancelled = true;
       clearTimeout(watchdog);
@@ -250,11 +231,22 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       })
       .catch(() => {
         if (!cancelled) setSyncError("Your account data could not be loaded.");
+      })
+      .finally(() => {
+        if (!cancelled) setSynced(true);
       });
     return () => {
       cancelled = true;
     };
   }, [user]);
+
+  // A visitor with no session has nothing to reconcile with the server, so
+  // the sync state resolves as soon as the session check finishes.
+  useEffect(() => {
+    if (authLoading || user) return;
+    const task = setTimeout(() => setSynced(true), 0);
+    return () => clearTimeout(task);
+  }, [authLoading, user]);
 
   useEffect(
     () => () => {

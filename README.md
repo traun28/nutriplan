@@ -166,6 +166,10 @@ following commands (all exist in `package.json`) plus manual/API-level testing:
 | `npm run lint` | ESLint (`eslint-config-next`) — no rules are disabled globally |
 | `npm run build` | Production compilation of every page and route |
 | `npm run engine:check` | 34 regression checks on the nutrition engine (BMI/energy/macro edge cases: null, zero, negative, NaN, Infinity, extreme values), diet generator, safety validator and food-database integrity |
+| `npm run test:planner` | 68 checks on the 7-day planner: every dietary pattern and body type generates a valid week (including high calorie targets), allergies/intolerances/dietary patterns are never broken, start-date anchoring, day regeneration and the safe "too restricted" failure path |
+| `npm run test:flow` | End-to-end HTTP flow against a real production server (`npm run build` first): register → session → `/api/auth/me` → `/api/profile` → `POST /api/meal-plans` → 7-day plan saved → logout → login again, plus plan ownership isolation. Starts its own throwaway PostgreSQL unless `BASE_URL` is set |
+| `npm run test:bootstrap` | Migration/bootstrap races across independent serverless-like instances |
+| `npm test` | `engine:check` + `test:planner` (both need no server or database) |
 
 Manual QA scripts and results are recorded in `docs/TESTING.md`. Synthetic
 fixtures for the dataset and attachment features live in `scripts/fixtures/`.
@@ -254,7 +258,10 @@ src/
 │   └── planSync.ts         Shared /api/plan loader (deduplicates start-up requests)
 └── types/                  Canonical data models (profile.ts, attachment.ts, …)
 
-scripts/engineCheck.ts      Engine regression checks (npm run engine:check)
+scripts/engineCheck.ts        Engine regression checks (npm run engine:check)
+scripts/plannerEngineCheck.ts 7-day planner checks (npm run test:planner)
+scripts/apiFlowCheck.ts       End-to-end API flow check (npm run test:flow)
+scripts/profileFixtures.ts    Shared complete-profile fixtures for both checks
 scripts/importDataset.ts    Offline participant-dataset importer (Node 22+)
 scripts/testAttachments.mjs Attachment pipeline smoke test (needs a running server)
 scripts/fixtures/           Synthetic fixtures only — never real people
@@ -506,6 +513,13 @@ because the food database has no fibre values.
   over the existing `budget` food tag only — there are no prices.
 - **Day selector → meals → Daily total** with `consumed / target` indicators;
   **Weekly summary** (averages, meals planned, days on calorie target).
+- **One or two dishes per meal** — portions are bounded by each food's own
+  realistic maximum, so when the slot's share of a large calorie target cannot
+  be reached with a single dish, a second compatible dish is added from the
+  same restriction-filtered pool (never against an allergy or dietary rule).
+- **Everything comes from the saved profile** — the page sends only the plan
+  name, budget, optional start date and the pantry toggle; the server loads
+  the profile, nutrition targets, restrictions and pantry from the database.
 - **Regenerate plan / day / meal** — each changes only its own scope.
 - **Replace meal** — alternatives pass the same allergy / intolerance /
   dietary filters, are scaled to the slot's calorie budget and carry
@@ -536,6 +550,10 @@ on every route, the user id is never read from the client):
 
 Failure codes: `PROFILE_INCOMPLETE` / `TARGETS_UNAVAILABLE` (409),
 `INSUFFICIENT_OPTIONS` / `VALIDATION_FAILED` (422), database unavailable (503).
+An `INSUFFICIENT_OPTIONS` response explains the binding limit with numbers —
+how many foods are compatible and excluded, how many calories the compatible
+meals can realistically build, and whether the daily target or the
+restrictions are what stopped it — instead of a generic message.
 
 ## 24. Recipes, grocery list & pantry (Phase 4)
 

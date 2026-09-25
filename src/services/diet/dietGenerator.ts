@@ -45,7 +45,11 @@ import {
   type PlannerSlot,
 } from "@/services/diet/config";
 import { PREP_TIME_LIMITS } from "@/services/diet/config";
-import { filterFoods, foodsForCategory } from "@/services/diet/filters";
+import {
+  filterFoods,
+  foodsForCategory,
+  type FoodRejection,
+} from "@/services/diet/filters";
 import { collectHabitFoods, scoreFood } from "@/services/diet/scoring";
 import { validateGeneratedDietPlan } from "@/services/diet/planValidator";
 import { buildRecommendations } from "@/services/diet/recommendations";
@@ -222,6 +226,20 @@ const PREFERRED_TAG_BOOST = 0.06;
 /** Phase 4 — maximum nudge when every ingredient of a food is in the pantry. */
 const PANTRY_BOOST_MAX = 0.08;
 
+/**
+ * The most dishes one planned meal may combine.
+ *
+ * Portions are bounded twice (the food's own realistic `maxServings` and the
+ * global `PORTION_BOUNDS`), so a single dish has a calorie ceiling. For a
+ * large daily target — or a day split across only two or three meals — one
+ * dish per meal cannot reach the slot's share of the target, and every
+ * attempt used to fail as "too few compatible options" even when nothing was
+ * excluded. A second compatible dish (dal with rice, curd with paratha)
+ * closes that gap using the same food database and the same restriction
+ * filter.
+ */
+export const MAX_ITEMS_PER_MEAL = 2;
+
 /** Phase 4 — 0..PANTRY_BOOST_MAX, proportional to the share of ingredients on hand. */
 export function pantryBoost(food: FoodItemRecord, preferIngredients: string[] | undefined): number {
   if (!preferIngredients || preferIngredients.length === 0 || food.ingredients.length === 0) return 0;
@@ -348,8 +366,12 @@ function buildPlan(
       success: false,
       reason: "INSUFFICIENT_OPTIONS",
       message:
-        "There are not enough suitable meals matching your current restrictions.",
-      details: summariseRejections(rejections),
+        "None of the foods in the database match your current restrictions, so no plan can be built.",
+      details: [
+        compatibleSummary(allowed),
+        ...summariseRejections(rejections),
+        ...restrictionAdvice(profile),
+      ],
       offendingFoodIds: [],
     };
   }
@@ -427,18 +449,67 @@ function buildPlan(
 
     const servings = chooseServings(food, slotCalories);
     const item = buildPlannedItem(food, servings);
+    const items: PlannedFoodItem[] = [item];
 
     usedFoodIds.add(food.id);
     food.ingredients.forEach((ingredient) => usedIngredients.add(ingredient));
+
+    // One dish is not always enough: portions are capped by the food's own
+    // realistic maximum, so a big calorie target leaves part of this slot's
+    // budget unfilled. When that happens the meal gains a second compatible
+    // dish, chosen by the same scoring from the same restriction-filtered
+    // pool — a dish may never be added against a restriction.
+    const singleDishCapacity =
+      food.calories * Math.min(PORTION_BOUNDS.max, food.maxServings);
+    if (
+      MAX_ITEMS_PER_MEAL > items.length &&
+      singleDishCapacity < slotCalories * (1 - PLAN_TOLERANCES.caloriePercent) &&
+      ranked.length > 1
+    ) {
+      const remainingCalories = slotCalories - item.calories;
+      const complement = ranked
+        .filter((candidate) => candidate.food.id !== food.id)
+        .map((candidate) => ({
+          food: candidate.food,
+          score: scoreFood(candidate.food, {
+            slotCalories: remainingCalories,
+            slotProtein: Math.max(0, slotProtein - item.proteinGrams),
+            profile,
+            habitFoods,
+            usedFoodIds,
+            usedIngredients,
+            datasetFitFor,
+          }).total,
+        }))
+        .sort((a, b) => b.score - a.score)[0];
+      if (complement) {
+        const complementItem = buildPlannedItem(
+          complement.food,
+          chooseServings(complement.food, remainingCalories),
+        );
+        // The second dish closes the gap; it must not push this meal over
+        // its own share of the calorie target.
+        if (
+          item.calories + complementItem.calories <=
+          slotCalories * (1 + PLAN_TOLERANCES.caloriePercent)
+        ) {
+          items.push(complementItem);
+          usedFoodIds.add(complement.food.id);
+          complement.food.ingredients.forEach((ingredient) =>
+            usedIngredients.add(ingredient),
+          );
+        }
+      }
+    }
 
     const userTime = profile.mealTimings[slot];
     meals.push(
       mealFromItems(
         slot,
-        [item],
+        items,
         userTime || DEFAULT_MEAL_TIMES[slot],
         share,
-        buildMealNote(food, profile),
+        buildMealNote(food, profile, items.length > 1),
       ),
     );
   }
@@ -449,7 +520,11 @@ function buildPlan(
       reason: "INSUFFICIENT_OPTIONS",
       message:
         "No compatible meals could be found for any part of your day with the current restrictions.",
-      details: summariseRejections(rejections),
+      details: [
+        compatibleSummary(pool),
+        ...summariseRejections(rejections),
+        ...restrictionAdvice(profile),
+      ],
       offendingFoodIds: [],
     };
   }
@@ -529,15 +604,20 @@ function buildPlan(
     dailyTotals.calories < targetCalories * (1 - PLAN_TOLERANCES.calorieHardPercent);
   if (emptySlots.length > 0 || severeShortfall) {
     if (emptySlots.length >= slots.length / 2 || severeShortfall) {
+      const report = shortfallReport({
+        allowed: pool,
+        rejections,
+        slots,
+        targetCalories,
+        plannedCalories: dailyTotals.calories,
+        emptySlots,
+        profile,
+      });
       return {
         success: false,
         reason: "INSUFFICIENT_OPTIONS",
-        message:
-          "Your current selections leave too few compatible meal options to build a balanced day.",
-        details: [
-          ...summariseRejections(rejections),
-          "Try reviewing your restrictions or adding more preferred foods.",
-        ],
+        message: report.message,
+        details: report.details,
         offendingFoodIds: [],
       };
     }
@@ -653,7 +733,11 @@ function balancePlan(
   }
 }
 
-function buildMealNote(food: FoodItemRecord, profile: UserProfile): string {
+function buildMealNote(
+  food: FoodItemRecord,
+  profile: UserProfile,
+  pairedDish = false,
+): string {
   const notes: string[] = [];
   if (
     profile.practicalConstraints.mealPreparationTime === "very_little" &&
@@ -665,7 +749,111 @@ function buildMealNote(food: FoodItemRecord, profile: UserProfile): string {
     (cuisine) => food.cuisines.includes(cuisine),
   );
   if (matchedCuisine) notes.push("Matches one of your preferred cuisines.");
+  if (pairedDish) {
+    notes.push(
+      "A second compatible dish is included so this meal reaches its share of your calorie target.",
+    );
+  }
   return notes.join(" ");
+}
+
+/**
+ * Explains how much of the food database is usable, in numbers — Part 6 of
+ * the planner requirements asks for the reason a plan cannot be built to be
+ * stated honestly instead of blaming restrictions that may not exist.
+ */
+function compatibleSummary(allowed: FoodItemRecord[]): string {
+  const excluded = FOOD_DATABASE.length - allowed.length;
+  return `${allowed.length} of ${FOOD_DATABASE.length} foods in the database are compatible with your profile${
+    excluded > 0 ? ` (${excluded} excluded)` : ""
+  }.`;
+}
+
+/** Advice that only mentions restrictions when the user actually declared any. */
+function restrictionAdvice(profile: UserProfile): string[] {
+  const advice: string[] = [];
+  const hasRestrictions =
+    profile.allergies.some((entry) => entry !== "none") ||
+    profile.intolerances.length > 0 ||
+    profile.foodsToAvoid.length > 0 ||
+    profile.dietaryPreferences.dietaryType !== "";
+  if (hasRestrictions) {
+    advice.push(
+      "Review your allergies, intolerances, dietary type and foods to avoid — a plan is never generated that breaks one of them.",
+    );
+  }
+  return advice;
+}
+
+/**
+ * Highest daily calories the compatible foods can build for the slots the
+ * plan actually uses: the two largest compatible dishes per slot (the meal
+ * size limit) at each dish's realistic maximum portion. Used only to explain
+ * a shortfall, never as a target.
+ */
+function estimateDailyCapacity(
+  allowed: FoodItemRecord[],
+  slots: PlannerSlot[],
+): number {
+  let total = 0;
+  for (const slot of slots) {
+    const capacities = foodsForCategory(allowed, SLOT_CATEGORY[slot])
+      .map((food) => food.calories * Math.min(PORTION_BOUNDS.max, food.maxServings))
+      .sort((a, b) => b - a);
+    for (const capacity of capacities.slice(0, MAX_ITEMS_PER_MEAL)) {
+      total += capacity;
+    }
+  }
+  return Math.round(total);
+}
+
+interface ShortfallContext {
+  allowed: FoodItemRecord[];
+  rejections: FoodRejection[];
+  slots: PlannerSlot[];
+  targetCalories: number;
+  plannedCalories: number;
+  emptySlots: PlannerSlot[];
+  profile: UserProfile;
+}
+
+/**
+ * Turns a shortfall into an accurate, actionable message: what was built,
+ * what the compatible foods can realistically build, and what removed the
+ * rest — so "too few compatible options" is only said when it is true.
+ */
+function shortfallReport(context: ShortfallContext): {
+  message: string;
+  details: string[];
+} {
+  const capacity = estimateDailyCapacity(context.allowed, context.slots);
+  const target = Math.round(context.targetCalories);
+  const capacityBound =
+    capacity < context.targetCalories * (1 - PLAN_TOLERANCES.calorieHardPercent);
+
+  const message = capacityBound
+    ? `Your daily calorie target (${target} kcal) is higher than the meals compatible with your profile can build (about ${capacity} kcal across ${
+        context.slots.length
+      } meal${context.slots.length === 1 ? "" : "s"}).`
+    : emptySlotsMessage(context.emptySlots);
+
+  const details = [
+    compatibleSummary(context.allowed),
+    ...summariseRejections(context.rejections),
+    `Planned ${Math.round(context.plannedCalories)} kcal against a ${target} kcal target; the compatible meals can build about ${capacity} kcal for the meals in this plan.`,
+    ...restrictionAdvice(context.profile),
+    "You can also adjust your daily calorie target in your profile, or plan more meals per day.",
+  ];
+  return { message, details };
+}
+
+function emptySlotsMessage(emptySlots: PlannerSlot[]): string {
+  if (emptySlots.length === 0) {
+    return "Your current selections leave too few compatible meal options to build a balanced day.";
+  }
+  return `No compatible option was available for ${emptySlots
+    .map((slot) => mealLabel(slot))
+    .join(", ")}, so a balanced day could not be built.`;
 }
 
 function summariseRejections(

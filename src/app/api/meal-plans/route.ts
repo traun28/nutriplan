@@ -3,7 +3,13 @@
  * plans; POST generates a new 7-day plan from the stored profile and
  * targets, validates it and saves it as the current plan.
  */
-import { currentUser, errorResponse, readJson, unauthorized } from "@/services/server/guard";
+import {
+  badRequest,
+  currentUser,
+  errorResponse,
+  readOptionalJson,
+  unauthorized,
+} from "@/services/server/guard";
 import { assertPlanSafe, loadPlanningContext, pantryIngredientsFor } from "@/services/server/mealPlanService";
 import { cleanPlanName, createMealPlan, listMealPlans } from "@/services/server/mealPlanRepository";
 import { generateWeeklyPlan } from "@/services/diet/weeklyPlanner";
@@ -33,7 +39,19 @@ interface CreateBody {
 export async function POST(request: Request) {
   const user = await currentUser();
   if (!user) return unauthorized();
-  const body = (await readJson<CreateBody>(request)) ?? {};
+
+  // Every field of this request is optional (the plan is built from the
+  // stored profile), but a body that was sent and cannot be parsed is a
+  // client error — not an empty request.
+  const parsed = await readOptionalJson<CreateBody>(request);
+  if (!parsed.ok) return badRequest("Invalid request.");
+  if (
+    parsed.value !== null &&
+    (typeof parsed.value !== "object" || Array.isArray(parsed.value))
+  ) {
+    return badRequest("Invalid request.");
+  }
+  const body = parsed.value ?? {};
 
   const startDate = body.startDate === null || body.startDate === undefined || body.startDate === ""
     ? null
