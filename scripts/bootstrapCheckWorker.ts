@@ -50,6 +50,33 @@ if (expectReady) {
     process.exit(1);
   }
   console.log(`[${label}] ready; users table queryable (${probe.rows[0].rows} rows)`);
+
+  // Optional (RUN_REGISTRATION_PROBE=1): prove that a real registration can
+  // proceed after initialisation — insert a user exactly like
+  // POST /api/auth/register does, read it back, then clean it up again.
+  if (process.env.RUN_REGISTRATION_PROBE === "1") {
+    const email = `bootstrap-probe-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@gmail.com`;
+    const inserted = (await db.execute(
+      sql`insert into "users" ("email", "password_hash", "full_name")
+          values (${email}, 'probe-hash', 'Bootstrap Probe')
+          returning "id"`,
+    )) as unknown as { rows?: { id?: number }[] };
+    if (typeof inserted.rows?.[0]?.id !== "number") {
+      console.error(`[${label}] registration probe: could not insert a user`);
+      process.exit(1);
+    }
+    const found = (await db.execute(
+      sql`select count(*)::int as n from "users" where "email" = ${email}`,
+    )) as unknown as { rows?: { n?: number }[] };
+    const cleaned = (await db.execute(
+      sql`delete from "users" where "email" = ${email}`,
+    )) as unknown as { rows?: unknown[] };
+    if (found.rows?.[0]?.n !== 1 || !Array.isArray(cleaned.rows)) {
+      console.error(`[${label}] registration probe: read-back or cleanup failed`);
+      process.exit(1);
+    }
+    console.log(`[${label}] registration probe: user inserted, read back and cleaned up`);
+  }
 } else {
   console.log(`[${label}] correctly not ready: ${status.detail}`);
 }

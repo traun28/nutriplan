@@ -19,7 +19,20 @@
  *      — it must honestly report "not ready", never a false success;
  *   E. a cold start whose working directory has no ./drizzle folder (what a
  *      serverless bundle looked like before `outputFileTracingIncludes`) —
- *      it must fail with the real cause instead of a generic error.
+ *      it must fail with the real cause instead of a generic error;
+ *   F. the production incident of 25 September, reproduced:
+ *      F1. a cold start while a *suspended peer* holds the session lock
+ *          (a connection that acquires the lock and then goes silent, exactly
+ *          what a Vercel instance that was suspended/killed without a clean
+ *          TCP close looks like server-side) — the cold start must NOT hang
+ *          for 30 s on 55P03; it must fail fast with a clear retryable state;
+ *      F2. the same, but against the already-migrated database — the cold
+ *          start must REUSE the applied schema instead of waiting at all;
+ *      F3. the peer is reaped (its connection closed) — the next cold start
+ *          must migrate, end "ready", and a real registration-shaped insert
+ *          into users must work (self-heal);
+ *   G. after everything, no advisory lock may remain: a probe connection
+ *      must be able to take the very same lock (and release it again).
  *
  * Exits non-zero on any failure.
  */
@@ -72,6 +85,9 @@ function freePort(): Promise<number> {
 interface WorkerResult {
   code: number | null;
   output: string;
+  /** Wall-clock milliseconds the worker took — the lock regression must stay
+   *  far below the old 30 s blocking `lock_timeout`. */
+  elapsedMs: number;
 }
 
 /** Runs one cold-start worker (fresh process ⇒ fresh module state). */
@@ -84,16 +100,21 @@ function runWorker(options: {
   /** Working directory of the worker — a directory without ./drizzle simulates
    *  a serverless bundle that was not shipped the migration folder. */
   cwd?: string;
+  /** Extra environment for the worker (e.g. DB_BOOTSTRAP_LOCK_WAIT_MS). */
+  env?: Record<string, string>;
 }): Promise<WorkerResult> {
   const url = `postgresql://${USER}:${PASSWORD}@${HOST}:${options.port}/${options.database}`;
   const env: NodeJS.ProcessEnv = { ...process.env };
   delete env.DB_AUTO_MIGRATE;
+  delete env.DB_BOOTSTRAP_LOCK_WAIT_MS;
   env.DATABASE_URL = url;
   env.DATABASE_URL_UNPOOLED = url; // migrations prefer the direct connection
   env.EXPECT_READY = options.expectReady ? "1" : "0";
   env.WORKER_LABEL = options.label;
   if (!options.autoMigrate) env.DB_AUTO_MIGRATE = "false";
+  if (options.env) Object.assign(env, options.env);
 
+  const startedAt = Date.now();
   return new Promise((resolve) => {
     const child = spawn(
       process.execPath,
@@ -106,7 +127,7 @@ function runWorker(options: {
     child.stderr.on("data", (chunk) => (output += chunk));
     child.on("close", (code) => {
       clearTimeout(timer);
-      resolve({ code, output });
+      resolve({ code, output, elapsedMs: Date.now() - startedAt });
     });
   });
 }
@@ -218,6 +239,101 @@ async function main() {
       );
     } finally {
       await rm(noDrizzleDir, { recursive: true, force: true });
+    }
+
+    /* ---------------------------------------------------------------- */
+    /* F. The 25 September production incident, reproduced: a *suspended */
+    /*    peer* holds the session-level advisory lock. The parent plays  */
+    /*    the peer — it acquires the exact lock key the bootstrap uses   */
+    /*    and then goes silent with the socket still open. Server-side   */
+    /*    that is indistinguishable from a Vercel function that was      */
+    /*    suspended or killed without a clean TCP close. (Advisory locks */
+    /*    are per-database, so the peer holds the key in each database   */
+    /*    it must block.)                                                */
+    /* ---------------------------------------------------------------- */
+    const peerKey =
+      "SELECT pg_try_advisory_lock(hashtext('nutriplan'), hashtext('drizzle_migrations')) AS acquired";
+    const peerRelease =
+      "SELECT pg_advisory_unlock(hashtext('nutriplan'), hashtext('drizzle_migrations')) AS released";
+    const peers: Client[] = [];
+    for (const databaseName of [MIGRATED_DB, UNMIGRATED_DB]) {
+      const peer = new Client({
+        connectionString: `postgresql://${USER}:${PASSWORD}@${HOST}:${port}/${databaseName}`,
+      });
+      await peer.connect();
+      const held = await peer.query<{ acquired: boolean }>(peerKey);
+      if (held.rows[0]?.acquired !== true) throw new Error(`test setup: peer could not hold the lock in ${databaseName}`);
+      peers.push(peer);
+    }
+
+    /* F1. Unmigrated database, peer holds the lock: the cold start must
+           fail FAST with a clear retryable state — never the old 30 s
+           blocking 55P03 hang. */
+    const staleBusy = await runWorker({
+      database: UNMIGRATED_DB, expectReady: false, label: "stale-peer boot", autoMigrate: true, port,
+      env: { DB_BOOTSTRAP_LOCK_WAIT_MS: "3000" },
+    });
+    check(
+      "Stale peer: cold start reports the retryable busy state (no 55P03, no 30 s hang)",
+      staleBusy.code === 0 &&
+        /still finishing the database bootstrap/i.test(staleBusy.output) &&
+        !/55P03|lock timeout/i.test(staleBusy.output),
+      `${Math.round(staleBusy.elapsedMs / 1000)}s — ${staleBusy.output.trim().split("\n").pop() ?? ""}`,
+    );
+    check(
+      "Stale peer: the wait stayed bounded (old code blocked ~30 s)",
+      staleBusy.elapsedMs < 20_000,
+      `${staleBusy.elapsedMs}ms`,
+    );
+
+    /* F2. Already-migrated database, peer holds the lock: the cold start
+           must REUSE the applied schema (the journal already covers the
+           local migrations) instead of waiting on the lock at all. */
+    const reuse = await runWorker({
+      database: MIGRATED_DB, expectReady: true, label: "reuse-migrated boot", autoMigrate: true, port,
+      env: { DB_BOOTSTRAP_LOCK_WAIT_MS: "3000" },
+    });
+    check(
+      "Suspended peer: cold start reuses the already-applied schema and ends ready",
+      reuse.code === 0,
+      `${Math.round(reuse.elapsedMs / 1000)}s — ${reuse.output.trim().split("\n").pop() ?? ""}`,
+    );
+
+    /* F3. The peer is reaped (its connections close, as TCP keepalive
+           eventually does in production): the next cold start must migrate
+           the empty database, end "ready", and a real registration-shaped
+           write to users must work — the self-heal. */
+    for (const peer of peers) {
+      await peer.query(peerRelease).catch(() => undefined);
+      await peer.end().catch(() => undefined);
+    }
+    const recovered = await runWorker({
+      database: UNMIGRATED_DB, expectReady: true, label: "post-peer boot", autoMigrate: true, port,
+      env: { RUN_REGISTRATION_PROBE: "1" },
+    });
+    check(
+      "After the peer is reaped: bootstrap self-heals and registration can proceed",
+      recovered.code === 0 && /registration probe: user inserted, read back and cleaned up/i.test(recovered.output),
+      recovered.output.trim().split("\n").filter((line) => line.startsWith("[")).slice(-2).join(" | "),
+    );
+
+    /* ---------------------------------------------------------------- */
+    /* G. No advisory lock may be left behind by any of the above. A     */
+    /*    probe connection must be able to take the very same key in     */
+    /*    every database (and releases it again immediately).            */
+    /* ---------------------------------------------------------------- */
+    for (const databaseName of [MIGRATED_DB, UNMIGRATED_DB]) {
+      const lockProbe = new Client({
+        connectionString: `postgresql://${USER}:${PASSWORD}@${HOST}:${port}/${databaseName}`,
+      });
+      await lockProbe.connect();
+      const free = await lockProbe.query<{ acquired: boolean }>(peerKey);
+      check(
+        `No advisory lock remains in ${databaseName}`,
+        free.rows[0]?.acquired === true,
+      );
+      if (free.rows[0]?.acquired === true) await lockProbe.query(peerRelease);
+      await lockProbe.end();
     }
   } finally {
     try {
