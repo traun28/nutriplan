@@ -19,6 +19,7 @@ import {
 import { promisify } from "node:util";
 import { and, eq, gt, lt } from "drizzle-orm";
 import { db, hasDatabase } from "@/db";
+import { logDatabaseError } from "@/db/errors";
 import { sessions, users } from "@/db/schema";
 import {
   deleteDevSession,
@@ -116,7 +117,12 @@ export async function getSessionUser(token: string | undefined): Promise<Session
       .limit(1);
 
     return rows[0] ?? null;
-  } catch {
+  } catch (error) {
+    // Without this, a broken session lookup is indistinguishable from "no
+    // session at all": every authenticated route answers 401 and asks the
+    // user to sign in again. Record the (sanitised) cause so a 401 in the
+    // production logs can be told apart from a genuine expired cookie.
+    logDatabaseError("session lookup failed", error);
     return null;
   }
 }

@@ -179,6 +179,12 @@ export function WeeklyPlanner() {
                 </h2>
               </div>
               <div className="p-5">
+                <p className="mb-4 text-xs leading-relaxed text-muted">
+                  Your plan will use your saved profile, nutrition targets, food preferences and dietary restrictions — nothing needs to be re-entered here.{" "}
+                  <a href="/planner" className="font-semibold text-brand-600 hover:underline">
+                    Edit my profile
+                  </a>
+                </p>
                 {!targetsReady && (
                   <Notice tone="warning" message="Your nutrition targets are not calculated yet. Generation will use your saved profile to calculate them, or you can review them first." action={<Button size="sm" variant="outline" href="/nutrition">Review targets</Button>} />
                 )}

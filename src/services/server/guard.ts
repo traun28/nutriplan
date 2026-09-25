@@ -46,6 +46,33 @@ export async function readJson<T>(request: Request): Promise<T | null> {
   }
 }
 
+/**
+ * Like `readJson`, but tells "no body was sent" apart from "the body was sent
+ * and is not valid JSON".
+ *
+ * `readJson` returns null for both, so a malformed request would be silently
+ * treated as an empty one and answered with a *business* error (or, worse,
+ * accepted). Routes whose fields are all optional use this instead, so a
+ * broken body is rejected as a client error while a body-less request still
+ * works.
+ */
+export async function readOptionalJson<T>(
+  request: Request,
+): Promise<{ ok: true; value: T | null } | { ok: false }> {
+  let text: string;
+  try {
+    text = await request.text();
+  } catch {
+    return { ok: false };
+  }
+  if (text.trim() === "") return { ok: true, value: null };
+  try {
+    return { ok: true, value: JSON.parse(text) as T };
+  } catch {
+    return { ok: false };
+  }
+}
+
 /** Translates a thrown value into a safe JSON error response. */
 export function errorResponse(error: unknown, fallback = "The server could not complete that request."): Response {
   const status =

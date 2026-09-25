@@ -11,7 +11,10 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "engine:check": "npx tsx --tsconfig tsconfig.json scripts/engineCheck.ts",
-    "test:bootstrap": "npx tsx --tsconfig tsconfig.json scripts/bootstrapCheck.ts"
+    "test:bootstrap": "npx tsx --tsconfig tsconfig.json scripts/bootstrapCheck.ts",
+    "test:planner": "npx tsx --tsconfig tsconfig.json scripts/plannerEngineCheck.ts",
+    "test:flow": "npx tsx --tsconfig tsconfig.json scripts/apiFlowCheck.ts",
+    "test": "npm run engine:check && npm run test:planner"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",
