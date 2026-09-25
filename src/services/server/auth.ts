@@ -20,6 +20,7 @@ import { promisify } from "node:util";
 import { and, eq, gt, lt } from "drizzle-orm";
 import { db, hasDatabase } from "@/db";
 import { sessions, users } from "@/db/schema";
+import { logDatabaseFailure } from "@/services/server/databaseErrors";
 import {
   deleteDevSession,
   findDevSession,
@@ -116,7 +117,8 @@ export async function getSessionUser(token: string | undefined): Promise<Session
       .limit(1);
 
     return rows[0] ?? null;
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("getSessionUser", error);
     return null;
   }
 }

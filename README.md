@@ -84,7 +84,8 @@ and descriptions only.
 
 | Variable | Required | Description |
 |---|---|---|
-| `DATABASE_URL` | **Yes** (production) | PostgreSQL connection string used by the app and by Drizzle (`npm run db:push`). Without it, `npm run dev` falls back to a temporary in-memory store for accounts and datasets; `npm run start` refuses to sign users in (HTTP 503) so nothing is silently lost. |
+| `DATABASE_URL` | **Yes** (production) | Pooled PostgreSQL connection for application queries (also used by the existing Drizzle CLI config). Without it, `npm run dev` falls back to a temporary in-memory store for accounts and datasets; `npm run start` refuses to sign users in (HTTP 503) so nothing is silently lost. |
+| `DATABASE_URL_UNPOOLED` | Recommended on Vercel + Neon | Direct/non-pooled PostgreSQL connection for automatic startup migrations. If unset, migrations fall back to `DATABASE_URL`; configure the direct URL to serialize concurrent serverless starts safely. |
 | `AI_PROVIDER` | No | `openai`, `anthropic` or `none` (default). Enables LLM-phrased assistant replies and dataset explanations. |
 | `AI_API_KEY` | No | Provider API key. Never logged, never returned to the client. |
 | `AI_MODEL` | No | Model name; defaults `gpt-4o-mini` / `claude-3-5-haiku-latest`. |
@@ -215,8 +216,8 @@ Any Node host that can run `next start` and reach a PostgreSQL database
 (Vercel + Neon, Render, Railway, Fly.io, a VPS). Static export is **not**
 supported — authentication, file processing and the API are server routes.
 
-1. Set `DATABASE_URL` (and optional `AI_*`) in the host's environment — never commit them.
-2. Run `npm ci && npm run build` (and `npm run db:push` once per schema change, from a machine that can reach the database).
+1. Set `DATABASE_URL` to the pooled connection and, for Neon, `DATABASE_URL_UNPOOLED` to the direct connection (and optional `AI_*`) in the host's environment — never commit them. At startup, committed Drizzle migrations use the direct connection while API/auth queries use the pooled one. Without `DATABASE_URL_UNPOOLED`, startup migrations fall back to `DATABASE_URL`. Set `DB_AUTO_MIGRATE=false` only if migrations are managed separately.
+2. Run `npm ci && npm run build`. The existing Drizzle CLI config (`npm run db:push`) still reads `DATABASE_URL`; it is not run as part of this deployment fix.
 3. Start with `npm run start` behind HTTPS. The session cookie is `httpOnly`,
    `sameSite=lax` and `secure` in production, so plain HTTP will not keep users signed in.
 4. Health check: `GET /api/health` → `{ ok: true, database: "connected" }`.

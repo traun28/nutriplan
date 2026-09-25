@@ -7,13 +7,13 @@
  * schema state separately, so the real cause is visible in one request.
  */
 import { db, hasDatabase } from "@/db";
-import { databaseStatus, initialiseDatabase, reinitialiseDatabase } from "@/db/bootstrap";
+import { databaseStatus, describeDatabaseError, initialiseDatabase, reinitialiseDatabase } from "@/db/bootstrap";
 import { sql } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  // `?retry=1` forces a fresh attempt (re-runs migrations, re-probes).
+  // `?retry=1` retries a failed boot; a ready boot is already cached.
   const retry = new URL(request.url).searchParams.get("retry") === "1";
 
   if (!hasDatabase) {
@@ -52,14 +52,15 @@ export async function GET(request: Request) {
   try {
     await db.execute(sql`select 1 from "users" limit 1`);
   } catch (error) {
-    console.error("[health] schema probe failed:", error);
+    const detail = describeDatabaseError(error);
+    console.error("[health] schema probe failed:", detail);
     return Response.json(
       {
         ok: false,
         configured: true,
-        database: "connected",
-        schema: "incomplete",
-        detail: "The database is reachable but its tables could not be queried.",
+        database: "unavailable",
+        schema: "unverified",
+        detail,
       },
       { status: 503 },
     );

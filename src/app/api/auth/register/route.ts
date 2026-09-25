@@ -14,6 +14,7 @@ import {
   setSessionCookie,
 } from "@/services/server/auth";
 import { badRequest, readJson, serverError } from "@/services/server/guard";
+import { logDatabaseFailure } from "@/services/server/databaseErrors";
 import { createDevUser, findDevUser } from "@/services/server/devStore";
 import { validateGmailAddress } from "@/lib/email";
 
@@ -86,7 +87,8 @@ export async function POST(request: Request) {
     });
     setSessionCookie(response, token, expiresAt);
     return response;
-  } catch {
+  } catch (error) {
+    logDatabaseFailure("register", error);
     return serverError("Could not create the account.");
   }
 }

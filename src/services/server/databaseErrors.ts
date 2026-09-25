@@ -5,7 +5,7 @@
  * generic sentence, so a missing `DATABASE_URL`, an unreachable server and a
  * missing table were all indistinguishable — and undiagnosable. These helpers
  * keep the user-facing message friendly while making it *accurate*, and log the
- * real driver error server-side where it belongs.
+ * underlying cause without including connection strings or passwords.
  */
 import { hasDatabase } from "@/db";
 import { databaseStatus, describeDatabaseError } from "@/db/bootstrap";
@@ -30,12 +30,13 @@ export function databaseFailureMessage(fallback: string): string {
 }
 
 /**
- * Converts a thrown driver error into an accurate message and records the
- * original error in the server log (never sent to the browser).
+ * Converts a thrown driver error into an accurate message and logs only its
+ * sanitized cause (never a raw connection string or SQL parameters).
  */
 export function reportDatabaseError(context: string, error: unknown): string {
-  console.error(`[db] ${context} failed:`, error);
-  return databaseFailureMessage(describeDatabaseError(error));
+  const detail = describeDatabaseError(error);
+  console.error(`[db] ${context} failed:`, detail);
+  return databaseFailureMessage(detail);
 }
 
 /**
@@ -44,5 +45,5 @@ export function reportDatabaseError(context: string, error: unknown): string {
  * failure is still recorded — otherwise an outage looks like "no data yet".
  */
 export function logDatabaseFailure(context: string, error: unknown): void {
-  console.error(`[db] ${context} failed:`, error instanceof Error ? error.message : error);
+  console.error(`[db] ${context} failed:`, describeDatabaseError(error));
 }
