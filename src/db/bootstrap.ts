@@ -22,6 +22,7 @@
  * cannot be reached or migrated, the outcome is recorded and surfaced safely
  * by `/api/health` and by the API error messages.
  */
+import { existsSync } from "node:fs";
 import path from "node:path";
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
@@ -36,6 +37,25 @@ const MIGRATIONS_FOLDER = path.join(process.cwd(), "drizzle");
 /** Set `DB_AUTO_MIGRATE=false` to boot without touching the schema. */
 const autoMigrate = process.env.DB_AUTO_MIGRATE?.trim().toLowerCase() !== "false";
 
+/**
+ * Drizzle's migrator reads the folder through `fs` at runtime, so a path built
+ * from `process.cwd()` cannot be followed by output file tracing. In a
+ * serverless bundle that does not ship `./drizzle` (see `outputFileTracingIncludes`
+ * in next.config.ts) `migrate()` would die with a bare "Can't find
+ * meta/_journal.json file" — which says nothing about the real cause. Failing
+ * here with an explicit, sanitised error keeps cold starts diagnosable.
+ */
+function assertMigrationsFolder(): void {
+  const journal = path.join(MIGRATIONS_FOLDER, "meta", "_journal.json");
+  if (!existsSync(MIGRATIONS_FOLDER) || !existsSync(journal)) {
+    const error = new Error(
+      "The drizzle migrations folder is missing from this deployment bundle, so the database schema cannot be created or verified.",
+    ) as Error & { code?: string };
+    error.code = "MIGRATIONS_FOLDER_MISSING";
+    throw error;
+  }
+}
+
 async function runMigrations(): Promise<void> {
   const directUrl = process.env.DATABASE_URL_UNPOOLED?.trim();
   const migrationUrl = directUrl || process.env.DATABASE_URL?.trim();
@@ -46,6 +66,8 @@ async function runMigrations(): Promise<void> {
   if (new URL(migrationUrl).hostname.includes("-pooler.")) {
     throw new Error("Bootstrap requires a direct DATABASE_URL_UNPOOLED connection.");
   }
+
+  assertMigrationsFolder();
 
   // Keep DDL off the pooled runtime client; close this connection after boot.
   const client = new Client({
@@ -60,7 +82,14 @@ async function runMigrations(): Promise<void> {
     // Direct connections hold a session lock across Drizzle's journal check
     // and migration transaction, serialising concurrent serverless cold starts.
     await client.query("SELECT pg_advisory_lock(hashtext('nutriplan'), hashtext('drizzle_migrations'))");
-    await migrate(drizzle(client), { migrationsFolder: MIGRATIONS_FOLDER });
+    try {
+      await migrate(drizzle(client), { migrationsFolder: MIGRATIONS_FOLDER });
+    } catch (error) {
+      // Surface the real migration failure (sanitised) instead of letting the
+      // boot continue as if the schema had been applied.
+      logDatabaseError("migration failed", error);
+      throw error;
+    }
   } finally {
     await client.end(); // also releases the advisory lock on failure
   }
@@ -99,6 +128,8 @@ export function describeDatabaseError(error: unknown): string {
   const code = pickCode(error);
 
   switch (code) {
+    case "MIGRATIONS_FOLDER_MISSING":
+      return "This deployment bundle is missing the database migrations, so the schema could not be created.";
     case "42P01":
       return "The database schema has not been created yet.";
     case "3D000":
@@ -165,17 +196,29 @@ async function runInitialisation(): Promise<DatabaseState> {
     }
 
     // A real query proves the connection works and the schema is present.
+    // Checking for `users` specifically matters: counting tables alone would
+    // report "ready" for a database that has tables but not this app's schema.
     const probe = (await db.execute(
-      sql`select count(*)::int as tables
+      sql`select count(*)::int as tables,
+                 to_regclass('public.users') is not null as has_users
             from information_schema.tables
            where table_schema = 'public'`,
-    )) as unknown as { rows?: { tables?: number }[] };
+    )) as unknown as { rows?: { tables?: number; has_users?: boolean }[] };
 
     const tables = probe.rows?.[0]?.tables ?? 0;
     if (tables === 0) {
       status = {
         state: "unavailable",
         detail: "The database is reachable but contains no tables. Apply the database migrations.",
+      };
+      console.error(`[db] ${status.detail}`);
+      return status;
+    }
+    if (probe.rows?.[0]?.has_users !== true) {
+      status = {
+        state: "unavailable",
+        detail:
+          "The database is reachable but the users table is missing, so the schema is not fully applied.",
       };
       console.error(`[db] ${status.detail}`);
       return status;

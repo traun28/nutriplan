@@ -7,6 +7,7 @@
  */
 import { eq } from "drizzle-orm";
 import { databaseRequiredError, db, hasDatabase } from "@/db";
+import { initialiseDatabase } from "@/db/bootstrap";
 import { logDatabaseError } from "@/db/errors";
 import { users } from "@/db/schema";
 import {
@@ -59,6 +60,16 @@ export async function POST(request: Request) {
       });
       setSessionCookie(response, token, expiresAt);
       return response;
+    }
+
+    // Never query before the database has been initialised. `initialiseDatabase`
+    // is memoised per process (the instrumentation hook already awaits it on
+    // cold start), so this await is free on every normal request — but if that
+    // boot initialisation failed or was skipped, this route refuses to run
+    // against an unmigrated database instead of dying with 42P01.
+    const status = await initialiseDatabase();
+    if (status.state !== "ready") {
+      return Response.json({ error: status.detail }, { status: 503 });
     }
 
     const existing = await db
