@@ -24,7 +24,9 @@
  */
 import path from "node:path";
 import { sql } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
+import { Client } from "pg";
 import { db, hasDatabase } from "@/db";
 
 /** Migration SQL committed in `/drizzle`; generated with `npm run db:generate`. */
@@ -32,6 +34,27 @@ const MIGRATIONS_FOLDER = path.join(process.cwd(), "drizzle");
 
 /** Set `DB_AUTO_MIGRATE=false` to boot without touching the schema. */
 const autoMigrate = process.env.DB_AUTO_MIGRATE?.trim().toLowerCase() !== "false";
+
+async function runMigrations(): Promise<void> {
+  const directUrl = process.env.DATABASE_URL_UNPOOLED?.trim();
+  const migrationUrl = directUrl || process.env.DATABASE_URL?.trim();
+  if (!migrationUrl) throw new Error("No database URL is configured for migrations.");
+
+  // Keep DDL off the pooled runtime client; close this connection after boot.
+  const client = new Client({ connectionString: migrationUrl, connectionTimeoutMillis: 30_000 });
+  client.on("error", () => console.error("[db] migration connection lost."));
+  try {
+    await client.connect();
+    if (directUrl) {
+      // Direct connections hold a session lock across Drizzle's journal check
+      // and migration transaction, serialising concurrent serverless cold starts.
+      await client.query("SELECT pg_advisory_lock(hashtext('nutriplan'), hashtext('drizzle_migrations'))");
+    }
+    await migrate(drizzle(client), { migrationsFolder: MIGRATIONS_FOLDER });
+  } finally {
+    await client.end(); // also releases the advisory lock on failure
+  }
+}
 
 export type DatabaseState =
   | { state: "not_configured"; detail: string }
@@ -124,7 +147,7 @@ async function runInitialisation(): Promise<DatabaseState> {
 
   try {
     if (autoMigrate) {
-      await migrate(db, { migrationsFolder: MIGRATIONS_FOLDER });
+      await runMigrations();
     }
 
     // A real query proves the connection works and the schema is present.

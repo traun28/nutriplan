@@ -38,8 +38,8 @@ const poolConfig: PoolConfig = databaseUrl
       // Bound the pool: 10 concurrent connections is plenty for this app and
       // prevents a burst of requests from opening sockets without limit.
       max: 10,
-      // Fail a connection attempt after 10s rather than hanging the request.
-      connectionTimeoutMillis: 10_000,
+      // Allow Neon to wake up without waiting indefinitely for a connection.
+      connectionTimeoutMillis: 30_000,
       // Release sockets that sit idle, so a restarted database is reconnected.
       idleTimeoutMillis: 30_000,
       application_name: "nutriplan",
