@@ -14,7 +14,6 @@ import {
   verifyPassword,
 } from "@/services/server/auth";
 import { badRequest, readJson, serverError } from "@/services/server/guard";
-import { logDatabaseFailure } from "@/services/server/databaseErrors";
 import { findDevUser } from "@/services/server/devStore";
 import { validateGmailAddress } from "@/lib/email";
 
@@ -77,8 +76,7 @@ export async function POST(request: Request) {
     });
     setSessionCookie(response, token, expiresAt);
     return response;
-  } catch (error) {
-    logDatabaseFailure("login", error);
+  } catch {
     return serverError("Could not sign you in.");
   }
 }

@@ -1,9 +1,9 @@
 /**
  * Server boot hook.
  *
- * `register()` runs once per Node instance (including Vercel cold starts),
- * before requests on that instance. This is the right place to check that the
- * schema exists: per-request migrations would add latency and race requests, and
+ * `register()` runs once when the Node server starts, before any request is
+ * served. That is the correct place to make sure the database schema exists:
+ * doing it per request would add latency and race concurrent requests, and
  * doing it only from a CLI step (`npm run db:push`) leaves the app returning
  * 503 on every page if anyone forgets that step.
  *

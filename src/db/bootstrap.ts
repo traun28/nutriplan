@@ -3,10 +3,9 @@
  *
  * A configured `DATABASE_URL` is only half the story: if the tables have never
  * been created, every query fails with `42P01 relation does not exist`, and the
- * repositories turn that into a 503 on every page. This module applies the
- * committed Drizzle migrations once per process, before the first request is
- * served (see `src/instrumentation.ts`). Migrations use the direct Neon URL,
- * while the application queries continue to use the pooled runtime URL.
+ * repositories turn that into a 503 on every page. This module removes that
+ * failure mode by applying the committed Drizzle migrations once per process,
+ * before the first request is served (see `src/instrumentation.ts`).
  *
  * Migrations are idempotent, so this is safe on every boot and on every kind of
  * database it meets:
@@ -19,8 +18,9 @@
  *   • partly created        → only the missing tables are added;
  *   • already migrated      → Drizzle finds its record and does nothing.
  *
- * It never fabricates data or hides a real outage: if the database cannot be
- * reached or migrated, the outcome is recorded and reported by `/api/health`.
+ * It never fabricates data and never hides a real outage: if the database
+ * cannot be reached or migrated, the outcome is recorded and surfaced verbatim
+ * by `/api/health` and by the API error messages.
  */
 import path from "node:path";
 import { sql } from "drizzle-orm";
@@ -35,40 +35,24 @@ const MIGRATIONS_FOLDER = path.join(process.cwd(), "drizzle");
 /** Set `DB_AUTO_MIGRATE=false` to boot without touching the schema. */
 const autoMigrate = process.env.DB_AUTO_MIGRATE?.trim().toLowerCase() !== "false";
 
-/** Keep schema changes off the pooled runtime connection when Neon provides a direct URL. */
-const unpooledUrl = process.env.DATABASE_URL_UNPOOLED?.trim() || undefined;
-
 async function runMigrations(): Promise<void> {
-  const migrationUrl = unpooledUrl || process.env.DATABASE_URL?.trim();
+  const directUrl = process.env.DATABASE_URL_UNPOOLED?.trim();
+  const migrationUrl = directUrl || process.env.DATABASE_URL?.trim();
   if (!migrationUrl) throw new Error("No database URL is configured for migrations.");
 
-  if (!unpooledUrl && process.env.NODE_ENV === "production") {
-    console.warn("[db] DATABASE_URL_UNPOOLED is unset; migrations are falling back to DATABASE_URL. Configure a direct URL for concurrent serverless starts.");
-  }
-
-  // One short-lived, dedicated connection per boot (not per request). Drizzle's
-  // schema creation, journal lookup and transaction must all use this client.
-  const client = new Client({
-    connectionString: migrationUrl,
-    connectionTimeoutMillis: 30_000,
-    application_name: "nutriplan-migrations",
-  });
-  client.on("error", (error) => {
-    console.error("[db] migration connection error:", describeDatabaseError(error));
-  });
-
+  // Keep DDL off the pooled runtime client; close this connection after boot.
+  const client = new Client({ connectionString: migrationUrl, connectionTimeoutMillis: 30_000 });
+  client.on("error", () => console.error("[db] migration connection lost."));
   try {
     await client.connect();
-    if (unpooledUrl) {
-      // A direct connection holds this session lock until end(), serialising
-      // concurrent Vercel cold starts before Drizzle checks its migration journal.
-      // A transaction-pooler cannot guarantee session affinity, so only lock
-      // when the direct connection is configured.
+    if (directUrl) {
+      // Direct connections hold a session lock across Drizzle's journal check
+      // and migration transaction, serialising concurrent serverless cold starts.
       await client.query("SELECT pg_advisory_lock(hashtext('nutriplan'), hashtext('drizzle_migrations'))");
     }
     await migrate(drizzle(client), { migrationsFolder: MIGRATIONS_FOLDER });
   } finally {
-    await client.end(); // releases the advisory lock even if migration fails
+    await client.end(); // also releases the advisory lock on failure
   }
 }
 
@@ -86,7 +70,6 @@ let status: DatabaseState = {
 
 /** One initialisation per process; concurrent callers share the same promise. */
 let initialising: Promise<DatabaseState> | null = null;
-let retrying: Promise<DatabaseState> | null = null;
 
 /** Outcome of the most recent initialisation attempt. */
 export function databaseStatus(): DatabaseState {
@@ -98,18 +81,18 @@ export function isDatabaseReady(): boolean {
 }
 
 /**
- * Translates a driver error into an accurate, non-sensitive reason. Use the
- * innermost cause (not Drizzle's SQL wrapper) and never echo connection URLs.
+ * Translates a driver error into an accurate, non-sensitive reason. The raw
+ * error is logged server-side so the real cause is always diagnosable.
  */
 export function describeDatabaseError(error: unknown): string {
   const code = pickCode(error);
-  const message = safeErrorMessage(error);
+  const message = error instanceof Error ? error.message : String(error);
 
   switch (code) {
     case "42P01":
       return "The database schema has not been created yet.";
     case "3D000":
-      return "The configured database does not exist.";
+      return "The database named in DATABASE_URL does not exist.";
     case "28P01":
     case "28000":
       return "The database rejected the configured credentials.";
@@ -136,18 +119,6 @@ function pickCode(error: unknown, depth = 0): string | undefined {
   return pickCode(candidate.cause, depth + 1);
 }
 
-function safeErrorMessage(error: unknown, depth = 0): string {
-  if (error && typeof error === "object") {
-    const candidate = error as { message?: unknown; cause?: unknown };
-    if (candidate.cause && depth < 4) return safeErrorMessage(candidate.cause, depth + 1);
-    error = candidate.message;
-  }
-  if (typeof error !== "string") return "";
-  return error
-    .replace(/\bpostgres(?:ql)?:\/\/[^\s'"<>]+/gi, "[redacted database URL]")
-    .replace(/\bpassword\s*[:=]\s*[^\s,;]+/gi, "password=[redacted]");
-}
-
 /**
  * Applies pending migrations and verifies the schema is queryable.
  * Safe to call repeatedly; the first call does the work.
@@ -157,18 +128,10 @@ export function initialiseDatabase(): Promise<DatabaseState> {
   return initialising;
 }
 
-/** Retry a failed boot without racing an in-flight migration or opening more clients. */
+/** Forces a fresh attempt — used by `/api/health` when it is asked to re-check. */
 export function reinitialiseDatabase(): Promise<DatabaseState> {
-  if (retrying) return retrying;
-  retrying = (async () => {
-    const previous = initialising ? await initialising : null;
-    if (previous?.state === "ready") return previous;
-    initialising = null;
-    return initialiseDatabase();
-  })().finally(() => {
-    retrying = null;
-  });
-  return retrying;
+  initialising = null;
+  return initialiseDatabase();
 }
 
 async function runInitialisation(): Promise<DatabaseState> {
@@ -198,7 +161,7 @@ async function runInitialisation(): Promise<DatabaseState> {
     if (tables === 0) {
       status = {
         state: "unavailable",
-        detail: "The database is reachable but contains no tables. Check the committed migrations and DB_AUTO_MIGRATE setting.",
+        detail: `The database is reachable but contains no tables. Run "npm run db:push" against ${redact(process.env.DATABASE_URL)}.`,
       };
       console.error(`[db] ${status.detail}`);
       return status;
@@ -208,8 +171,14 @@ async function runInitialisation(): Promise<DatabaseState> {
     return status;
   } catch (error) {
     status = { state: "unavailable", detail: describeDatabaseError(error) };
-    // Report the underlying cause without logging connection strings or SQL.
-    console.error("[db] initialisation failed:", status.detail);
+    // Log the real error server-side — the client only ever sees `detail`.
+    console.error("[db] initialisation failed:", error);
     return status;
   }
+}
+
+/** Removes credentials so a connection string can be quoted in a message. */
+function redact(url: string | undefined): string {
+  if (!url) return "(unset)";
+  return url.replace(/\/\/[^@/]*@/, "//***:***@");
 }

@@ -38,7 +38,7 @@ const poolConfig: PoolConfig = databaseUrl
       // Bound the pool: 10 concurrent connections is plenty for this app and
       // prevents a burst of requests from opening sockets without limit.
       max: 10,
-      // Allow Neon to wake up without leaving connection attempts unbounded.
+      // Allow Neon to wake up without waiting indefinitely for a connection.
       connectionTimeoutMillis: 30_000,
       // Release sockets that sit idle, so a restarted database is reconnected.
       idleTimeoutMillis: 30_000,
@@ -67,10 +67,7 @@ function createPool(): Pool {
   // `pg` emits that on the pool; with no listener it becomes an unhandled
   // 'error' event and takes the whole Node process down.
   created.on("error", (error) => {
-    const detail = error.message
-      .replace(/\bpostgres(?:ql)?:\/\/[^\s'"<>]+/gi, "[redacted database URL]")
-      .replace(/\bpassword\s*[:=]\s*[^\s,;]+/gi, "password=[redacted]");
-    console.error("[db] idle client error:", detail);
+    console.error("[db] idle client error:", error.message);
   });
   return created;
 }
