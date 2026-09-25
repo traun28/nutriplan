@@ -19,7 +19,7 @@
  *   • already migrated      → Drizzle finds its record and does nothing.
  *
  * It never fabricates data and never hides a real outage: if the database
- * cannot be reached or migrated, the outcome is recorded and surfaced verbatim
+ * cannot be reached or migrated, the outcome is recorded and surfaced safely
  * by `/api/health` and by the API error messages.
  */
 import path from "node:path";
@@ -28,6 +28,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { Client } from "pg";
 import { db, hasDatabase } from "@/db";
+import { logDatabaseError } from "@/db/errors";
 
 /** Migration SQL committed in `/drizzle`; generated with `npm run db:generate`. */
 const MIGRATIONS_FOLDER = path.join(process.cwd(), "drizzle");
@@ -40,16 +41,25 @@ async function runMigrations(): Promise<void> {
   const migrationUrl = directUrl || process.env.DATABASE_URL?.trim();
   if (!migrationUrl) throw new Error("No database URL is configured for migrations.");
 
+  // Session advisory locks are unsafe through Neon's transaction pooler.
+  // The fallback supports direct DATABASE_URLs (including local PostgreSQL).
+  if (new URL(migrationUrl).hostname.includes("-pooler.")) {
+    throw new Error("Bootstrap requires a direct DATABASE_URL_UNPOOLED connection.");
+  }
+
   // Keep DDL off the pooled runtime client; close this connection after boot.
-  const client = new Client({ connectionString: migrationUrl, connectionTimeoutMillis: 30_000 });
-  client.on("error", () => console.error("[db] migration connection lost."));
+  const client = new Client({
+    connectionString: migrationUrl,
+    connectionTimeoutMillis: 30_000,
+    application_name: "nutriplan-migrations",
+  });
+  client.on("error", (error) => logDatabaseError("migration connection lost", error));
   try {
     await client.connect();
-    if (directUrl) {
-      // Direct connections hold a session lock across Drizzle's journal check
-      // and migration transaction, serialising concurrent serverless cold starts.
-      await client.query("SELECT pg_advisory_lock(hashtext('nutriplan'), hashtext('drizzle_migrations'))");
-    }
+    await client.query("SET lock_timeout = '30s'");
+    // Direct connections hold a session lock across Drizzle's journal check
+    // and migration transaction, serialising concurrent serverless cold starts.
+    await client.query("SELECT pg_advisory_lock(hashtext('nutriplan'), hashtext('drizzle_migrations'))");
     await migrate(drizzle(client), { migrationsFolder: MIGRATIONS_FOLDER });
   } finally {
     await client.end(); // also releases the advisory lock on failure
@@ -70,6 +80,7 @@ let status: DatabaseState = {
 
 /** One initialisation per process; concurrent callers share the same promise. */
 let initialising: Promise<DatabaseState> | null = null;
+let inFlight = false;
 
 /** Outcome of the most recent initialisation attempt. */
 export function databaseStatus(): DatabaseState {
@@ -86,7 +97,6 @@ export function isDatabaseReady(): boolean {
  */
 export function describeDatabaseError(error: unknown): string {
   const code = pickCode(error);
-  const message = error instanceof Error ? error.message : String(error);
 
   switch (code) {
     case "42P01":
@@ -108,7 +118,7 @@ export function describeDatabaseError(error: unknown): string {
     case "53301":
       return "The database has run out of available connections.";
     default:
-      return message || "The database could not complete that request.";
+      return "The database could not complete that request.";
   }
 }
 
@@ -124,12 +134,16 @@ function pickCode(error: unknown, depth = 0): string | undefined {
  * Safe to call repeatedly; the first call does the work.
  */
 export function initialiseDatabase(): Promise<DatabaseState> {
-  if (!initialising) initialising = runInitialisation();
+  if (!initialising) {
+    inFlight = true;
+    initialising = runInitialisation().finally(() => { inFlight = false; });
+  }
   return initialising;
 }
 
 /** Forces a fresh attempt — used by `/api/health` when it is asked to re-check. */
 export function reinitialiseDatabase(): Promise<DatabaseState> {
+  if (inFlight) return initialiseDatabase();
   initialising = null;
   return initialiseDatabase();
 }
@@ -161,7 +175,7 @@ async function runInitialisation(): Promise<DatabaseState> {
     if (tables === 0) {
       status = {
         state: "unavailable",
-        detail: `The database is reachable but contains no tables. Run "npm run db:push" against ${redact(process.env.DATABASE_URL)}.`,
+        detail: "The database is reachable but contains no tables. Apply the database migrations.",
       };
       console.error(`[db] ${status.detail}`);
       return status;
@@ -172,13 +186,7 @@ async function runInitialisation(): Promise<DatabaseState> {
   } catch (error) {
     status = { state: "unavailable", detail: describeDatabaseError(error) };
     // Log the real error server-side — the client only ever sees `detail`.
-    console.error("[db] initialisation failed:", error);
+    logDatabaseError("initialisation failed", error);
     return status;
   }
-}
-
-/** Removes credentials so a connection string can be quoted in a message. */
-function redact(url: string | undefined): string {
-  if (!url) return "(unset)";
-  return url.replace(/\/\/[^@/]*@/, "//***:***@");
 }

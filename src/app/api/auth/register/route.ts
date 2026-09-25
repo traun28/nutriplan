@@ -7,6 +7,7 @@
  */
 import { eq } from "drizzle-orm";
 import { databaseRequiredError, db, hasDatabase } from "@/db";
+import { logDatabaseError } from "@/db/errors";
 import { users } from "@/db/schema";
 import {
   createSession,
@@ -86,7 +87,8 @@ export async function POST(request: Request) {
     });
     setSessionCookie(response, token, expiresAt);
     return response;
-  } catch {
+  } catch (error) {
+    logDatabaseError("registration failed", error);
     return serverError("Could not create the account.");
   }
 }
